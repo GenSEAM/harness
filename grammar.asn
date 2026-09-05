@@ -562,6 +562,25 @@
           :rationale "Unit test verifying DOM grounding checks on model selected selectors")
     (:sym :name "test-benchmark-slm-coherence" :kind :fn :tokens 4
           :rationale "Unit test verifying batch SLM coherence benchmarking and pass-rate calculation")
+
+    ;; Phase 19 Benchmark Runner Symbols
+    (:sym :name "BenchmarkProfile" :kind :type :tokens 1)
+    (:sym :name "RunnerConfig" :kind :type :tokens 1)
+    (:sym :name "create-runner-config" :kind :fn :tokens 3
+          :rationale "Constructs benchmark runner configuration record")
+    (:sym :name "validate-runner-security" :kind :fn :tokens 3
+          :rationale "Audits configuration strings to ensure zero raw API key literals")
+    (:sym :name "format-runner-banner" :kind :fn :tokens 3
+          :rationale "Formats clean runner startup banner with redacted secrets")
+    (:sym :name "test-create-runner-config" :kind :fn :tokens 4
+          :rationale "Unit test verifying construction of runner config")
+    (:sym :name "test-validate-runner-security-clean" :kind :fn :tokens 5
+          :rationale "Unit test verifying validation of clean environment configs")
+    (:sym :name "test-validate-runner-security-leak" :kind :fn :tokens 5
+          :rationale "Unit test verifying detection and rejection of secret leaks")
+    (:sym :name "test-format-runner-banner" :kind :fn :tokens 4
+          :rationale "Unit test verifying formatting of runner banner")
   ]
 )
+
 
