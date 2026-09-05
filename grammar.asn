@@ -278,5 +278,7 @@
           :rationale "Unit test for YAML tab rejection and collection balance")
     (:sym :name "test-resolve-test-runner" :kind :fn :tokens 4
           :rationale "Unit test for polyglot test runner resolution")
+    (:sym :name "test-python-structural-validation" :kind :fn :tokens 4
+          :rationale "Unit test for Python dialect detection, pytest runner, delimiter balance, and tab rejection")
   ]
 )

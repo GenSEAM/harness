@@ -2,7 +2,8 @@
   :d "Unit tests for universal polyglot pre-execution verifier and anti-hallucination guardrails."
   :x [test-detect-language test-validate-delimiter-balance test-validate-markup-tags
       test-validate-yaml-syntax test-resolve-test-runner test-verify-chunk-match
-      test-verify-structural-action test-execute-verification-gate test-format-gate-rejection run-tests]
+      test-verify-structural-action test-execute-verification-gate test-format-gate-rejection
+      test-python-structural-validation run-tests]
   :i [(verifier :a v)])
 
 (df test-detect-language [] -> Bool
@@ -90,6 +91,31 @@
     (and (string-contains? msg ":gate-rejected")
          (string-contains? msg "cargo test"))))
 
+(df test-python-structural-validation [] -> Bool
+  :d "Verifies end-to-end Python validation: dialect detection, pytest resolution, delimiter balance, tab rejection, chunk matching, and gate enforcement."
+  (let [(py-lang (v/detect-language "server/app.py"))
+        (py-runner (v/resolve-test-runner "python"))
+        (py-valid-code "def parse_records(items):\n    return {'data': [x.strip() for x in items if len(x) > 0]}\n")
+        (py-unbalanced-code "def parse_records(items):\n    return {'data': [x.strip() for x in items\n")
+        (py-clean-edit (v/verify-structural-action "str-replace" "calc.py" "def add(x, y):\n    return x + y\n"))
+        (py-tab-edit (v/verify-structural-action "str-replace" "calc.py" "def add(x, y):\n\treturn x + y\n"))
+        (py-source "def run():\n    value = 42\n    return value\n")
+        (py-chunk-match (v/verify-chunk-match py-source "    value = 42"))
+        (py-chunk-mismatch (v/verify-chunk-match py-source "    value = 99"))
+        (gate-ok (v/execute-verification-gate "pytest" true))
+        (gate-failed (v/execute-verification-gate "pytest" false))]
+    (and (= py-lang "python")
+         (and (= py-runner "pytest")
+              (and (v/validate-delimiter-balance py-valid-code)
+                   (and (not (v/validate-delimiter-balance py-unbalanced-code))
+                        (and (.-allowed py-clean-edit)
+                             (and (not (.-allowed py-tab-edit))
+                                  (and (string-contains? (.-reason py-tab-edit) "Forbidden tab characters")
+                                       (and (.-allowed py-chunk-match)
+                                            (and (not (.-allowed py-chunk-mismatch))
+                                                 (and (.-allowed gate-ok)
+                                                      (not (.-allowed gate-failed))))))))))))))
+
 (df run-tests [] -> Bool
   :d "Executes full polyglot verifier test suite."
   (and (test-detect-language)
@@ -100,5 +126,6 @@
                            (and (test-verify-chunk-match)
                                 (and (test-verify-structural-action)
                                      (and (test-execute-verification-gate)
-                                          (test-format-gate-rejection))))))))))
+                                          (and (test-format-gate-rejection)
+                                               (test-python-structural-validation)))))))))))
 
