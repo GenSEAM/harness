@@ -580,6 +580,29 @@
           :rationale "Unit test verifying detection and rejection of secret leaks")
     (:sym :name "test-format-runner-banner" :kind :fn :tokens 4
           :rationale "Unit test verifying formatting of runner banner")
+
+    ;; Phase 21 Repository Scout Symbols
+    (:sym :name "RepoProfile" :kind :type :tokens 1)
+    (:sym :name "RepoAuditResult" :kind :type :tokens 1)
+    (:sym :name "scout-repo" :kind :fn :tokens 2)
+    (:sym :name "format-profile-asn" :kind :fn :tokens 3
+          :rationale "Formats repository profile as dense ASN S-expression for context injection")
+    (:sym :name "audit-code-diff" :kind :fn :tokens 3
+          :rationale "Audits code diff against repository profile and flags forbidden API calls")
+    (:sym :name "make-empty-profile" :kind :fn :tokens 3
+          :rationale "Constructs an empty fallback repository profile")
+    (:sym :name "test-scout-react-19" :kind :fn :tokens 4
+          :rationale "Unit test for repository scouting on React 19 lockfile")
+    (:sym :name "test-scout-pydantic-v2" :kind :fn :tokens 4
+          :rationale "Unit test for repository scouting on Pydantic v2 poetry lockfile")
+    (:sym :name "test-audit-code-clean" :kind :fn :tokens 4
+          :rationale "Unit test asserting clean idiomatic code passes audit")
+    (:sym :name "test-audit-code-forbidden" :kind :fn :tokens 4
+          :rationale "Unit test asserting forbidden API calls are blocked with violations")
+    (:sym :name "test-format-profile-asn" :kind :fn :tokens 4
+          :rationale "Unit test asserting dense ASN S-expression profile formatting")
+    (:sym :name "run-repo-scout-tests" :kind :fn :tokens 4
+          :rationale "Executes complete repository scout unit test suite")
   ]
 )
 
