@@ -28,7 +28,7 @@
   (:f output Str "Stdout or result payload")
   (:f error-msg Str "Error details if failed"))
 
-(df standard-coding-tools [] -> (List BuiltinTool
+(df standard-coding-tools [] -> (List BuiltinTool)
   :d "Returns canonical set of direct built-in coding tools."
   (list
     (BuiltinTool
@@ -69,7 +69,7 @@
       :name "git-status"
       :description "Checks current Git working tree status"
       :params (list)
-      :deterministic true)))
+      :deterministic true))
 
 (df find-tool [(name Str) (tools (List BuiltinTool))] -> (Option BuiltinTool)
   :d "Finds tool by canonical kebab-case name."

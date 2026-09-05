@@ -41,7 +41,7 @@
   (let [(name (.-tool-name call))]
     (if (should-execute-locally name)
         (c/execute-builtin-tool call)
-        (c/execute-builtin-tool call))))
+        (c/ToolResult :call-id (.-id call) :tool-name name :success false :output "" :error-msg "Tool requires remote LLM execution tier"))))
 
 (df format-savings-report [(routed-calls I64)] -> Str
   :d "Reports token and latency savings achieved through local tool execution."
