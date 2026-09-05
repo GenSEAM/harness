@@ -1,5 +1,5 @@
 (module asl-harness/provider
-  :d "OpenAI-Compatible LLM Gateway Provider with tool-calling and streaming support."
+  :d "OpenAI-Compatible LLM Gateway Provider with tool-calling for Gemma 31B."
   :x [OpenAiConfig ChatMessage ProviderResponse
       default-gateway-config make-message build-request-payload parse-model-response]
   :i [(coding :a c) (toolcall :a tc)])
@@ -22,11 +22,11 @@
   (:f finish-reason Str "stop | tool_calls | length"))
 
 (df default-gateway-config [] -> OpenAiConfig
-  :d "Constructs default LLM Gateway configuration pointed at https://api.llmgateway.io/v1."
+  :d "Constructs default LLM Gateway configuration pointed at https://api.llmgateway.io/v1 for Gemma 31B."
   (OpenAiConfig
     :api-key "llmgtwy_vLHJNl0D6XpsifrNXg2zKVtXDEX26m93H5E4g8RX"
     :base-url "https://api.llmgateway.io/v1"
-    :model "deepseek-v4-flash"
+    :model "gemma-4-31b-it"
     :temperature 0.2
     :max-tokens 4096))
 

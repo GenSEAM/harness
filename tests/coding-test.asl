@@ -46,9 +46,9 @@
         (msgs (list (prov/make-message "user" "hello")))
         (tools (c/standard-coding-tools))
         (payload (prov/build-request-payload cfg msgs tools))]
-    (and (= (.-model cfg) "deepseek-v4-flash")
+    (and (= (.-model cfg) "gemma-4-31b-it")
          (and (= (.-base-url cfg) "https://api.llmgateway.io/v1")
-              (string-contains? payload "deepseek-v4-flash")))))
+              (string-contains? payload "gemma-4-31b-it")))))
 
 (df test-local-exec [] -> Bool
   :d "Verifies deterministic tools are routed to local execution tier without LLM round-trip."
