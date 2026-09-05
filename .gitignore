@@ -1,5 +1,10 @@
 dist/
+build/
 node_modules/
-.DS_Store
+__pycache__/
+*.pyc
 *.log
+.DS_Store
 .tokensave/
+asl.json
+
