@@ -15,3 +15,11 @@
 - Disjoint Ownership: Verified across all Wave 0 phases.
 
 Wave 0 plans drafted and locked. Ready for parallel Wave 0 execution.
+- 2026-09-05: Dispatched Wave 0 subagents concurrently in single message:
+  * Firewall Implementer (`harness/src/firewall.asl`, `harness/tests/firewall-test.asl`) -> Gate PASSED
+  * FSM Normalizer Implementer (`harness/src/fsm-normalizer.asl`, `harness/tests/fsm-normalizer-test.asl`) -> Gate PASSED
+  * REPL Inspector Implementer (`harness/src/repl.asl`, `harness/tests/repl-test.asl`) -> Gate PASSED
+- Orchestrator Gate Reproduction: All 3 gates executed independently and verified 100% green.
+- Symbol Registration: 27 new symbols added to `harness/grammar.asn` with verified token counts and rationales.
+- Gate Check: Full 7-stage pre-commit gate passed cleanly.
+- Wave 0 complete. Unblocking Wave 1: `agent-core-blackboard-dag`, `bus-credit-backpressure`, `intel-lens-cartography`.

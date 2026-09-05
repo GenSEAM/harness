@@ -44,9 +44,9 @@ graph TD
 
 | Phase ID | Wave | Priority | Dependencies | Owns (Exclusive Patterns) | Gate Command | Status |
 |---|:---:|:---:|---|---|---|:---:|
-| `harness-action-firewall` | **Wave 0** | **P0** | `[]` | `harness/src/firewall.asl`<br>`harness/tests/firewall-test.asl` | `asl test harness/tests/firewall-test.asl` | `ready` |
-| `harness-grammar-fsm` | **Wave 0** | **P0** | `[]` | `harness/src/fsm-normalizer.asl`<br>`harness/tests/fsm-normalizer-test.asl` | `asl test harness/tests/fsm-normalizer-test.asl` | `ready` |
-| `coding-repl-inspector` | **Wave 0** | **P0** | `[]` | `harness/src/repl.asl`<br>`harness/tests/repl-test.asl` | `asl test harness/tests/repl-test.asl` | `ready` |
+| `harness-action-firewall` | **Wave 0** | **P0** | `[]` | `harness/src/firewall.asl`<br>`harness/tests/firewall-test.asl` | `asl test harness/tests/firewall-test.asl` | `done` |
+| `harness-grammar-fsm` | **Wave 0** | **P0** | `[]` | `harness/src/fsm-normalizer.asl`<br>`harness/tests/fsm-normalizer-test.asl` | `asl test harness/tests/fsm-normalizer-test.asl` | `done` |
+| `coding-repl-inspector` | **Wave 0** | **P0** | `[]` | `harness/src/repl.asl`<br>`harness/tests/repl-test.asl` | `asl test harness/tests/repl-test.asl` | `done` |
 | `agent-core-blackboard-dag` | **Wave 1** | **P1** | `["harness-action-firewall"]` | `agent-core/src/blackboard.asl`<br>`agent-core/tests/blackboard-test.asl` | `asl test agent-core/tests/blackboard-test.asl` | `pending` |
 | `bus-credit-backpressure` | **Wave 1** | **P1** | `["harness-grammar-fsm"]` | `agent-bus/src/backpressure.asl`<br>`agent-bus/tests/backpressure-test.asl` | `asl test agent-bus/tests/backpressure-test.asl` | `pending` |
 | `intel-lens-cartography` | **Wave 1** | **P1** | `["coding-repl-inspector"]` | `intel/src/lens.asl`<br>`intel/tests/lens-test.asl` | `asl test intel/tests/lens-test.asl` | `pending` |

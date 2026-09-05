@@ -158,5 +158,48 @@
           :rationale "Unit test for user plugin registration")
     (:sym :name "test-experimental-flags" :kind :fn :tokens 3
           :rationale "Unit test for experimental feature flags")
+    (:sym :name "FirewallPolicy" :kind :struct :tokens 2)
+    (:sym :name "FirewallVerdict" :kind :struct :tokens 2)
+    (:sym :name "default-firewall-policy" :kind :fn :tokens 3
+          :rationale "Constructs default action firewall policy record")
+    (:sym :name "evaluate-path-boundary" :kind :fn :tokens 3
+          :rationale "Validates file paths stay inside allowed workspace root")
+    (:sym :name "evaluate-command-safety" :kind :fn :tokens 3
+          :rationale "Validates shell commands against dangerous execution patterns")
+    (:sym :name "audit-action" :kind :fn :tokens 2)
+    (:sym :name "test-path-traversal-blocked" :kind :fn :tokens 4
+          :rationale "Unit test asserting path traversal attempts are blocked")
+    (:sym :name "test-dangerous-cmd-blocked" :kind :fn :tokens 4
+          :rationale "Unit test asserting dangerous shell commands are blocked")
+    (:sym :name "test-allowed-sandbox-path" :kind :fn :tokens 4
+          :rationale "Unit test asserting safe paths within workspace are allowed")
+    (:sym :name "FsmState" :kind :enum :tokens 2)
+    (:sym :name "FsmResult" :kind :struct :tokens 2)
+    (:sym :name "normalize-keywords" :kind :fn :tokens 2)
+    (:sym :name "balance-delimiters-fsm" :kind :fn :tokens 3
+          :rationale "Single-pass FSM delimiter auto-balancer for truncated outputs")
+    (:sym :name "repair-syntax-fsm" :kind :fn :tokens 3
+          :rationale "End-to-end FSM syntax normalizer and repair pipeline")
+    (:sym :name "test-keyword-normalization" :kind :fn :tokens 3
+          :rationale "Unit test for hallucinated keyword normalization")
+    (:sym :name "test-delimiter-auto-balance" :kind :fn :tokens 4
+          :rationale "Unit test for single-pass delimiter auto-balancing")
+    (:sym :name "test-nested-form-repair" :kind :fn :tokens 4
+          :rationale "Unit test for deeply nested S-expression syntax repair")
+    (:sym :name "ReplSession" :kind :struct :tokens 2)
+    (:sym :name "EvalOutcome" :kind :struct :tokens 2)
+    (:sym :name "new-repl-session" :kind :fn :tokens 3
+          :rationale "Initializes a new in-memory REPL evaluation session")
+    (:sym :name "eval-expression" :kind :fn :tokens 2)
+    (:sym :name "patch-ast-node" :kind :fn :tokens 3
+          :rationale "Performs granular S-expression substitution at target symbol")
+    (:sym :name "format-semantic-error" :kind :fn :tokens 3
+          :rationale "Formats structured AST semantic error diagnostic")
+    (:sym :name "test-eval-expression" :kind :fn :tokens 3
+          :rationale "Unit test for sub-millisecond in-memory expression evaluation")
+    (:sym :name "test-patch-ast-node" :kind :fn :tokens 4
+          :rationale "Unit test for granular AST node substitution")
+    (:sym :name "test-semantic-error-formatting" :kind :fn :tokens 4
+          :rationale "Unit test for structured semantic error formatting")
   ]
 )
