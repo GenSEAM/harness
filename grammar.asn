@@ -420,5 +420,32 @@
           :rationale "Searches benchmark task suite by unique identifier string")
     (:sym :name "test-swe-006" :kind :fn :tokens 3
           :rationale "Unit test verifying SWE-006 cross-package blast radius and ghost API migration task")
+
+    ;; Phase 07 AST Guard & Sanitizer Symbols
+    (:sym :name "AstMutationVerdict" :kind :type :tokens 1)
+    (:sym :name "audit-ast-mutation" :kind :fn :tokens 3
+          :rationale "Audits pre/post code AST mutations preventing deletion of protected symbols")
+    (:sym :name "format-mutation-verdict" :kind :fn :tokens 3
+          :rationale "Formats structured diagnostic verdict for AST mutation audit")
+    (:sym :name "extract-symbol-definitions" :kind :fn :tokens 3
+          :rationale "Extracts symbol definition identifiers from source code lines")
+    (:sym :name "SanitizedTrace" :kind :type :tokens 1)
+    (:sym :name "sanitize-trace" :kind :fn :tokens 2)
+    (:sym :name "format-sanitized-trace" :kind :fn :tokens 3
+          :rationale "Renders clean compact diagnostic block from sanitized trace")
+    (:sym :name "is-framework-noise?" :kind :fn :tokens 3
+          :rationale "Predicate detecting framework runtime frames in stack traces")
+    (:sym :name "estimate-trace-tokens" :kind :fn :tokens 3
+          :rationale "Deterministic token estimation heuristic for traceback lines")
+    (:sym :name "test-ast-mutation-clean-edit" :kind :fn :tokens 5
+          :rationale "Unit test verifying valid AST edits pass mutation gate")
+    (:sym :name "test-ast-mutation-deleted-assertion-blocked" :kind :fn :tokens 5
+          :rationale "Unit test asserting deleted test assertions are rejected")
+    (:sym :name "test-ast-mutation-multiple-violations" :kind :fn :tokens 4
+          :rationale "Unit test verifying multiple missing symbols are recorded")
+    (:sym :name "test-sanitize-noisy-traceback" :kind :fn :tokens 4
+          :rationale "Unit test asserting framework frames are stripped from traceback")
+    (:sym :name "test-sanitize-token-budget" :kind :fn :tokens 4
+          :rationale "Unit test verifying sanitized traceback respects token limit")
   ]
 )
