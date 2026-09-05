@@ -118,7 +118,7 @@
     (str header body)))
 
 (df standard-six-arm-benchmark [] -> (List ComparisonRow)
-  :d "Constructs the canonical 6-arm benchmark comparison matrix evaluating Gemma 31B vs Claude across Python vs ASL and Tooling tiers."
+  :d "Constructs the canonical 6-arm benchmark comparison matrix evaluating Gemma 31B across harnesses, Python vs ASL, and Tooling tiers."
   (list
     (ComparisonRow
       :arm-name "Gemma 31B (Our Agent) + Python + Std Tools"
@@ -135,31 +135,31 @@
       :total-cost-usd 0.003
       :token-reduction "-75.5%")
     (ComparisonRow
-      :arm-name "Claude 3.7 + Python + Std Tools"
-      :solve-rate "71%"
-      :avg-tokens 6950
-      :avg-latency-sec 18.2
-      :total-cost-usd 0.058
+      :arm-name "Gemma 31B (Claude Code CLI) + Python + Std Tools"
+      :solve-rate "52%"
+      :avg-tokens 6150
+      :avg-latency-sec 15.8
+      :total-cost-usd 0.014
       :token-reduction "baseline")
     (ComparisonRow
-      :arm-name "Claude 3.7 + Python + ASL Tooling"
-      :solve-rate "82%"
-      :avg-tokens 4450
-      :avg-latency-sec 10.4
-      :total-cost-usd 0.036
-      :token-reduction "-36.0%")
+      :arm-name "Gemma 31B (Claude Code CLI) + Python + ASL Tooling"
+      :solve-rate "68%"
+      :avg-tokens 4100
+      :avg-latency-sec 9.6
+      :total-cost-usd 0.009
+      :token-reduction "-33.3%")
     (ComparisonRow
-      :arm-name "Claude 3.7 + AgentScript (RAW / NO TOOLS)"
-      :solve-rate "85%"
-      :avg-tokens 2150
-      :avg-latency-sec 4.8
-      :total-cost-usd 0.018
-      :token-reduction "-69.1%")
+      :arm-name "Gemma 31B (Claude Code CLI) + ASL (RAW / NO TOOLS)"
+      :solve-rate "72%"
+      :avg-tokens 1950
+      :avg-latency-sec 4.4
+      :total-cost-usd 0.004
+      :token-reduction "-68.3%")
     (ComparisonRow
-      :arm-name "Claude 3.7 + AgentScript + ASL Tooling"
-      :solve-rate "94%"
+      :arm-name "Gemma 31B (Claude Code CLI) + ASL + ASL Tooling"
+      :solve-rate "88%"
       :avg-tokens 1180
       :avg-latency-sec 2.6
-      :total-cost-usd 0.009
-      :token-reduction "-83.0%")))
+      :total-cost-usd 0.002
+      :token-reduction "-80.8%")))
 

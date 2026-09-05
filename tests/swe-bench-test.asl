@@ -31,14 +31,14 @@
               (string-contains? matrix "ASL Coding Harness")))))
 
 (df test-six-arm-matrix [] -> Bool
-  :d "Verifies full 6-arm benchmark matrix covers Gemma 31B vs Claude across Python and ASL."
+  :d "Verifies full 6-arm benchmark matrix covers Gemma 31B across harnesses, Python and ASL."
   (let [(rows (swe/standard-six-arm-benchmark))
         (formatted (swe/format-benchmark-matrix rows))]
     (and (= (list-length rows) 6)
          (and (string-contains? formatted "Gemma 31B (Our Agent) + Python")
               (and (string-contains? formatted "Gemma 31B (Our Agent) + ASL")
-                   (and (string-contains? formatted "Claude 3.7 + AgentScript (RAW / NO TOOLS)")
-                        (string-contains? formatted "Claude 3.7 + AgentScript + ASL Tooling")))))))
+                   (and (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL (RAW / NO TOOLS)")
+                        (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL + ASL Tooling")))))))
 
 (df run-tests [] -> Bool
   :d "Executes full SWE benchmark test suite."
