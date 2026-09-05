@@ -474,5 +474,51 @@
           :rationale "Unit test verifying comparison and token savings against Claude CLI")
     (:sym :name "test-matrix-formatting" :kind :fn :tokens 3
           :rationale "Unit test verifying Markdown table formatting of benchmark matrix")
+
+    ;; Phase 11 Instrumental Ablation Suite Symbols
+    (:sym :name "AblationMetric" :kind :type :tokens 1)
+    (:sym :name "AblationReport" :kind :type :tokens 1)
+    (:sym :name "measure-preload-ablation" :kind :fn :tokens 3
+          :rationale "Measures token reduction of Graph-Horizon Paging vs full context")
+    (:sym :name "measure-health-ablation" :kind :fn :tokens 3
+          :rationale "Measures circular dependency and blast radius hotspot detection")
+    (:sym :name "measure-deps-ablation" :kind :fn :tokens 3
+          :rationale "Measures prevention of deprecated method hallucinations")
+    (:sym :name "measure-fsm-ablation" :kind :fn :tokens 3
+          :rationale "Measures single-pass recovery of truncated delimiters and keywords")
+    (:sym :name "measure-ast-gate-ablation" :kind :fn :tokens 4
+          :rationale "Measures interception of deleted test assertions")
+    (:sym :name "measure-sanitizer-ablation" :kind :fn :tokens 3
+          :rationale "Measures traceback noise reduction from large runtime stacks")
+    (:sym :name "measure-pointer-ablation" :kind :fn :tokens 3
+          :rationale "Measures context token savings of blob offloading")
+    (:sym :name "measure-gateway-ablation" :kind :fn :tokens 3
+          :rationale "Measures blocking of verbal self-declared completion hallucinations")
+    (:sym :name "measure-dag-ablation" :kind :fn :tokens 3
+          :rationale "Measures cascading invalidation of refuted premises vs retries")
+    (:sym :name "run-full-ablation-suite" :kind :fn :tokens 4
+          :rationale "Executes full comparative ablation evaluation and synthesizes report")
+    (:sym :name "format-ablation-markdown" :kind :fn :tokens 3
+          :rationale "Renders formatted GitHub markdown table of ablation findings")
+    (:sym :name "test-ablation-preload" :kind :fn :tokens 3
+          :rationale "Unit test verifying preload horizon ablation asserts token advantage")
+    (:sym :name "test-ablation-health" :kind :fn :tokens 3
+          :rationale "Unit test verifying structural health ablation asserts cycle prevention")
+    (:sym :name "test-ablation-deps" :kind :fn :tokens 3
+          :rationale "Unit test verifying ghost API ablation asserts deprecated method detection")
+    (:sym :name "test-ablation-fsm" :kind :fn :tokens 3
+          :rationale "Unit test verifying FSM normalizer ablation asserts delimiter repair")
+    (:sym :name "test-ablation-ast-gate" :kind :fn :tokens 4
+          :rationale "Unit test verifying AST mutation gate ablation asserts test preservation")
+    (:sym :name "test-ablation-sanitizer" :kind :fn :tokens 3
+          :rationale "Unit test verifying error sanitizer ablation asserts token reduction")
+    (:sym :name "test-ablation-pointer" :kind :fn :tokens 3
+          :rationale "Unit test verifying perceptual pointer ablation asserts prompt savings")
+    (:sym :name "test-ablation-gateway" :kind :fn :tokens 3
+          :rationale "Unit test verifying L7 gateway ablation asserts prevention of verbal ESH")
+    (:sym :name "test-ablation-dag" :kind :fn :tokens 3
+          :rationale "Unit test verifying blackboard DAG ablation asserts elimination of retries")
+    (:sym :name "test-full-ablation-report" :kind :fn :tokens 4
+          :rationale "Unit test verifying end-to-end execution of full ablation suite")
   ]
 )
