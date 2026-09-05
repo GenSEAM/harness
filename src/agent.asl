@@ -1,9 +1,10 @@
 (module asl-harness/agent
-  :d "Complete Autonomous Coding Agent runtime integrating Action Firewall, FSM Normalizer, REPL, Config, and Compactor."
+  :d "Complete Autonomous Coding Agent runtime integrating Action Firewall, FSM Normalizer, REPL, Config, Compactor, and Verifier."
   :x [AgentState AgentStepOutcome
       new-coding-agent process-model-turn run-agent-task agent-summary]
   :i [(coding :a c) (firewall :a fw) (fsm-normalizer :a fsm)
-      (repl :a repl) (config :a cfg) (local-exec :a lx) (compactor :a comp)])
+      (repl :a repl) (config :a cfg) (local-exec :a lx)
+      (compactor :a comp) (verifier :a v)])
 
 (dfs AgentState
   (:f session-id Str "Unique session trace ID")

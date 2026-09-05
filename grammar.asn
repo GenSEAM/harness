@@ -240,22 +240,21 @@
           :rationale "Unit test for S-expression extraction from preamble")
     (:sym :name "test-compact-history" :kind :fn :tokens 3
           :rationale "Unit test for sliding window history compaction")
-    (:sym :name "normalize-indentation" :kind :fn :tokens 2)
-    (:sym :name "repair-py-colons" :kind :fn :tokens 3
-          :rationale "Auto-completes missing trailing colons on Python compound headers")
-    (:sym :name "parse-py-traceback" :kind :fn :tokens 3
-          :rationale "Parses raw Python stderr into structured diagnostic receipt")
-    (:sym :name "detect-missing-imports" :kind :fn :tokens 3
-          :rationale "Detects referenced standard library modules lacking imports")
-    (:sym :name "repair-python-code" :kind :fn :tokens 3
-          :rationale "Runs end-to-end Python syntax repair pipeline")
-    (:sym :name "test-py-colons" :kind :fn :tokens 3
-          :rationale "Unit test for Python compound header colon auto-repair")
-    (:sym :name "test-py-indentation" :kind :fn :tokens 3
-          :rationale "Unit test for Python indentation normalization")
-    (:sym :name "test-missing-imports" :kind :fn :tokens 3
-          :rationale "Unit test for missing standard library import injection")
-    (:sym :name "test-traceback-parsing" :kind :fn :tokens 3
-          :rationale "Unit test for Python traceback parsing into receipt")
+    (:sym :name "VerificationVerdict" :kind :struct :tokens 2)
+    (:sym :name "detect-language" :kind :fn :tokens 2)
+    (:sym :name "validate-delimiter-balance" :kind :fn :tokens 3
+          :rationale "Universal delimiter validator checking matching balance of parens, brackets, and braces")
+    (:sym :name "verify-chunk-match" :kind :fn :tokens 3
+          :rationale "Verifies that target replacement chunk exists uniquely in file content before surgical edit")
+    (:sym :name "verify-structural-action" :kind :fn :tokens 3
+          :rationale "Pre-execution invariant gate validating action payload before execution")
+    (:sym :name "test-detect-language" :kind :fn :tokens 3
+          :rationale "Unit test for language detection across extensions")
+    (:sym :name "test-validate-delimiter-balance" :kind :fn :tokens 4
+          :rationale "Unit test for universal delimiter balance validation")
+    (:sym :name "test-verify-chunk-match" :kind :fn :tokens 4
+          :rationale "Unit test for surgical chunk existence validation")
+    (:sym :name "test-verify-structural-action" :kind :fn :tokens 4
+          :rationale "Unit test for pre-execution structural action gate")
   ]
 )
