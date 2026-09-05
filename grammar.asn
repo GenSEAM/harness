@@ -135,5 +135,28 @@
           :rationale "Unit test runner for coding tools dispatch")
     (:sym :name "test-local-exec" :kind :fn :tokens 3
           :rationale "Unit test runner for local execution router")
+    (:sym :name "ModelProfile" :kind :struct :tokens 2)
+    (:sym :name "PluginHook" :kind :enum :tokens 2)
+    (:sym :name "HarnessPlugin" :kind :struct :tokens 2)
+    (:sym :name "HarnessConfig" :kind :struct :tokens 2)
+    (:sym :name "profile-gemma-31b" :kind :fn :tokens 3
+          :rationale "Profile preset for Gemma 31B target model")
+    (:sym :name "profile-default" :kind :fn :tokens 2)
+    (:sym :name "default-harness-config" :kind :fn :tokens 3
+          :rationale "Constructs standard default configuration record")
+    (:sym :name "toggle-feature" :kind :fn :tokens 2)
+    (:sym :name "feature-enabled?" :kind :fn :tokens 2)
+    (:sym :name "register-plugin" :kind :fn :tokens 2)
+    (:sym :name "enable-experimental" :kind :fn :tokens 2)
+    (:sym :name "experimental-enabled?" :kind :fn :tokens 2)
+    (:sym :name "make-plugin" :kind :fn :tokens 2)
+    (:sym :name "test-default-config" :kind :fn :tokens 3
+          :rationale "Unit test for default harness configuration")
+    (:sym :name "test-toggle-features" :kind :fn :tokens 3
+          :rationale "Unit test for feature flag toggling")
+    (:sym :name "test-plugin-registration" :kind :fn :tokens 3
+          :rationale "Unit test for user plugin registration")
+    (:sym :name "test-experimental-flags" :kind :fn :tokens 3
+          :rationale "Unit test for experimental feature flags")
   ]
 )
