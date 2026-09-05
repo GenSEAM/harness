@@ -1,6 +1,6 @@
 (module asl-harness/verifier
   :d "Universal Pre-Execution Invariant Verifier & Anti-Hallucination Guardrails."
-  :x [VerificationVerdict detect-language validate-delimiter-balance verify-chunk-match verify-structural-action]
+  :x [VerificationVerdict detect-language validate-delimiter-balance verify-chunk-match verify-structural-action execute-verification-gate format-gate-rejection]
   :i [(compactor :a comp)])
 
 (dfs VerificationVerdict
@@ -66,4 +66,18 @@
        (VerificationVerdict :allowed false :reason "ast-patch is specialized for S-expression ASTs; use str-replace for other languages" :language lang))
       (:else
        (VerificationVerdict :allowed true :reason "" :language lang)))))
+
+(df execute-verification-gate [(test-cmd Str) (gate-passed Bool)] -> VerificationVerdict
+  :d "Executes independent automated verification gate, prohibiting self-declared completion if gate fails."
+  (cond
+    ((string-empty? test-cmd)
+     (VerificationVerdict :allowed false :reason "Task must define an explicit verification command" :language "text"))
+    ((not gate-passed)
+     (VerificationVerdict :allowed false :reason "Verification command exited with failure; regressions detected" :language "text"))
+    (:else
+     (VerificationVerdict :allowed true :reason "" :language "text"))))
+
+(df format-gate-rejection [(test-cmd Str) (reason Str)] -> Str
+  :d "Formats structured diagnostic message guiding the model to fix test regressions."
+  (str "(:gate-rejected :command \"" test-cmd "\" :reason \"" reason "\" :directive \"Fix failing tests before declaring completion\")"))
 

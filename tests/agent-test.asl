@@ -1,6 +1,6 @@
 (module asl-harness/agent-test
   :d "Unit tests for complete Autonomous Coding Agent runtime."
-  :x [test-agent-init test-agent-turn-fsm-normalization test-agent-turn-firewall-blocking test-agent-task-resolution test-agent-surgical-patch test-agent-phase-transitions]
+  :x [test-agent-init test-agent-turn-fsm-normalization test-agent-turn-firewall-blocking test-agent-task-resolution test-agent-surgical-patch test-agent-phase-transitions test-agent-verification-gate-rejection]
   :i [(agent :a ag) (config :a cfg)])
 
 (df test-agent-init [] -> Bool
@@ -66,3 +66,28 @@
               (and (= (.-phase s2) "plan")
                    (and (= (.-phase s3) "patch")
                         (= (.-phase s4) "resolved")))))))
+
+(df test-agent-verification-gate-rejection [] -> Bool
+  :d "Verifies completion is rejected when verification gate has no test command, forcing model back to patch."
+  (let [(c (cfg/default-harness-config))
+        (s-init (ag/new-coding-agent "sess-007" "TASK-106" c))
+        (s-no-gate (ag/AgentState
+                     :session-id (.-session-id s-init)
+                     :task-id (.-task-id s-init)
+                     :iteration (.-iteration s-init)
+                     :max-iterations (.-max-iterations s-init)
+                     :phase (.-phase s-init)
+                     :last-error (.-last-error s-init)
+                     :config (.-config s-init)
+                     :policy (.-policy s-init)
+                     :repl-sess (.-repl-sess s-init)
+                     :history (.-history s-init)
+                     :actions-executed (.-actions-executed s-init)
+                     :actions-blocked (.-actions-blocked s-init)
+                     :resolved false
+                     :test-command ""))
+        (outcome (ag/process-model-turn s-no-gate "I claim victory! :task-complete"))
+        (next-st (.-next-state outcome))]
+    (and (not (.-resolved next-st))
+         (and (= (.-phase next-st) "patch")
+              (string-contains? (.-last-error next-st) ":gate-rejected")))))

@@ -1,6 +1,6 @@
 (module asl-harness/verifier-test
   :d "Unit tests for universal pre-execution verifier and anti-hallucination guardrails."
-  :x [test-detect-language test-validate-delimiter-balance test-verify-chunk-match test-verify-structural-action run-tests]
+  :x [test-detect-language test-validate-delimiter-balance test-verify-chunk-match test-verify-structural-action test-execute-verification-gate test-format-gate-rejection run-tests]
   :i [(verifier :a v)])
 
 (df test-detect-language [] -> Bool
@@ -35,10 +35,27 @@
     (and (.-allowed res-good)
          (not (.-allowed res-unbalanced)))))
 
+(df test-execute-verification-gate [] -> Bool
+  :d "Verifies independent automated verification gate prevents self-declaration hallucination."
+  (let [(res-pass (v/execute-verification-gate "asl test" true))
+        (res-fail (v/execute-verification-gate "asl test" false))
+        (res-empty (v/execute-verification-gate "" true))]
+    (and (.-allowed res-pass)
+         (and (not (.-allowed res-fail))
+              (not (.-allowed res-empty))))))
+
+(df test-format-gate-rejection [] -> Bool
+  :d "Verifies gate rejection formats structured diagnostic message."
+  (let [(msg (v/format-gate-rejection "asl test" "exit 1"))]
+    (and (string-contains? msg ":gate-rejected")
+         (string-contains? msg "asl test"))))
+
 (df run-tests [] -> Bool
   :d "Executes full verifier test suite."
   (and (test-detect-language)
        (and (test-validate-delimiter-balance)
             (and (test-verify-chunk-match)
-                 (test-verify-structural-action)))))
+                 (and (test-verify-structural-action)
+                      (and (test-execute-verification-gate)
+                           (test-format-gate-rejection)))))))
 

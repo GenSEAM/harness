@@ -256,5 +256,15 @@
           :rationale "Unit test for surgical chunk existence validation")
     (:sym :name "test-verify-structural-action" :kind :fn :tokens 4
           :rationale "Unit test for pre-execution structural action gate")
+    (:sym :name "execute-verification-gate" :kind :fn :tokens 3
+          :rationale "Executes independent automated verification gate preventing self-declaration hallucination")
+    (:sym :name "format-gate-rejection" :kind :fn :tokens 3
+          :rationale "Formats structured diagnostic message guiding model to fix test regressions")
+    (:sym :name "test-execute-verification-gate" :kind :fn :tokens 4
+          :rationale "Unit test for independent verification gate preventing self-declaration")
+    (:sym :name "test-format-gate-rejection" :kind :fn :tokens 4
+          :rationale "Unit test for formatted gate rejection message")
+    (:sym :name "test-agent-verification-gate-rejection" :kind :fn :tokens 5
+          :rationale "Unit test verifying agent rejects unverified completion attempts")
   ]
 )

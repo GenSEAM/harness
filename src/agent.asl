@@ -19,7 +19,8 @@
   (:f history (List Str) "Turn history log")
   (:f actions-executed (List Str) "Permitted and executed action log")
   (:f actions-blocked (List Str) "Blocked action security audit log")
-  (:f resolved Bool "Task completion status"))
+  (:f resolved Bool "Task completion status")
+  (:f test-command Str "Automated verification gate command"))
 
 (dfs AgentStepOutcome
   (:f next-state AgentState "Updated agent state")
@@ -29,7 +30,7 @@
   (:f finished Bool "True if agent reached task completion or limit"))
 
 (df new-coding-agent [(session-id Str) (task-id Str) (config cfg/HarnessConfig)] -> AgentState
-  :d "Initializes a fully wired autonomous coding agent with context compaction."
+  :d "Initializes a fully wired autonomous coding agent with context compaction and verification gate."
   (let [(policy (fw/default-firewall-policy))
         (repl-session (repl/new-repl-session session-id))]
     (AgentState
@@ -45,7 +46,8 @@
       :history (list)
       :actions-executed (list)
       :actions-blocked (list)
-      :resolved false)))
+      :resolved false
+      :test-command "asl test")))
 
 (df derive-next-phase [(text Str) (curr-phase Str) (is-done Bool)] -> Str
   :d "Determines next engineering phase in the agent workflow."
@@ -67,13 +69,22 @@
         (use-fw (cfg/feature-enabled? (.-config state) "firewall"))
         (unfenced (comp/extract-sexpr raw-output))
         (normalized (if use-fsm (fsm/repair-syntax-fsm unfenced) unfenced))
-        (is-done (or (string-contains? normalized ":task-complete")
-                     (string-contains? normalized "TASK_RESOLVED")))
+        (wants-done (or (string-contains? normalized ":task-complete")
+                        (string-contains? normalized "TASK_RESOLVED")))
+        (gate-verdict (if wants-done
+                          (v/execute-verification-gate (.-test-command state) true)
+                          (v/VerificationVerdict :allowed false :reason "" :language "")))
+        (is-done (and wants-done (.-allowed gate-verdict)))
+        (gate-err (if (and wants-done (not is-done))
+                      (v/format-gate-rejection (.-test-command state) (.-reason gate-verdict))
+                      ""))
         (is-blocked (and use-fw (or (string-contains? normalized "../")
                                     (or (string-contains? normalized "rm -rf")
                                         (string-contains? normalized "/etc")))))
         (new-iter (+ (.-iteration state) 1))
-        (next-phase (derive-next-phase normalized (.-phase state) is-done))
+        (next-phase (if (and wants-done (not is-done))
+                        "patch"
+                        (derive-next-phase normalized (.-phase state) is-done)))
         (has-patch (or (string-contains? normalized "ast-patch")
                        (string-contains? normalized "str-replace")))
         (ex-list (cond
@@ -81,12 +92,15 @@
                    (is-done (list))
                    (has-patch (list "surgical-patch" "repl-eval"))
                    (:else (list "fs-write" "repl-eval"))))
-        (blk-list (if is-blocked (list "path-traversal-blocked") (list)))
+        (blk-list (cond
+                    (is-blocked (list "path-traversal-blocked"))
+                    ((and wants-done (not is-done)) (list "verification-gate-failed"))
+                    (:else (list))))
         (new-executed (if (and (not is-blocked) (not is-done))
                           (list-concat (.-actions-executed state) ex-list)
                           (.-actions-executed state)))
-        (new-blocked (if is-blocked
-                         (list-cons "action-blocked" (.-actions-blocked state))
+        (new-blocked (if (or is-blocked (and wants-done (not is-done)))
+                         (list-concat (.-actions-blocked state) blk-list)
                          (.-actions-blocked state)))
         (finished (or is-done (>= new-iter (.-max-iterations state))))
         (compacted-hist (comp/compact-history (list-cons normalized (.-history state)) 2))
@@ -96,14 +110,15 @@
                    :iteration new-iter
                    :max-iterations (.-max-iterations state)
                    :phase next-phase
-                   :last-error ""
+                   :last-error gate-err
                    :config (.-config state)
                    :policy (.-policy state)
                    :repl-sess (.-repl-sess state)
                    :history compacted-hist
                    :actions-executed new-executed
                    :actions-blocked new-blocked
-                   :resolved is-done))]
+                   :resolved is-done
+                   :test-command (.-test-command state)))]
     (AgentStepOutcome
       :next-state next-st
       :normalized-text normalized
