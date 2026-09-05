@@ -412,5 +412,13 @@
           :rationale "Unit test for strict 1-turn reflection ceiling")
     (:sym :name "test-agent-reflection-cycle" :kind :fn :tokens 4
           :rationale "Unit test for multi-turn agent reflection loop")
+
+    ;; Phase 05 Monorepo Eval Symbols
+    (:sym :name "swe-006-task" :kind :fn :tokens 3
+          :rationale "Factory returning canonical SWE-006 cross-package monorepo benchmark task")
+    (:sym :name "find-swe-task" :kind :fn :tokens 3
+          :rationale "Searches benchmark task suite by unique identifier string")
+    (:sym :name "test-swe-006" :kind :fn :tokens 3
+          :rationale "Unit test verifying SWE-006 cross-package blast radius and ghost API migration task")
   ]
 )

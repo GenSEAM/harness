@@ -1,12 +1,12 @@
 (module asl-harness/tests/swe-bench-test
-  :d "Unit tests for SWE-bench evaluation engine and multi-arm comparison."
-  :x [test-tasks test-telemetry test-matrix test-six-arm-matrix run-tests]
+  :d "Unit tests for SWE-bench evaluation engine, multi-arm comparison, and SWE-006 monorepo benchmark."
+  :x [test-tasks test-telemetry test-matrix test-six-arm-matrix test-swe-006 run-tests]
   :i [(swe-bench :a swe)])
 
 (df test-tasks [] -> Bool
-  :d "Verifies standard SWE benchmark task definitions."
+  :d "Verifies standard SWE benchmark task definitions including SWE-006."
   (let [(tasks (swe/standard-swe-tasks))]
-    (and (= (list-length tasks) 5)
+    (and (= (list-length tasks) 6)
          (and (= (.-id (option-or (list-head tasks) (swe/SweTask :id "" :title "" :description "" :target-file "" :expected-diff-lines 0 :test-command ""))) "SWE-001")
               true))))
 
@@ -37,12 +37,22 @@
     (and (= (list-length rows) 6)
          (and (string-contains? formatted "Gemma 31B (Our Agent) + Python")
               (and (string-contains? formatted "Gemma 31B (Our Agent) + ASL")
-                   (and (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL (RAW / NO TOOLS)")
-                        (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL + ASL Tooling")))))))
+                    (and (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL (RAW / NO TOOLS)")
+                         (string-contains? formatted "Gemma 31B (Claude Code CLI) + ASL + ASL Tooling")))))))
+
+(df test-swe-006 [] -> Bool
+  :d "Verifies SWE-006 cross-package blast radius and ghost API migration task definition."
+  (let [(t (swe/swe-006-task))
+        (found (swe/find-swe-task (swe/standard-swe-tasks) "SWE-006"))]
+    (and (= (.-id t) "SWE-006")
+         (= (.-target-file t) "packages/core/src/service.asl")
+         (= (.-expected-diff-lines t) 12)
+         (option-is-some? found))))
 
 (df run-tests [] -> Bool
   :d "Executes full SWE benchmark test suite."
   (and (test-tasks)
        (and (test-telemetry)
             (and (test-matrix)
-                 (test-six-arm-matrix)))))
+                 (and (test-six-arm-matrix)
+                      (test-swe-006))))))

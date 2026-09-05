@@ -2,7 +2,7 @@
   :d "SWE-bench Engineering Evaluation Engine: 6-arm comparative benchmark across Python vs ASL, Standard Tools vs ASL Tooling, and Gemma 31B vs Claude."
   :x [SweTask RunTelemetry ComparisonRow BenchmarkSuite
       standard-swe-tasks evaluate-arm-telemetry format-benchmark-matrix make-telemetry
-      standard-six-arm-benchmark]
+      standard-six-arm-benchmark swe-006-task find-swe-task]
   :i [(coding :a c) (normalizer :a norm) (toolcall :a tc) (provider :a prov) (local-exec :a lx)])
 
 (dfs SweTask
@@ -36,6 +36,16 @@
   (:f target-gateway Str "LLM Gateway endpoint")
   (:f tasks (List SweTask) "Set of evaluated benchmarks")
   (:f runs (List RunTelemetry) "Recorded run metrics"))
+
+(df swe-006-task [] -> SweTask
+  :d "Canonical SWE-006 cross-package blast radius and ghost API migration benchmark task."
+  (SweTask
+    :id "SWE-006"
+    :title "Cross-Package Blast Radius & Ghost API Migration"
+    :description "Analyze multi-package blast radius using intel-impact and migrate deprecated ghost API calls across package boundaries without introducing circular dependencies"
+    :target-file "packages/core/src/service.asl"
+    :expected-diff-lines 12
+    :test-command "asl test"))
 
 (df standard-swe-tasks [] -> (List SweTask)
   :d "Returns canonical polyglot SWE benchmark tasks representing core bug localization and patch repair."
@@ -74,7 +84,17 @@
       :description "Fix forbidden tab characters and unbalanced mapping blocks in YAML"
       :target-file ".github/ci.yaml"
       :expected-diff-lines 3
-      :test-command "asl test")))
+      :test-command "asl test")
+    (swe-006-task)))
+
+(df find-swe-task [(tasks (List SweTask)) (task-id Str)] -> (Option SweTask)
+  :d "Finds benchmark task by unique identifier string."
+  (fold (fn [(acc (Option SweTask)) (t SweTask)] -> (Option SweTask)
+          (mt acc
+            ((some _) acc)
+            ((none) (if (= (.-id t) task-id) (some t) (none)))))
+        (none)
+        tasks))
 
 (df make-telemetry [(arm Str) (task-id Str) (resolved Bool) (tokens-in I64) (tokens-out I64) (latency I64) (cost F64) (local-ratio F64)] -> RunTelemetry
   :d "Constructs RunTelemetry record with specified values."
