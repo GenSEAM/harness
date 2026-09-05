@@ -447,5 +447,32 @@
           :rationale "Unit test asserting framework frames are stripped from traceback")
     (:sym :name "test-sanitize-token-budget" :kind :fn :tokens 4
           :rationale "Unit test verifying sanitized traceback respects token limit")
+
+    ;; Phase 10 Multi-Model Factorial Benchmark Symbols
+    (:sym :name "ThinkingMode" :kind :type :tokens 1)
+    (:sym :name "ModelVariant" :kind :type :tokens 1)
+    (:sym :name "BenchmarkConfig" :kind :type :tokens 1)
+    (:sym :name "ModelBenchmarkRow" :kind :type :tokens 1)
+    (:sym :name "BenchmarkMatrix" :kind :type :tokens 1)
+    (:sym :name "make-benchmark-config" :kind :fn :tokens 3
+          :rationale "Constructs benchmark configuration record with timeout and switches")
+    (:sym :name "run-model-benchmark" :kind :fn :tokens 3
+          :rationale "Evaluates empirical metrics for given model variant and thinking mode")
+    (:sym :name "build-factorial-matrix" :kind :fn :tokens 3
+          :rationale "Builds complete factorial evaluation matrix across models and architectures")
+    (:sym :name "format-matrix-markdown" :kind :fn :tokens 3
+          :rationale "Renders formatted GitHub markdown table for benchmark results")
+    (:sym :name "test-benchmark-config-creation" :kind :fn :tokens 4
+          :rationale "Unit test verifying benchmark configuration options")
+    (:sym :name "test-qwen-05b-browser-viability" :kind :fn :tokens 4
+          :rationale "Unit test verifying in-browser viability and solve rate of Qwen 0.5B")
+    (:sym :name "test-qwen-local-scaling" :kind :fn :tokens 4
+          :rationale "Unit test verifying local scaling performance of Qwen 3B and 4B")
+    (:sym :name "test-gemma-gateway-eval" :kind :fn :tokens 4
+          :rationale "Unit test verifying Gemma 31B evaluation through LM Gateway")
+    (:sym :name "test-claude-cli-comparison" :kind :fn :tokens 4
+          :rationale "Unit test verifying comparison and token savings against Claude CLI")
+    (:sym :name "test-matrix-formatting" :kind :fn :tokens 3
+          :rationale "Unit test verifying Markdown table formatting of benchmark matrix")
   ]
 )
