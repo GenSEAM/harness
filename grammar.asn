@@ -603,6 +603,37 @@
           :rationale "Unit test asserting dense ASN S-expression profile formatting")
     (:sym :name "run-repo-scout-tests" :kind :fn :tokens 4
           :rationale "Executes complete repository scout unit test suite")
+
+    ;; Phase 22 In-Harness Verifier Symbols
+    (:sym :name "PlanGateItem" :kind :type :tokens 1)
+    (:sym :name "HarnessTurnState" :kind :type :tokens 1)
+    (:sym :name "VerificationResult" :kind :type :tokens 1)
+    (:sym :name "init-turn-state" :kind :fn :tokens 3
+          :rationale "Initializes clean turn state for in-harness verification")
+    (:sym :name "register-plan-item" :kind :fn :tokens 3
+          :rationale "Registers an incremental plan item with an explicit verification gate")
+    (:sym :name "record-gate-execution" :kind :fn :tokens 3
+          :rationale "Records the real sandbox execution result of a plan item's gate command")
+    (:sym :name "validate-turn-completion" :kind :fn :tokens 3
+          :rationale "Audits agent completion claim against real physical gate execution")
+    (:sym :name "audit-action-precondition" :kind :fn :tokens 3
+          :rationale "Enforces plan-before-act invariant on mutating actions")
+    (:sym :name "format-verification-feedback" :kind :fn :tokens 3
+          :rationale "Formats verification result into agent system message")
+    (:sym :name "test-read-only-action-allowed" :kind :fn :tokens 5
+          :rationale "Unit test asserting read-only actions are permitted without a plan")
+    (:sym :name "test-mutating-action-rejected-without-plan" :kind :fn :tokens 6
+          :rationale "Unit test asserting mutating actions require a declared plan item")
+    (:sym :name "test-mutating-action-approved-with-plan" :kind :fn :tokens 6
+          :rationale "Unit test asserting mutating actions are allowed once a plan is registered")
+    (:sym :name "test-esh-rejection-unexecuted-gate" :kind :fn :tokens 5
+          :rationale "Unit test asserting completion is rejected if verification gate was never executed")
+    (:sym :name "test-esh-rejection-failed-gate" :kind :fn :tokens 5
+          :rationale "Unit test asserting completion is rejected if verification gate returned non-zero exit code")
+    (:sym :name "test-turn-completion-approved" :kind :fn :tokens 4
+          :rationale "Unit test asserting completion approval when all gates have executed with exit code 0")
+    (:sym :name "run-in-harness-tests" :kind :fn :tokens 4
+          :rationale "Executes complete in-harness verifier unit test suite")
   ]
 )
 
