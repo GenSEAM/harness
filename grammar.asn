@@ -520,5 +520,22 @@
           :rationale "Unit test verifying blackboard DAG ablation asserts elimination of retries")
     (:sym :name "test-full-ablation-report" :kind :fn :tokens 4
           :rationale "Unit test verifying end-to-end execution of full ablation suite")
+    (:sym :name "ToolCallTranspileResult" :kind :struct :tokens 1)
+    (:sym :name "compact-tool-schema" :kind :fn :tokens 3
+          :rationale "Translates verbose JSON schema tool definition into a dense ASN tool signature")
+    (:sym :name "json-tool-call-to-asn" :kind :fn :tokens 5
+          :rationale "Converts JSON tool arguments into a compact ASN invocation frame")
+    (:sym :name "asn-to-tool-result" :kind :fn :tokens 4
+          :rationale "Formats an ASN tool execution output into an Anthropic Messages tool_result block")
+    (:sym :name "measure-tool-compaction" :kind :fn :tokens 3
+          :rationale "Measures empirical token delta between verbose JSON tool calling and compact ASN format")
+    (:sym :name "test-compact-tool-schema" :kind :fn :tokens 4
+          :rationale "Unit test verifying JSON schema compaction into ASN tool signature")
+    (:sym :name "test-json-tool-call-to-asn" :kind :fn :tokens 6
+          :rationale "Unit test verifying JSON tool call conversion into ASN invocation frame")
+    (:sym :name "test-asn-to-tool-result" :kind :fn :tokens 5
+          :rationale "Unit test verifying formatting ASN tool output into Anthropic tool_result block")
+    (:sym :name "test-measure-tool-compaction" :kind :fn :tokens 4
+          :rationale "Unit test verifying token compaction measurement on tool calling payload")
   ]
 )
