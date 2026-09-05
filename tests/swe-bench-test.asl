@@ -6,7 +6,7 @@
 (df test-tasks [] -> Bool
   :d "Verifies standard SWE benchmark task definitions."
   (let [(tasks (swe/standard-swe-tasks))]
-    (and (= (list-length tasks) 3)
+    (and (= (list-length tasks) 5)
          (and (= (.-id (option-or (list-head tasks) (swe/SweTask :id "" :title "" :description "" :target-file "" :expected-diff-lines 0 :test-command ""))) "SWE-001")
               true))))
 

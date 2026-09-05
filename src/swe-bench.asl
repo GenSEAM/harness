@@ -38,7 +38,7 @@
   (:f runs (List RunTelemetry) "Recorded run metrics"))
 
 (df standard-swe-tasks [] -> (List SweTask)
-  :d "Returns canonical SWE benchmark tasks representing core bug localization and patch repair."
+  :d "Returns canonical polyglot SWE benchmark tasks representing core bug localization and patch repair."
   (list
     (SweTask
       :id "SWE-001"
@@ -51,15 +51,29 @@
       :id "SWE-002"
       :title "Type coercion and quotation escaping in ASN codec serializer"
       :description "Ensure control characters and quotes are escaped correctly in multiline records"
-      :target-file "src/codec.asl"
+      :target-file "src/codec.py"
       :expected-diff-lines 6
-      :test-command "asl test")
+      :test-command "pytest")
     (SweTask
       :id "SWE-003"
+      :title "JSX tag balancing and event propagation in modal dialog"
+      :description "Fix unclosed tag and prop drilling in interactive component"
+      :target-file "components/Modal.tsx"
+      :expected-diff-lines 5
+      :test-command "pnpm test")
+    (SweTask
+      :id "SWE-004"
       :title "Transitive caller cycle detection in code intelligence graph"
       :description "Prevent infinite loop when analyzing mutually recursive module dependencies"
-      :target-file "src/graph.asl"
+      :target-file "src/graph.rs"
       :expected-diff-lines 8
+      :test-command "cargo test")
+    (SweTask
+      :id "SWE-005"
+      :title "CI/CD workflow tab indentation and matrix definition"
+      :description "Fix forbidden tab characters and unbalanced mapping blocks in YAML"
+      :target-file ".github/ci.yaml"
+      :expected-diff-lines 3
       :test-command "asl test")))
 
 (df make-telemetry [(arm Str) (task-id Str) (resolved Bool) (tokens-in I64) (tokens-out I64) (latency I64) (cost F64) (local-ratio F64)] -> RunTelemetry
