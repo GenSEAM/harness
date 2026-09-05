@@ -1,6 +1,6 @@
 (module asl-harness/tests/swe-bench-test
   :d "Unit tests for SWE-bench evaluation engine and multi-arm comparison."
-  :x [test-tasks test-telemetry test-matrix run-tests]
+  :x [test-tasks test-telemetry test-matrix test-six-arm-matrix run-tests]
   :i [(swe-bench :a swe)])
 
 (df test-tasks [] -> Bool
@@ -30,8 +30,19 @@
          (and (string-contains? matrix "Claude Code + GenSEAM Tools")
               (string-contains? matrix "ASL Coding Harness")))))
 
+(df test-six-arm-matrix [] -> Bool
+  :d "Verifies full 6-arm benchmark matrix covers Gemma 31B vs Claude across Python and ASL."
+  (let [(rows (swe/standard-six-arm-benchmark))
+        (formatted (swe/format-benchmark-matrix rows))]
+    (and (= (list-length rows) 6)
+         (and (string-contains? formatted "Gemma 31B (Our Agent) + Python")
+              (and (string-contains? formatted "Gemma 31B (Our Agent) + ASL")
+                   (and (string-contains? formatted "Claude 3.7 + AgentScript (RAW / NO TOOLS)")
+                        (string-contains? formatted "Claude 3.7 + AgentScript + ASL Tooling")))))))
+
 (df run-tests [] -> Bool
   :d "Executes full SWE benchmark test suite."
   (and (test-tasks)
        (and (test-telemetry)
-            (test-matrix))))
+            (and (test-matrix)
+                 (test-six-arm-matrix)))))

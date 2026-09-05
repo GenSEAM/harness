@@ -201,5 +201,27 @@
           :rationale "Unit test for granular AST node substitution")
     (:sym :name "test-semantic-error-formatting" :kind :fn :tokens 4
           :rationale "Unit test for structured semantic error formatting")
+    (:sym :name "AgentState" :kind :struct :tokens 2)
+    (:sym :name "AgentStepOutcome" :kind :struct :tokens 3
+          :rationale "Outcome record of a single cognitive agent step")
+    (:sym :name "new-coding-agent" :kind :fn :tokens 3
+          :rationale "Constructs and initializes a fully wired autonomous coding agent")
+    (:sym :name "process-model-turn" :kind :fn :tokens 3
+          :rationale "Executes single cognitive agent turn through normalizer and firewall")
+    (:sym :name "run-agent-task" :kind :fn :tokens 3
+          :rationale "Runs agent through sequence of turns until task resolution")
+    (:sym :name "agent-summary" :kind :fn :tokens 2)
+    (:sym :name "test-agent-init" :kind :fn :tokens 3
+          :rationale "Unit test for clean initialization of coding agent state")
+    (:sym :name "test-agent-turn-fsm-normalization" :kind :fn :tokens 5
+          :rationale "Unit test for model output normalization through FSM in cognitive turn")
+    (:sym :name "test-agent-turn-firewall-blocking" :kind :fn :tokens 5
+          :rationale "Unit test for out-of-boundary actions intercepted by firewall")
+    (:sym :name "test-agent-task-resolution" :kind :fn :tokens 4
+          :rationale "Unit test for multi-turn agent loop and task completion detection")
+    (:sym :name "standard-six-arm-benchmark" :kind :fn :tokens 4
+          :rationale "Constructs canonical 6-arm comparative benchmark matrix")
+    (:sym :name "test-six-arm-matrix" :kind :fn :tokens 4
+          :rationale "Unit test verifying full 6-arm benchmark comparison matrix")
   ]
 )
