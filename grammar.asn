@@ -280,5 +280,69 @@
           :rationale "Unit test for polyglot test runner resolution")
     (:sym :name "test-python-structural-validation" :kind :fn :tokens 4
           :rationale "Unit test for Python dialect detection, pytest runner, delimiter balance, and tab rejection")
+
+    ;; Deps Module Symbols (Phase 03)
+    (:sym :name "LockfileKind" :kind :type :tokens 1)
+    (:sym :name "lockfile-npm" :kind :val :tokens 2)
+    (:sym :name "lockfile-pnpm" :kind :val :tokens 2)
+    (:sym :name "lockfile-cargo" :kind :val :tokens 2)
+    (:sym :name "lockfile-poetry" :kind :val :tokens 2)
+    (:sym :name "lockfile-pip" :kind :val :tokens 2)
+    (:sym :name "lockfile-unknown" :kind :val :tokens 2)
+    (:sym :name "PinnedDependency" :kind :type :tokens 1)
+    (:sym :name "PackageSpec" :kind :type :tokens 1)
+    (:sym :name "detect-lockfile-kind" :kind :fn :tokens 3
+          :rationale "Identifies lockfile package manager kind from filename")
+    (:sym :name "lockfile-kind-to-ecosystem" :kind :fn :tokens 4
+          :rationale "Maps LockfileKind enum to ecosystem name string")
+    (:sym :name "extract-npm-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned package version from npm package-lock or manifest")
+    (:sym :name "extract-pnpm-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned package version from pnpm lockfile")
+    (:sym :name "extract-cargo-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned crate version from Cargo lockfile")
+    (:sym :name "extract-poetry-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned package version from Poetry lockfile")
+    (:sym :name "extract-pip-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned package version from pip requirements file")
+    (:sym :name "parse-pinned-version" :kind :fn :tokens 3
+          :rationale "Dispatches lockfile version parsing across package managers")
+    (:sym :name "check-anti-cheating-policy" :kind :fn :tokens 4
+          :rationale "Enforces offline execution policy during benchmarks")
+    (:sym :name "resolve-type-skeleton" :kind :fn :tokens 3
+          :rationale "Generates version-pinned typed interface skeleton")
+    (:sym :name "is-ghost-api?" :kind :fn :tokens 3
+          :rationale "Identifies deprecated or hallucinated APIs in pinned version")
+    (:sym :name "deps-resolve-from-lockfile" :kind :fn :tokens 4
+          :rationale "Resolves dependency symbol spec directly from lockfile content")
+    (:sym :name "deps-resolve" :kind :fn :tokens 2)
+    (:sym :name "format-package-spec" :kind :fn :tokens 3
+          :rationale "Formats package spec record into diagnostic string")
+
+    ;; Deps Test Symbols
+    (:sym :name "test-detect-lockfile-kind" :kind :fn :tokens 4
+          :rationale "Tests lockfile type detection")
+    (:sym :name "test-parse-pinned-version-npm" :kind :fn :tokens 5
+          :rationale "Tests npm version parsing")
+    (:sym :name "test-parse-pinned-version-pnpm" :kind :fn :tokens 5
+          :rationale "Tests pnpm version parsing")
+    (:sym :name "test-parse-pinned-version-cargo" :kind :fn :tokens 5
+          :rationale "Tests cargo version parsing")
+    (:sym :name "test-parse-pinned-version-poetry" :kind :fn :tokens 5
+          :rationale "Tests poetry version parsing")
+    (:sym :name "test-parse-pinned-version-pip" :kind :fn :tokens 5
+          :rationale "Tests pip version parsing")
+    (:sym :name "test-anti-cheating-policy" :kind :fn :tokens 4
+          :rationale "Tests anti-cheating offline policy enforcement")
+    (:sym :name "test-ghost-api-pydantic-v2" :kind :fn :tokens 5
+          :rationale "Tests ghost API guard for Pydantic v2")
+    (:sym :name "test-ghost-api-react-19" :kind :fn :tokens 5
+          :rationale "Tests ghost API guard for React 19")
+    (:sym :name "test-ghost-api-elimination" :kind :fn :tokens 4
+          :rationale "Tests ghost API elimination across packages")
+    (:sym :name "test-deps-resolve-from-lockfile" :kind :fn :tokens 5
+          :rationale "Tests dependency resolution from lockfile")
+    (:sym :name "test-deps-resolve-e2e" :kind :fn :tokens 4
+          :rationale "Tests end-to-end dependency resolution")
   ]
 )
