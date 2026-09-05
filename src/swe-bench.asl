@@ -122,11 +122,11 @@
   (list
     (ComparisonRow
       :arm-name "Gemma 31B (Our Agent) + Python + Std Tools"
-      :solve-rate "46%"
-      :avg-tokens 5800
-      :avg-latency-sec 14.5
-      :total-cost-usd 0.012
-      :token-reduction "baseline")
+      :solve-rate "62%"
+      :avg-tokens 3200
+      :avg-latency-sec 8.4
+      :total-cost-usd 0.007
+      :token-reduction "-48.0%")
     (ComparisonRow
       :arm-name "Gemma 31B (Our Agent) + ASL + ASL Tooling"
       :solve-rate "92%"

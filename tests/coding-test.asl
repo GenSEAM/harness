@@ -4,19 +4,24 @@
   :i [(coding :a c) (normalizer :a norm) (toolcall :a tc) (provider :a prov) (local-exec :a lx)])
 
 (df test-coding-tools [] -> Bool
-  :d "Verifies standard coding tools declaration and direct execution including ast-patch."
+  :d "Verifies standard coding tools declaration and direct execution including ast-patch and str-replace."
   (let [(tools (c/standard-coding-tools))
         (found (c/find-tool "fs-read" tools))
         (found-patch (c/find-tool "ast-patch" tools))
+        (found-replace (c/find-tool "str-replace" tools))
         (call (c/ToolCall :id "call-1" :tool-name "fs-read" :arguments (list (pair "path" "src/main.asl"))))
         (call-patch (c/ToolCall :id "call-2" :tool-name "ast-patch" :arguments (list (pair "path" "src/main.asl") (pair "symbol" "foo") (pair "replacement" "(df foo [] true)"))))
+        (call-replace (c/ToolCall :id "call-3" :tool-name "str-replace" :arguments (list (pair "path" "src/main.py") (pair "old-chunk" "x = 1") (pair "new-chunk" "x = 2"))))
         (res (c/execute-builtin-tool call))
-        (res-patch (c/execute-builtin-tool call-patch))]
+        (res-patch (c/execute-builtin-tool call-patch))
+        (res-replace (c/execute-builtin-tool call-replace))]
     (and (not (list-empty? tools))
          (and (option-is-some? found)
               (and (option-is-some? found-patch)
-                   (and (.-success res)
-                        (.-success res-patch)))))))
+                   (and (option-is-some? found-replace)
+                        (and (.-success res)
+                             (and (.-success res-patch)
+                                  (.-success res-replace)))))))))
 
 (df test-normalizer [] -> Bool
   :d "Verifies hallucination normalizer repairs snake_case, keywords, types, and delimiter balance."

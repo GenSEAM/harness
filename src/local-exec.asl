@@ -21,7 +21,8 @@
           (or (= tool-name "ast-search")
               (or (= tool-name "intel-query")
                   (or (= tool-name "git-status")
-                      (= tool-name "ast-patch")))))))
+                      (or (= tool-name "ast-patch")
+                          (= tool-name "str-replace"))))))))
 
 (df plan-route [(tool-name Str)] -> RouteDecision
   :d "Calculates optimal execution tier and estimated savings."

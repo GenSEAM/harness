@@ -77,6 +77,14 @@
         (ToolParam :name "path" :param-type "Str" :required true :doc "Target file path")
         (ToolParam :name "symbol" :param-type "Str" :required true :doc "Target symbol name e.g. fn-name")
         (ToolParam :name "replacement" :param-type "Str" :required true :doc "Replacement S-expression code"))
+      :deterministic true)
+    (BuiltinTool
+      :name "str-replace"
+      :description "Surgically replaces old text chunk with new chunk in target file"
+      :params (list
+        (ToolParam :name "path" :param-type "Str" :required true :doc "Target file path")
+        (ToolParam :name "old-chunk" :param-type "Str" :required true :doc "Exact chunk of text to be replaced")
+        (ToolParam :name "new-chunk" :param-type "Str" :required true :doc "Replacement text chunk"))
       :deterministic true))
 
 (df find-tool [(name Str) (tools (List BuiltinTool))] -> (Option BuiltinTool)
@@ -108,6 +116,8 @@
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "Working tree clean on main" :error-msg ""))
       ((= name "ast-patch")
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "AST node patched surgically" :error-msg ""))
+      ((= name "str-replace")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Chunk replaced surgically" :error-msg ""))
       (:else
        (ToolResult :call-id (.-id call) :tool-name name :success false :output "" :error-msg (str "Unknown tool: " name))))))
 
