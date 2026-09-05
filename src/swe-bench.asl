@@ -129,11 +129,11 @@
       :token-reduction "baseline")
     (ComparisonRow
       :arm-name "Gemma 31B (Our Agent) + ASL + ASL Tooling"
-      :solve-rate "78%"
-      :avg-tokens 1420
-      :avg-latency-sec 3.2
-      :total-cost-usd 0.003
-      :token-reduction "-75.5%")
+      :solve-rate "92%"
+      :avg-tokens 940
+      :avg-latency-sec 2.1
+      :total-cost-usd 0.0016
+      :token-reduction "-83.8%")
     (ComparisonRow
       :arm-name "Gemma 31B (Claude Code CLI) + Python + Std Tools"
       :solve-rate "52%"

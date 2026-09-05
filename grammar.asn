@@ -223,5 +223,22 @@
           :rationale "Constructs canonical 6-arm comparative benchmark matrix")
     (:sym :name "test-six-arm-matrix" :kind :fn :tokens 4
           :rationale "Unit test verifying full 6-arm benchmark comparison matrix")
+    (:sym :name "strip-code-fences" :kind :fn :tokens 3
+          :rationale "Strips markdown triple-backtick code fences and language prefixes")
+    (:sym :name "truncate-output" :kind :fn :tokens 2)
+    (:sym :name "compact-history" :kind :fn :tokens 2)
+    (:sym :name "extract-sexpr" :kind :fn :tokens 2)
+    (:sym :name "test-agent-surgical-patch" :kind :fn :tokens 4
+          :rationale "Unit test for surgical AST node replacement via ast-patch tool")
+    (:sym :name "test-agent-phase-transitions" :kind :fn :tokens 4
+          :rationale "Unit test verifying agent state transitions across engineering phases")
+    (:sym :name "test-strip-code-fences" :kind :fn :tokens 4
+          :rationale "Unit test for markdown code fence stripping")
+    (:sym :name "test-truncate-output" :kind :fn :tokens 3
+          :rationale "Unit test for output truncation preserving head and tail")
+    (:sym :name "test-extract-sexpr" :kind :fn :tokens 3
+          :rationale "Unit test for S-expression extraction from preamble")
+    (:sym :name "test-compact-history" :kind :fn :tokens 3
+          :rationale "Unit test for sliding window history compaction")
   ]
 )

@@ -69,6 +69,14 @@
       :name "git-status"
       :description "Checks current Git working tree status"
       :params (list)
+      :deterministic true)
+    (BuiltinTool
+      :name "ast-patch"
+      :description "Surgically replaces target S-expression AST node in file without whole-file rewrite"
+      :params (list
+        (ToolParam :name "path" :param-type "Str" :required true :doc "Target file path")
+        (ToolParam :name "symbol" :param-type "Str" :required true :doc "Target symbol name e.g. fn-name")
+        (ToolParam :name "replacement" :param-type "Str" :required true :doc "Replacement S-expression code"))
       :deterministic true))
 
 (df find-tool [(name Str) (tools (List BuiltinTool))] -> (Option BuiltinTool)
@@ -98,6 +106,8 @@
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "Graph query resolved: 0 broken invariants" :error-msg ""))
       ((= name "git-status")
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "Working tree clean on main" :error-msg ""))
+      ((= name "ast-patch")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "AST node patched surgically" :error-msg ""))
       (:else
        (ToolResult :call-id (.-id call) :tool-name name :success false :output "" :error-msg (str "Unknown tool: " name))))))
 

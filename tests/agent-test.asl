@@ -1,6 +1,6 @@
 (module asl-harness/agent-test
   :d "Unit tests for complete Autonomous Coding Agent runtime."
-  :x [test-agent-init test-agent-turn-fsm-normalization test-agent-turn-firewall-blocking test-agent-task-resolution]
+  :x [test-agent-init test-agent-turn-fsm-normalization test-agent-turn-firewall-blocking test-agent-task-resolution test-agent-surgical-patch test-agent-phase-transitions]
   :i [(agent :a ag) (config :a cfg)])
 
 (df test-agent-init [] -> Bool
@@ -42,3 +42,27 @@
     (and (.-resolved final-st)
          (= (.-iteration final-st) 3)
          (string-contains? (ag/agent-summary final-st) "Resolved: YES"))))
+
+(df test-agent-surgical-patch [] -> Bool
+  :d "Verifies agent handles surgical ast-patch tool execution."
+  (let [(c (cfg/default-harness-config))
+        (state (ag/new-coding-agent "sess-005" "TASK-104" c))
+        (patch-turn "(:call ast-patch :path \"src/paged.asl\" :symbol \"slice\" :replacement \"(df slice [] true)\")")
+        (outcome (ag/process-model-turn state patch-turn))
+        (next-st (.-next-state outcome))]
+    (and (= (.-phase next-st) "patch")
+         (string-contains? (ag/agent-summary next-st) "Phase: patch"))))
+
+(df test-agent-phase-transitions [] -> Bool
+  :d "Verifies agent progresses through inspect, plan, patch, and resolved phases."
+  (let [(c (cfg/default-harness-config))
+        (s0 (ag/new-coding-agent "sess-006" "TASK-105" c))
+        (s1 (.-next-state (ag/process-model-turn s0 "(:call fs-read :path \"src/a.asl\")")))
+        (s2 (.-next-state (ag/process-model-turn s1 "(:plan inspect bounds, then apply fix)")))
+        (s3 (.-next-state (ag/process-model-turn s2 "(:call ast-patch :path \"src/a.asl\")")))
+        (s4 (.-next-state (ag/process-model-turn s3 "Task verified cleanly :task-complete")))]
+    (and (= (.-phase s0) "inspect")
+         (and (= (.-phase s1) "inspect")
+              (and (= (.-phase s2) "plan")
+                   (and (= (.-phase s3) "patch")
+                        (= (.-phase s4) "resolved")))))))

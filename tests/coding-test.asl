@@ -4,14 +4,19 @@
   :i [(coding :a c) (normalizer :a norm) (toolcall :a tc) (provider :a prov) (local-exec :a lx)])
 
 (df test-coding-tools [] -> Bool
-  :d "Verifies standard coding tools declaration and direct execution."
+  :d "Verifies standard coding tools declaration and direct execution including ast-patch."
   (let [(tools (c/standard-coding-tools))
         (found (c/find-tool "fs-read" tools))
+        (found-patch (c/find-tool "ast-patch" tools))
         (call (c/ToolCall :id "call-1" :tool-name "fs-read" :arguments (list (pair "path" "src/main.asl"))))
-        (res (c/execute-builtin-tool call))]
+        (call-patch (c/ToolCall :id "call-2" :tool-name "ast-patch" :arguments (list (pair "path" "src/main.asl") (pair "symbol" "foo") (pair "replacement" "(df foo [] true)"))))
+        (res (c/execute-builtin-tool call))
+        (res-patch (c/execute-builtin-tool call-patch))]
     (and (not (list-empty? tools))
          (and (option-is-some? found)
-              (.-success res)))))
+              (and (option-is-some? found-patch)
+                   (and (.-success res)
+                        (.-success res-patch)))))))
 
 (df test-normalizer [] -> Bool
   :d "Verifies hallucination normalizer repairs snake_case, keywords, types, and delimiter balance."

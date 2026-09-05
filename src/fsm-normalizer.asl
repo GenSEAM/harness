@@ -164,7 +164,7 @@
       :balanced? is-balanced)))
 
 (df replace-keyword-patterns [(s Str)] -> Str
-  :d "Performs ordered substring replacements for hallucinated keywords."
+  :d "Performs ordered substring replacements for hallucinated keywords, types, and forms."
   (let [(s1 (string-replace s "(defun " "(df "))
         (s2 (string-replace s1 "(defun\n" "(df\n"))
         (s3 (string-replace s2 "(defun\t" "(df\t"))
@@ -188,8 +188,15 @@
         (s21 (string-replace s20 "\nlambda " "\nfn "))
         (s22 (string-replace s21 "\tdefun " "\tdf "))
         (s23 (string-replace s22 "\tdefn " "\tdf "))
-        (s24 (string-replace s23 "\tlambda " "\tfn "))]
-    s24))
+        (s24 (string-replace s23 "\tlambda " "\tfn "))
+        (s25 (string-replace s24 "(defstruct " "(dfs "))
+        (s26 (string-replace s25 "(defrecord " "(dfs "))
+        (s27 (string-replace s26 "(defenum " "(dfe "))
+        (s28 (string-replace s27 " String " " Str "))
+        (s29 (string-replace s28 " Int64 " " I64 "))
+        (s30 (string-replace s29 " Boolean " " Bool "))
+        (s31 (string-replace s30 " Float64 " " F64 "))]
+    s31))
 
 (df normalize-keywords [(source Str)] -> Str
   :d "Replaces hallucinated keywords (defun -> df, defn -> df, lambda -> fn)."
@@ -217,10 +224,19 @@
            (step7 (if (string-ends-with? step6 " lambda")
                       (str (option-or (string-slice step6 0 (- (string-length step6) 7)) "") " fn")
                       step6))]
-       step7))))
+        step7))))
+
+(df strip-fences-local [(s Str)] -> Str
+  :d "Internal helper stripping markdown backticks before FSM delimiter balancing."
+  (let [(s1 (string-replace s "```asl\n" ""))
+        (s2 (string-replace s1 "```asl" ""))
+        (s3 (string-replace s2 "```\n" ""))
+        (s4 (string-replace s3 "```" ""))]
+    (string-trim s4)))
 
 (df repair-syntax-fsm [(source Str)] -> Str
-  :d "Runs keyword normalization followed by delimiter balancing to produce valid ASL."
-  (let [(kw-repaired (normalize-keywords source))
+  :d "Runs fence stripping, keyword normalization, and delimiter balancing to produce valid ASL."
+  (let [(unfenced (strip-fences-local source))
+        (kw-repaired (normalize-keywords unfenced))
         (fsm-res (balance-delimiters-fsm kw-repaired))]
     (.-repaired fsm-res)))
