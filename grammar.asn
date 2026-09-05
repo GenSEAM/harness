@@ -266,5 +266,17 @@
           :rationale "Unit test for formatted gate rejection message")
     (:sym :name "test-agent-verification-gate-rejection" :kind :fn :tokens 5
           :rationale "Unit test verifying agent rejects unverified completion attempts")
+    (:sym :name "validate-markup-tags" :kind :fn :tokens 3
+          :rationale "Validates balanced tag opening and closing for HTML, XML, and JSX/TSX markup")
+    (:sym :name "validate-yaml-syntax" :kind :fn :tokens 3
+          :rationale "Validates YAML indentation compliance rejecting tabs and checks collections")
+    (:sym :name "resolve-test-runner" :kind :fn :tokens 3
+          :rationale "Resolves canonical verification test runner command for given programming language")
+    (:sym :name "test-validate-markup-tags" :kind :fn :tokens 4
+          :rationale "Unit test for HTML, XML, and TSX tag balancing")
+    (:sym :name "test-validate-yaml-syntax" :kind :fn :tokens 4
+          :rationale "Unit test for YAML tab rejection and collection balance")
+    (:sym :name "test-resolve-test-runner" :kind :fn :tokens 4
+          :rationale "Unit test for polyglot test runner resolution")
   ]
 )
