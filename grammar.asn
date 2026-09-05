@@ -537,5 +537,31 @@
           :rationale "Unit test verifying formatting ASN tool output into Anthropic tool_result block")
     (:sym :name "test-measure-tool-compaction" :kind :fn :tokens 4
           :rationale "Unit test verifying token compaction measurement on tool calling payload")
+
+    ;; Phase 18 Browser Harness & SLM Coherence Symbols
+    (:sym :name "BrowserActionKind" :kind :type :tokens 1)
+    (:sym :name "BrowserAction" :kind :type :tokens 1)
+    (:sym :name "SlmCoherenceVerdict" :kind :type :tokens 1)
+    (:sym :name "make-browser-action" :kind :fn :tokens 3
+          :rationale "Constructs typed BrowserAction record from kind, selector, and payload values")
+    (:sym :name "verify-slm-coherence" :kind :fn :tokens 3
+          :rationale "Validates SLM completion for balanced delimiters, valid actions, and ghost function rejection")
+    (:sym :name "execute-harness-turn" :kind :fn :tokens 3
+          :rationale "Executes single in-browser turn verifying model completion against active DOM state")
+    (:sym :name "benchmark-slm-coherence" :kind :fn :tokens 3
+          :rationale "Aggregates coherence metrics and pass rates across a suite of model completion samples")
+    (:sym :name "test-make-browser-action" :kind :fn :tokens 4
+          :rationale "Unit test verifying construction of typed browser action records")
+    (:sym :name "test-verify-slm-coherence-valid-click" :kind :fn :tokens 6
+          :rationale "Unit test verifying coherence validation of well-formed click action")
+    (:sym :name "test-verify-slm-coherence-unbalanced-delimiters" :kind :fn :tokens 6
+          :rationale "Unit test asserting rejection of model completions with unbalanced brackets")
+    (:sym :name "test-verify-slm-coherence-ghost-rejection" :kind :fn :tokens 6
+          :rationale "Unit test asserting rejection of ungrounded or hazardous ghost actions")
+    (:sym :name "test-execute-harness-turn-grounding" :kind :fn :tokens 5
+          :rationale "Unit test verifying DOM grounding checks on model selected selectors")
+    (:sym :name "test-benchmark-slm-coherence" :kind :fn :tokens 4
+          :rationale "Unit test verifying batch SLM coherence benchmarking and pass-rate calculation")
   ]
 )
+
