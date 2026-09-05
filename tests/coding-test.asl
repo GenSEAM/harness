@@ -1,6 +1,6 @@
 (module asl-harness/tests/coding-test
   :d "Unit tests for agent coding harness, normalizer, toolcall translator, provider, and local execution."
-  :x [test-coding-tools test-normalizer test-toolcall test-provider test-local-exec run-tests]
+  :x [test-coding-tools test-normalizer test-toolcall test-provider test-local-exec test-intel-tools run-tests]
   :i [(coding :a c) (normalizer :a norm) (toolcall :a tc) (provider :a prov) (local-exec :a lx)])
 
 (df test-coding-tools [] -> Bool
@@ -37,18 +37,32 @@
                         (not (.-is-clean rep))))))))
 
 (df test-toolcall [] -> Bool
-  :d "Verifies ASN to OpenAI tool translation and back."
+  :d "Verifies ASN to OpenAI tool translation and back, including intel-preload and deps-resolve."
   (let [(tool (c/BuiltinTool
                 :name "fs-read"
                 :description "Reads file"
                 :params (list (c/ToolParam :name "path" :param-type "Str" :required true :doc "File path"))
                 :deterministic true))
         (schema (tc/tool-to-openai-schema tool))
+        (preload-tool (c/BuiltinTool
+                        :name "intel-preload"
+                        :description "Preload graph"
+                        :params (list (c/ToolParam :name "target" :param-type "Str" :required true :doc "Target"))
+                        :deterministic true))
+        (preload-schema (tc/tool-to-openai-schema preload-tool))
+        (deps-tool (c/BuiltinTool
+                     :name "deps-resolve"
+                     :description "Resolve deps"
+                     :params (list (c/ToolParam :name "package" :param-type "Str" :required true :doc "Package"))
+                     :deterministic true))
+        (deps-schema (tc/tool-to-openai-schema deps-tool))
         (call (c/ToolCall :id "c1" :tool-name "fs-read" :arguments (list (pair "path" "test.asl"))))
         (asn-str (tc/format-asn-tool-call "fs-read" (list (pair "path" "test.asl"))))]
     (and (= (.-name schema) "fs_read")
-         (and (string-contains? (.-parameters-json schema) "path")
-              (string-contains? asn-str "(:call :tool \"fs-read\"")))))
+         (and (= (.-name preload-schema) "intel_preload")
+              (and (= (.-name deps-schema) "deps_resolve")
+                   (and (string-contains? (.-parameters-json schema) "path")
+                        (string-contains? asn-str "(:call :tool \"fs-read\"")))))))
 
 (df test-provider [] -> Bool
   :d "Verifies default OpenAI gateway configuration and payload generation."
@@ -72,10 +86,41 @@
               (and (.-success res)
                    (string-contains? savings "Saved ~6500 tokens"))))))
 
+(df test-intel-tools [] -> Bool
+  :d "Verifies discovery, local routing, and in-memory execution of all 5 intelligence tools."
+  (let [(tools (c/standard-coding-tools))
+        (f-preload (c/find-tool "intel-preload" tools))
+        (f-impact (c/find-tool "intel-impact" tools))
+        (f-health (c/find-tool "intel-health" tools))
+        (f-deps (c/find-tool "deps-resolve" tools))
+        (f-patch (c/find-tool "ast-patch" tools))
+        (c-preload (c/ToolCall :id "ip-1" :tool-name "intel-preload" :arguments (list (pair "target" "sym-a") (pair "depth" "1") (pair "token-budget" "2000"))))
+        (c-impact (c/ToolCall :id "ii-1" :tool-name "intel-impact" :arguments (list (pair "symbol" "sym-b"))))
+        (c-health (c/ToolCall :id "ih-1" :tool-name "intel-health" :arguments (list (pair "scope" "pkg/src"))))
+        (c-deps (c/ToolCall :id "dr-1" :tool-name "deps-resolve" :arguments (list (pair "package" "pydantic") (pair "symbol" "model_dump"))))
+        (res-preload (lx/route-and-execute c-preload))
+        (res-impact (lx/route-and-execute c-impact))
+        (res-health (lx/route-and-execute c-health))
+        (res-deps (lx/route-and-execute c-deps))]
+    (and (option-is-some? f-preload)
+         (and (option-is-some? f-impact)
+              (and (option-is-some? f-health)
+                   (and (option-is-some? f-deps)
+                        (and (option-is-some? f-patch)
+                             (and (lx/should-execute-locally "intel-preload")
+                                  (and (lx/should-execute-locally "intel-impact")
+                                       (and (lx/should-execute-locally "intel-health")
+                                            (and (lx/should-execute-locally "deps-resolve")
+                                                 (and (.-success res-preload)
+                                                      (and (.-success res-impact)
+                                                           (and (.-success res-health)
+                                                                (.-success res-deps)))))))))))))))
+
 (df run-tests [] -> Bool
   :d "Executes full harness test suite."
   (and (test-coding-tools)
        (and (test-normalizer)
             (and (test-toolcall)
                  (and (test-provider)
-                      (test-local-exec))))))
+                      (and (test-local-exec)
+                           (test-intel-tools)))))))

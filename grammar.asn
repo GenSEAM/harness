@@ -344,5 +344,73 @@
           :rationale "Tests dependency resolution from lockfile")
     (:sym :name "test-deps-resolve-e2e" :kind :fn :tokens 4
           :rationale "Tests end-to-end dependency resolution")
+
+    ;; Phase 04 Config & Worktree Scoping Symbols
+    (:sym :name "WorkspaceScope" :kind :type :tokens 1)
+    (:sym :name "RepoKind" :kind :type :tokens 1)
+    (:sym :name "WorktreeInfo" :kind :type :tokens 1)
+    (:sym :name "StorageConfig" :kind :type :tokens 1)
+    (:sym :name "WorkspaceContext" :kind :type :tokens 1)
+    (:sym :name "profile-qwen-05b" :kind :fn :tokens 3
+          :rationale "Optimal profile for local Qwen 2.5 0.5B model")
+    (:sym :name "detect-repo-kind" :kind :fn :tokens 3
+          :rationale "Detects repository kind distinguishing main, worktree, and submodule")
+    (:sym :name "parse-gitdir-file" :kind :fn :tokens 3
+          :rationale "Parses and canonicalizes gitdir path from dot-git file")
+    (:sym :name "extract-worktree-id" :kind :fn :tokens 3
+          :rationale "Extracts unique worktree identifier from gitdir path")
+    (:sym :name "detect-worktree" :kind :fn :tokens 2)
+    (:sym :name "default-storage-config" :kind :fn :tokens 3
+          :rationale "Constructs default dual-scope storage path mapping")
+    (:sym :name "route-storage-target" :kind :fn :tokens 3
+          :rationale "Routes storage paths to master research, scratch, or worktree root")
+    (:sym :name "resolve-cascaded-config" :kind :fn :tokens 3
+          :rationale "Cascades configuration settings across 4 hierarchical tiers")
+
+    ;; Phase 04 Reflection & Feedback Symbols
+    (:sym :name "ReflectionVerdict" :kind :type :tokens 1)
+    (:sym :name "micro-reflect-step" :kind :fn :tokens 3
+          :rationale "Step-level micro-reflection checking AST balance and quiet failures")
+    (:sym :name "macro-reflect-audit" :kind :fn :tokens 3
+          :rationale "End-to-end macro-reflection with strict 1-turn limit ceiling")
+    (:sym :name "TaskFeedback" :kind :type :tokens 1)
+    (:sym :name "new-task-feedback" :kind :fn :tokens 3
+          :rationale "Constructs a new task feedback tracking record")
+    (:sym :name "feedback-add-completed" :kind :fn :tokens 3
+          :rationale "Appends verified completed item to task feedback")
+    (:sym :name "feedback-add-gap" :kind :fn :tokens 3
+          :rationale "Appends unverified gap or transparent disclosure to feedback")
+    (:sym :name "format-feedback-summary" :kind :fn :tokens 3
+          :rationale "Formats comprehensive feedback report of task execution")
+    (:sym :name "disclose-observed-gaps" :kind :fn :tokens 3
+          :rationale "Renders transparent gap disclosures block for user feedback")
+
+    ;; Phase 04 Unit Test Symbols
+    (:sym :name "test-intel-tools" :kind :fn :tokens 3
+          :rationale "Unit test for discovery and local execution of intelligence tools")
+    (:sym :name "test-qwen-profile" :kind :fn :tokens 3
+          :rationale "Unit test for Qwen 2.5 0.5B calibration profile")
+    (:sym :name "test-worktree-detection" :kind :fn :tokens 3
+          :rationale "Unit test for git worktree detection and parsing")
+    (:sym :name "test-storage-routing" :kind :fn :tokens 3
+          :rationale "Unit test for dual-scope storage path routing")
+    (:sym :name "test-cascaded-config" :kind :fn :tokens 3
+          :rationale "Unit test for 4-tier configuration cascading")
+    (:sym :name "test-feedback-init" :kind :fn :tokens 3
+          :rationale "Unit test for task feedback initialization")
+    (:sym :name "test-feedback-add-completed" :kind :fn :tokens 4
+          :rationale "Unit test for appending completed work items to feedback")
+    (:sym :name "test-feedback-add-gap" :kind :fn :tokens 4
+          :rationale "Unit test for appending transparent gap disclosures")
+    (:sym :name "test-feedback-formatting" :kind :fn :tokens 3
+          :rationale "Unit test for feedback disclosure formatting")
+    (:sym :name "test-micro-reflection" :kind :fn :tokens 3
+          :rationale "Unit test for step-level micro-reflection")
+    (:sym :name "test-macro-reflection-todo" :kind :fn :tokens 4
+          :rationale "Unit test for macro-reflection TODO detection")
+    (:sym :name "test-reflection-ceiling" :kind :fn :tokens 3
+          :rationale "Unit test for strict 1-turn reflection ceiling")
+    (:sym :name "test-agent-reflection-cycle" :kind :fn :tokens 4
+          :rationale "Unit test for multi-turn agent reflection loop")
   ]
 )

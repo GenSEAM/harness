@@ -85,7 +85,34 @@
         (ToolParam :name "path" :param-type "Str" :required true :doc "Target file path")
         (ToolParam :name "old-chunk" :param-type "Str" :required true :doc "Exact chunk of text to be replaced")
         (ToolParam :name "new-chunk" :param-type "Str" :required true :doc "Replacement text chunk"))
-      :deterministic true))
+      :deterministic true)
+    (BuiltinTool
+      :name "intel-preload"
+      :description "Preloads graph horizon paging with micro, meso, and macro tiers within token budget"
+      :params (list
+        (ToolParam :name "target" :param-type "Str" :required true :doc "Target symbol or module name")
+        (ToolParam :name "depth" :param-type "I64" :required true :doc "Traversal depth horizon")
+        (ToolParam :name "token-budget" :param-type "I64" :required true :doc "Maximum context token budget"))
+      :deterministic true)
+    (BuiltinTool
+      :name "intel-impact"
+      :description "Calculates blast radius and affected callers before patch application"
+      :params (list
+        (ToolParam :name "symbol" :param-type "Str" :required true :doc "Target symbol to calculate impact for"))
+      :deterministic true)
+    (BuiltinTool
+      :name "intel-health"
+      :description "Audits circular dependencies, blast radius hotspots, and signature invariants"
+      :params (list
+        (ToolParam :name "scope" :param-type "Str" :required true :doc "Target scope or module to verify"))
+      :deterministic true)
+    (BuiltinTool
+      :name "deps-resolve"
+      :description "Resolves lockfile-pinned version and type skeleton to eliminate ghost API hallucinations"
+      :params (list
+        (ToolParam :name "package" :param-type "Str" :required true :doc "Package identifier")
+        (ToolParam :name "symbol" :param-type "Str" :required true :doc "Target symbol or API name"))
+      :deterministic true)))
 
 (df find-tool [(name Str) (tools (List BuiltinTool))] -> (Option BuiltinTool)
   :d "Finds tool by canonical kebab-case name."
@@ -118,6 +145,14 @@
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "AST node patched surgically" :error-msg ""))
       ((= name "str-replace")
        (ToolResult :call-id (.-id call) :tool-name name :success true :output "Chunk replaced surgically" :error-msg ""))
+      ((= name "intel-preload")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Graph horizon preloaded: 3 stubs, 420 tokens" :error-msg ""))
+      ((= name "intel-impact")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Impact analysis: blast radius 1 callers" :error-msg ""))
+      ((= name "intel-health")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Health matrix: 0 cycles, 0 broken invariants" :error-msg ""))
+      ((= name "deps-resolve")
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Dependency resolved: exact pinned version" :error-msg ""))
       (:else
        (ToolResult :call-id (.-id call) :tool-name name :success false :output "" :error-msg (str "Unknown tool: " name))))))
 
