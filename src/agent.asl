@@ -190,7 +190,7 @@
                    :actions-blocked new-blocked
                    :resolved is-done
                    :test-command (.-test-command state)
-                   :reflection-turns new-refl-turns)))]
+                   :reflection-turns new-refl-turns))]
     (AgentStepOutcome
       :next-state next-st
       :normalized-text normalized
