@@ -1,0 +1,139 @@
+;; Package Grammar & Exported Symbol Registry (ASN)
+;; @genseam/asl-harness
+(:grammar
+  :package @genseam/asl-harness
+  :version "0.1.0"
+  :tokens-baseline 2
+  :symbols [
+    ;; Core Types (<= 2 tokens)
+    (:sym :name "ToolParam" :kind :type :tokens 2)
+    (:sym :name "BuiltinTool" :kind :type :tokens 2)
+    (:sym :name "ToolCall" :kind :type :tokens 2)
+    (:sym :name "ToolResult" :kind :type :tokens 2)
+    (:sym :name "ExecutionTier" :kind :type :tokens 2)
+    (:sym :name "RouteDecision" :kind :type :tokens 2)
+    (:sym :name "NormalizerReport" :kind :type :tokens 2)
+    (:sym :name "OpenAiConfig" :kind :type :tokens 2)
+    (:sym :name "ChatMessage" :kind :type :tokens 2)
+    (:sym :name "ProviderResponse" :kind :type :tokens 2)
+    (:sym :name "OpenAiTool" :kind :type :tokens 2)
+    (:sym :name "OpenAiToolCall" :kind :type :tokens 2)
+    (:sym :name "SweTask" :kind :type :tokens 2)
+    (:sym :name "RunTelemetry" :kind :type :tokens 2)
+    (:sym :name "ComparisonRow" :kind :type :tokens 2)
+    (:sym :name "BenchmarkSuite" :kind :type :tokens 2)
+    (:sym :name "CdpConnection" :kind :type :tokens 2)
+    (:sym :name "AdapterKind" :kind :type :tokens 2)
+    (:sym :name "AgentHarness" :kind :type :tokens 2)
+    (:sym :name "SourceDocument" :kind :type :tokens 2)
+    (:sym :name "ClaimCitation" :kind :type :tokens 2)
+    (:sym :name "VerificationResult" :kind :type :tokens 2)
+    (:sym :name "CacheEntry" :kind :type :tokens 2)
+    (:sym :name "ProxyState" :kind :type :tokens 2)
+    (:sym :name "ProxyDecision" :kind :type :tokens 2)
+    (:sym :name "McpServerConfig" :kind :type :tokens 2)
+
+    ;; Core Functions (<= 2 tokens)
+    (:sym :name "find-tool" :kind :fn :tokens 2)
+    (:sym :name "normalize-identifier" :kind :fn :tokens 2)
+    (:sym :name "canonicalize-keyword" :kind :fn :tokens 2)
+    (:sym :name "canonicalize-type" :kind :fn :tokens 2)
+    (:sym :name "balance-delimiters" :kind :fn :tokens 2)
+    (:sym :name "repair-hallucinations" :kind :fn :tokens 2)
+    (:sym :name "make-message" :kind :fn :tokens 2)
+    (:sym :name "make-telemetry" :kind :fn :tokens 2)
+    (:sym :name "run-tests" :kind :fn :tokens 2)
+    (:sym :name "navigate" :kind :fn :tokens 1)
+    (:sym :name "dispatch-click" :kind :fn :tokens 2)
+    (:sym :name "verify-citation" :kind :fn :tokens 2)
+    (:sym :name "verify-claims" :kind :fn :tokens 2)
+    (:sym :name "detect-contradiction" :kind :fn :tokens 2)
+    (:sym :name "find-document" :kind :fn :tokens 2)
+    (:sym :name "init-proxy" :kind :fn :tokens 2)
+    (:sym :name "register-source" :kind :fn :tokens 2)
+    (:sym :name "store-cache" :kind :fn :tokens 2)
+    (:sym :name "lookup-cache" :kind :fn :tokens 2)
+    (:sym :name "evaluate-action" :kind :fn :tokens 2)
+    (:sym :name "test-normalizer" :kind :fn :tokens 2)
+    (:sym :name "test-toolcall" :kind :fn :tokens 2)
+    (:sym :name "test-provider" :kind :fn :tokens 2)
+    (:sym :name "test-tasks" :kind :fn :tokens 2)
+    (:sym :name "test-telemetry" :kind :fn :tokens 2)
+    (:sym :name "test-matrix" :kind :fn :tokens 2)
+
+    ;; Extended Operations (> 2 tokens with required :rationale)
+    (:sym :name "standard-coding-tools" :kind :fn :tokens 3
+          :rationale "Factory returning the standard suite of direct agent coding tools")
+    (:sym :name "execute-builtin-tool" :kind :fn :tokens 3
+          :rationale "Direct execution dispatcher for built-in capability tools without subprocesses")
+    (:sym :name "format-tool-result" :kind :fn :tokens 3
+          :rationale "Formats tool execution payload into concise agent observation string")
+    (:sym :name "should-execute-locally" :kind :fn :tokens 3
+          :rationale "Router predicate identifying deterministic tools executable without LLM roundtrip")
+    (:sym :name "route-and-execute" :kind :fn :tokens 3
+          :rationale "Direct router executing tools in optimal execution tier")
+    (:sym :name "format-savings-report" :kind :fn :tokens 3
+          :rationale "Telemetry generator calculating token and latency savings from local execution")
+    (:sym :name "normalize-asl-fragment" :kind :fn :tokens 3
+          :rationale "Multi-step normalization pipeline repairing hallucinated ASL code fragments")
+    (:sym :name "default-gateway-config" :kind :fn :tokens 3
+          :rationale "Default configuration provider targeting LLM Gateway endpoint")
+    (:sym :name "build-request-payload" :kind :fn :tokens 3
+          :rationale "Serializes chat messages and tools into OpenAI-compatible request JSON")
+    (:sym :name "parse-model-response" :kind :fn :tokens 3
+          :rationale "Normalizes raw provider completion response into typed ProviderResponse")
+    (:sym :name "tool-to-openai-schema" :kind :fn :tokens 4
+          :rationale "Translates internal ASL BuiltinTool into OpenAI function tool schema")
+    (:sym :name "tools-to-openai-json" :kind :fn :tokens 4
+          :rationale "Generates OpenAI tools JSON array from list of ASN tool definitions")
+    (:sym :name "format-asn-tool-call" :kind :tokens 4
+          :rationale "Formats tool invocation in canonical ASN S-expression syntax")
+    (:sym :name "parse-openai-tool-call" :kind :fn :tokens 4
+          :rationale "Converts model JSON tool call payload back into typed ASL ToolCall")
+    (:sym :name "asn-call-to-openai-json" :kind :fn :tokens 5
+          :rationale "Converts internal ASL ToolCall into OpenAI-compatible JSON payload")
+    (:sym :name "standard-swe-tasks" :kind :fn :tokens 3
+          :rationale "Returns canonical benchmark tasks representing core bug localization and repair")
+    (:sym :name "evaluate-arm-telemetry" :kind :fn :tokens 3
+          :rationale "Aggregates performance telemetry across evaluation arms into ComparisonRow")
+    (:sym :name "format-benchmark-matrix" :kind :fn :tokens 3
+          :rationale "Renders final SWE-bench comparison markdown table from benchmark rows")
+    (:sym :name "standard-genseam-servers" :kind :fn :tokens 3
+          :rationale "Declares standard trio of GenSEAM MCP servers for benchmark harness")
+    (:sym :name "generate-claude-mcp-config" :kind :fn :tokens 4
+          :rationale "Generates JSON configuration file for isolated Claude Code invocation")
+    (:sym :name "verify-bridge-connectivity" :kind :fn :tokens 3
+          :rationale "Pre-flight check validating MCP bridge socket availability")
+    (:sym :name "make-cdp-connection" :kind :fn :tokens 3
+          :rationale "Factory initializing headless Chrome DevTools Protocol session")
+    (:sym :name "extract-axtree" :kind :fn :tokens 2)
+    (:sym :name "make-grounding-middleware" :kind :fn :tokens 3
+          :rationale "Middleware constructor enforcing citation verification before model execution")
+    (:sym :name "make-cache-middleware" :kind :fn :tokens 3
+          :rationale "Middleware constructor caching deterministic responses across sessions")
+    (:sym :name "make-audit-middleware" :kind :fn :tokens 3
+          :rationale "Middleware constructor recording audit trails of all agent actions")
+    (:sym :name "create-harness-pipeline" :kind :fn :tokens 3
+          :rationale "Assembles onion middleware pipeline for safe agent execution")
+    (:sym :name "all-claims-grounded?" :kind :fn :tokens 3
+          :rationale "Predicate asserting that 100% of generated claims cite verified source documents")
+    (:sym :name "get-adapter-name" :kind :fn :tokens 3
+          :rationale "Utility accessor returning string identifier of active adapter")
+    (:sym :name "make-source-document" :kind :fn :tokens 3
+          :rationale "Constructor wrapping raw text and metadata into typed SourceDocument")
+    (:sym :name "test-normalize-identifier" :kind :fn :tokens 3
+          :rationale "Unit test runner for identifier normalization")
+    (:sym :name "test-canonicalize-keywords" :kind :fn :tokens 3
+          :rationale "Unit test runner for keyword mapping")
+    (:sym :name "test-canonicalize-types" :kind :fn :tokens 3
+          :rationale "Unit test runner for type mapping")
+    (:sym :name "test-balance-delimiters" :kind :fn :tokens 3
+          :rationale "Unit test runner for delimiter balancer")
+    (:sym :name "test-repair-hallucinations" :kind :fn :tokens 3
+          :rationale "Unit test runner for end-to-end hallucination repair")
+    (:sym :name "test-coding-tools" :kind :fn :tokens 3
+          :rationale "Unit test runner for coding tools dispatch")
+    (:sym :name "test-local-exec" :kind :fn :tokens 3
+          :rationale "Unit test runner for local execution router")
+  ]
+)
