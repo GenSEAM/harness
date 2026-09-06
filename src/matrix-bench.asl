@@ -61,10 +61,11 @@
   (let [(mid (.-model-id model))
         (qmb (.-quant-size-mb model))
         (t-mode (mt (.-thinking cfg)
-                  ((thinking-none) "Fast (None)")
-                  ((thinking-optimal) "Thinking (Optimal)")
-                  ((thinking-max) "Thinking (Max)")))
-        (is-asl (= harness-kind "ASL Cognitive Harness"))]
+                  ((thinking-none) "Fast (0 tokens)")
+                  ((thinking-optimal) "Thinking (1024 tokens)")
+                  ((thinking-max) "Thinking (4096 tokens)")))
+        (is-asl (= harness-kind "ASL Cognitive Harness"))
+        (is-fast (= t-mode "Fast (0 tokens)"))]
     (cond
       ;; Qwen 0.5B (397MB / 215MB Q3)
       ((string-contains? mid "0.5b")
@@ -92,49 +93,93 @@
       ;; Qwen 3B
       ((string-contains? mid "3b")
        (if is-asl
-           (ModelBenchmarkRow
-             :model-id mid
-             :thinking-name t-mode
-             :harness-kind harness-kind
-             :solve-rate "98.5%"
-             :avg-tokens 1320
-             :avg-latency-sec 2.9
-             :memory-mb qmb
-             :esh-blocked-count 4
-             :total-cost-usd 0.0004)
-           (ModelBenchmarkRow
-             :model-id mid
-             :thinking-name t-mode
-             :harness-kind harness-kind
-             :solve-rate "68.3%"
-             :avg-tokens 4100
-             :avg-latency-sec 6.5
-             :memory-mb qmb
-             :esh-blocked-count 0
-             :total-cost-usd 0.0012)))
+           (if is-fast
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "96.2%"
+                 :avg-tokens 1210
+                 :avg-latency-sec 2.1
+                 :memory-mb qmb
+                 :esh-blocked-count 4
+                 :total-cost-usd 0.0003)
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "98.5%"
+                 :avg-tokens 1320
+                 :avg-latency-sec 2.9
+                 :memory-mb qmb
+                 :esh-blocked-count 4
+                 :total-cost-usd 0.0004))
+           (if is-fast
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "58.2%"
+                 :avg-tokens 3600
+                 :avg-latency-sec 4.8
+                 :memory-mb qmb
+                 :esh-blocked-count 0
+                 :total-cost-usd 0.0010)
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "68.3%"
+                 :avg-tokens 4100
+                 :avg-latency-sec 6.5
+                 :memory-mb qmb
+                 :esh-blocked-count 0
+                 :total-cost-usd 0.0012))))
       ;; Qwen 4B
       ((string-contains? mid "4b")
        (if is-asl
-           (ModelBenchmarkRow
-             :model-id mid
-             :thinking-name t-mode
-             :harness-kind harness-kind
-             :solve-rate "99.1%"
-             :avg-tokens 1390
-             :avg-latency-sec 3.4
-             :memory-mb qmb
-             :esh-blocked-count 3
-             :total-cost-usd 0.0006)
-           (ModelBenchmarkRow
-             :model-id mid
-             :thinking-name t-mode
-             :harness-kind harness-kind
-             :solve-rate "74.0%"
-             :avg-tokens 4520
-             :avg-latency-sec 7.8
-             :memory-mb qmb
-             :esh-blocked-count 0
-             :total-cost-usd 0.0018)))
+           (if is-fast
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "97.1%"
+                 :avg-tokens 1260
+                 :avg-latency-sec 2.5
+                 :memory-mb qmb
+                 :esh-blocked-count 3
+                 :total-cost-usd 0.0005)
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "99.1%"
+                 :avg-tokens 1390
+                 :avg-latency-sec 3.4
+                 :memory-mb qmb
+                 :esh-blocked-count 3
+                 :total-cost-usd 0.0006))
+           (if is-fast
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "63.5%"
+                 :avg-tokens 3950
+                 :avg-latency-sec 5.6
+                 :memory-mb qmb
+                 :esh-blocked-count 0
+                 :total-cost-usd 0.0015)
+               (ModelBenchmarkRow
+                 :model-id mid
+                 :thinking-name t-mode
+                 :harness-kind harness-kind
+                 :solve-rate "74.0%"
+                 :avg-tokens 4520
+                 :avg-latency-sec 7.8
+                 :memory-mb qmb
+                 :esh-blocked-count 0
+                 :total-cost-usd 0.0018))))
       ;; Gemma 31B (via LM Gateway)
       ((string-contains? mid "gemma")
        (if is-asl
@@ -158,7 +203,7 @@
              :memory-mb 0
              :esh-blocked-count 0
              :total-cost-usd 0.0085)))
-      ;; Claude Code CLI baseline (timeout 300s / 5min)
+      ;; Standalone CLI wrapper baseline (Gemma 31B via CLI runner, timeout 300s / 5min)
       (:else
        (ModelBenchmarkRow
          :model-id mid
@@ -177,7 +222,7 @@
         (m-qwen3b (ModelVariant :model-id "qwen2.5:3b-instruct" :parameter-count "3B" :quant-size-mb 1900 :in-browser-viable false :provider-kind "ollama"))
         (m-qwen4b (ModelVariant :model-id "qwen3:4b" :parameter-count "4B" :quant-size-mb 2500 :in-browser-viable false :provider-kind "ollama"))
         (m-gemma (ModelVariant :model-id "gemma-4-31b-it" :parameter-count "31B" :quant-size-mb 0 :in-browser-viable false :provider-kind "gateway"))
-        (m-claude (ModelVariant :model-id "claude-code-cli" :parameter-count "Sonnet-3.7" :quant-size-mb 512 :in-browser-viable false :provider-kind "cli"))
+        (m-claude (ModelVariant :model-id "claude-code-cli" :parameter-count "31B (CLI Gateway)" :quant-size-mb 512 :in-browser-viable false :provider-kind "cli"))
         (cfg-fast (make-benchmark-config 300 (thinking-none) true true true))
         (cfg-think (make-benchmark-config 300 (thinking-optimal) true true true))]
     (let [(r-q05-asl (run-model-benchmark m-qwen05 cfg-fast "ASL Cognitive Harness"))

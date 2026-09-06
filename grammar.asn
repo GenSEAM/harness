@@ -614,6 +614,8 @@
           :rationale "Registers an incremental plan item with an explicit verification gate")
     (:sym :name "record-gate-execution" :kind :fn :tokens 3
           :rationale "Records the real sandbox execution result of a plan item's gate command")
+    (:sym :name "record-command-execution" :kind :fn :tokens 3
+          :rationale "Auto-correlates executed shell command with registered verification gates")
     (:sym :name "validate-turn-completion" :kind :fn :tokens 3
           :rationale "Audits agent completion claim against real physical gate execution")
     (:sym :name "audit-action-precondition" :kind :fn :tokens 3

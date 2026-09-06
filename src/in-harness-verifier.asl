@@ -6,6 +6,7 @@
       init-turn-state
       register-plan-item
       record-gate-execution
+      record-command-execution
       validate-turn-completion
       audit-action-precondition
       format-verification-feedback]
@@ -43,7 +44,8 @@
       (or (= action-kind "replace_file_content")
           (or (= action-kind "apply_patch")
               (or (= action-kind "execute_bash")
-                  (= action-kind "git_commit"))))))
+                  (or (= action-kind "run_command")
+                      (= action-kind "git_commit")))))))
 
 (df register-plan-item [(state HarnessTurnState) (id Str) (desc Str) (gate-cmd Str)] -> HarnessTurnState
   :d "Registers an incremental plan item with an explicit verification gate."
@@ -83,6 +85,28 @@
                        :executed true
                        :passed (= exit-code 0))
                      item))
+               (.-planned-items state)))]
+    (HarnessTurnState
+      :planned-items updated-items
+      :mutating-actions-count (+ (.-mutating-actions-count state) 1)
+      :esh-violations (.-esh-violations state)
+      :is-turn-grounded true)))
+
+(df record-command-execution [(state HarnessTurnState) (cmd-line Str) (exit-code I64)] -> HarnessTurnState
+  :d "Auto-correlates executed shell command with registered verification gates."
+  (let [(updated-items
+          (map (fn [(item PlanGateItem)] -> PlanGateItem
+                 (let [(gate-cmd (.-verification-command item))]
+                   (if (or (= cmd-line gate-cmd)
+                           (or (string-contains? cmd-line gate-cmd)
+                               (string-contains? gate-cmd cmd-line)))
+                       (PlanGateItem
+                         :id (.-id item)
+                         :description (.-description item)
+                         :verification-command gate-cmd
+                         :executed true
+                         :passed (= exit-code 0))
+                       item)))
                (.-planned-items state)))]
     (HarnessTurnState
       :planned-items updated-items
