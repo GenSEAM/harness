@@ -10,6 +10,6 @@ Universal Autonomous Agent Harness with Anti-Hallucination Epistemic Grounding F
 - `MetasearchAdapter`: Decentralized multi-engine search aggregation.
 
 ## Anti-Hallucination Grounding Firewall
-- **Verbatim Quote Verification**: Validates claims strictly against exact quotes from retrieved documents (`asl-context`).
+- **Verbatim Quote Verification**: Validates claims strictly against exact quotes from retrieved documents (`asl-text`).
 - **Namespace-Isolated Prompt Caching**: Enforces strict boundaries between agent sessions to eliminate prompt bleed.
 - **Action Firewall**: Blocks ungrounded actions before side effects can take place.
