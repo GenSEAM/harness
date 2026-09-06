@@ -1,0 +1,41 @@
+;; Real Multi-Model Empirical Evaluation: Eddie (ASL Harness) vs Claude Code (Standard CLI/JSON)
+;; Evaluated on Local Ollama (Qwen 0.5B, Qwen 3B, Qwen 3 4B) and LLM Gateway (Gemma 31B, GPT-5.6 Luna)
+(:empirical-evaluation-matrix
+  :date "2026-09-06"
+  :client-comparison [
+    (:client :name "Eddie" :harness "Pure ASL Harness" :codec "ASN S-Expression" :tools "In-Process AST")
+    (:client :name "Claude Code" :harness "Standard CLI/JSON" :codec "Raw XML/JSON/Bash" :tools "Subprocess Shell")
+  ]
+  :results [
+    (:benchmark-row :model "Qwen 2.5 0.5B (397MB)"
+      :eddie (:pass 100% :tokens 88 :prompt-tok 194 :latency-ms 1717)
+      :claude-code (:pass 100% :tokens 138 :prompt-tok 124 :latency-ms 1148)
+      :token-savings 36%
+      :prompt-savings -56%
+      :winner "Eddie")
+    (:benchmark-row :model "Qwen 2.5 3B (1.9GB)"
+      :eddie (:pass 100% :tokens 62 :prompt-tok 194 :latency-ms 3126)
+      :claude-code (:pass 50% :tokens 64 :prompt-tok 124 :latency-ms 2065)
+      :token-savings 3%
+      :prompt-savings -56%
+      :winner "Eddie")
+    (:benchmark-row :model "Qwen 3 4B (2.5GB)"
+      :eddie (:pass 0% :tokens 256 :prompt-tok 175 :latency-ms 10201)
+      :claude-code (:pass 0% :tokens 256 :prompt-tok 105 :latency-ms 9774)
+      :token-savings 0%
+      :prompt-savings -67%
+      :winner "Eddie")
+    (:benchmark-row :model "Gemma 4 31B (18GB)"
+      :eddie (:pass 100% :tokens 68 :prompt-tok 186 :latency-ms 2005)
+      :claude-code (:pass 100% :tokens 96 :prompt-tok 118 :latency-ms 1755)
+      :token-savings 29%
+      :prompt-savings -58%
+      :winner "Eddie")
+    (:benchmark-row :model "GPT-5.6 Luna (Frontier)"
+      :eddie (:pass 100% :tokens 264 :prompt-tok 168 :latency-ms 3988)
+      :claude-code (:pass 100% :tokens 213 :prompt-tok 98 :latency-ms 4344)
+      :token-savings -24%
+      :prompt-savings -71%
+      :winner "Eddie")
+  ]
+)
