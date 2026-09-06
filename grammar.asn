@@ -832,6 +832,30 @@
           :rationale "Unit test verifying markdown formatting of doctor diagnosis report")
     (:sym :name "run-doctor-tests" :kind :fn :tokens 3
           :rationale "Runs complete test suite for Agent Doctor and Plugin System")
+
+    ;; Prompt Calibration & Anti-Pattern Benchmark Symbols
+    (:sym :name "PromptStrategy" :kind :type :tokens 1)
+    (:sym :name "ModelScale" :kind :type :tokens 1)
+    (:sym :name "CalibrationScore" :kind :type :tokens 1)
+    (:sym :name "CalibrationMatrix" :kind :type :tokens 1)
+    (:sym :name "make-score" :kind :fn :tokens 2)
+    (:sym :name "evaluate-strategy" :kind :fn :tokens 2)
+    (:sym :name "run-full-calibration" :kind :fn :tokens 3
+          :rationale "Executes factorial prompt calibration across all models and strategies")
+    (:sym :name "format-calibration-asn" :kind :fn :tokens 3
+          :rationale "Formats calibration matrix into canonical dense ASN representation")
+    (:sym :name "format-calibration-markdown" :kind :fn :tokens 3
+          :rationale "Formats calibration matrix into markdown comparison table")
+    (:sym :name "test-micro-affirmative-pass" :kind :fn :tokens 4
+          :rationale "Verifies micro SLM pass rate under affirmative prompt strategy")
+    (:sym :name "test-anti-pattern-contamination" :kind :fn :tokens 4
+          :rationale "Verifies that anti-patterns increase distractor contamination in SLMs")
+    (:sym :name "test-full-calibration-matrix" :kind :fn :tokens 4
+          :rationale "Verifies factorial prompt calibration matrix across all scales")
+    (:sym :name "test-format-calibration-asn" :kind :fn :tokens 4
+          :rationale "Verifies serialization of calibration results into ASN")
+    (:sym :name "run-calibration-tests" :kind :fn :tokens 3
+          :rationale "Runs complete test suite for prompt calibration benchmark")
   ]
 )
 
