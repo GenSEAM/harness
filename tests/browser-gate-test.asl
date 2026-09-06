@@ -1,6 +1,6 @@
 (module asl-harness/tests/browser-gate-test
   :d "Unit tests for pure AgentScript Browser Verification Gate"
-  :x [test-svg-clean test-asn-unbalanced test-security-eval test-games-readiness run-tests]
+  :x [run-tests]
   :i [(browser_gate :a bg)])
 
 (df test-svg-clean [] -> Bool

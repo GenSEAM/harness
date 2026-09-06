@@ -1,7 +1,6 @@
 (module asl-harness/browser-gate
   :d "Pure AgentScript In-Browser Verification Gate & Adaptive Self-Healing Engine"
-  :x [GateVerdict VerificationResult
-      check-syntax-gate check-security-gate check-readiness-gate run-browser-gates]
+  :x [GateVerdict VerificationResult run-browser-gates]
   :i [])
 
 (dfs GateVerdict

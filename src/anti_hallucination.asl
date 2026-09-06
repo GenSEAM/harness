@@ -1,8 +1,6 @@
 (module asl-harness/anti-hallucination
   :d "Pure AgentScript In-Memory Anti-Hallucination FSM and Delimiter Balancer"
-  :x [ThinkingResult ToolCallResult FsmRepairReport
-      extract-thinking strip-markdown-fences balance-delimiters
-      extract-toolcall-kind repair-and-normalize]
+  :x [ThinkingResult ToolCallResult FsmRepairReport repair-and-normalize]
   :i [])
 
 (dfs ThinkingResult

@@ -1,6 +1,6 @@
 (module asl-harness/tests/anti-hallucination-test
   :d "Unit tests for pure AgentScript Anti-Hallucination FSM Normalizer"
-  :x [test-extract-thinking test-strip-fences test-balance-delimiters test-repair-and-normalize run-tests]
+  :x [run-tests]
   :i [(anti_hallucination :a ah)])
 
 (df test-extract-thinking [] -> Bool
