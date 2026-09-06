@@ -7,6 +7,9 @@
       test-impl-audit-clean
       test-impl-audit-failed
       test-advance-stage
+      test-entropy-classification
+      test-pipeline-modes
+      test-eddie-config
       run-steps-pipeline-tests]
   :i [(steps-pipeline :a sp)])
 
@@ -65,6 +68,35 @@
     (and (= (.-current-phase-idx p1) 1)
          (= (.-active-stage p1) "plan"))))
 
+(df test-entropy-classification [] -> Bool
+  :d "Verifies task entropy classifier routes high-stakes tasks to full and simple tasks to fast"
+  (and (= (sp/classify-task-entropy "terminal-bench/html-js-filter: prevent xss attacks") "full")
+       (and (= (sp/classify-task-entropy "TB-042: solve interleaved vigenere cipher") "full")
+            (and (= (sp/classify-task-entropy "Fix small typo in comment") "fast")
+                 (= (sp/classify-task-entropy "Add REST endpoint for user profiles") "standard")))))
+
+(df test-pipeline-modes [] -> Bool
+  :d "Verifies creation of fast, standard, and full pipelines"
+  (let [(p-fast (sp/make-pipeline-by-mode "t-fast" "fix typo" "fast"))
+        (p-std (sp/make-pipeline-by-mode "t-std" "add endpoint" "standard"))
+        (p-full (sp/make-pipeline-by-mode "t-full" "xss security filter" "full"))
+        (p-adapt (sp/make-pipeline-by-mode "t-adapt" "crypto vigenere solver" "adaptive"))]
+    (and (= (len (.-phases p-fast)) 2)
+         (and (= (.-active-stage p-fast) "impl")
+              (and (= (len (.-phases p-std)) 3)
+                   (and (= (.-active-stage p-std) "plan")
+                        (and (= (len (.-phases p-full)) 5)
+                             (and (= (.-active-stage p-full) "scout")
+                                  (= (len (.-phases p-adapt)) 5)))))))))
+
+(df test-eddie-config [] -> Bool
+  :d "Verifies default Eddie configuration"
+  (let [(cfg (sp/default-eddie-config))]
+    (and (= (.-pipeline cfg) "full")
+         (and (.-anti-overthinking cfg)
+              (and (.-asl-first cfg)
+                   (.-scout-polyglot cfg))))))
+
 (df run-steps-pipeline-tests [] -> Bool
   :d "Runs all steps pipeline test cases"
   (and (test-create-pipeline)
@@ -73,4 +105,7 @@
                  (and (test-gap-audit-bloat)
                       (and (test-impl-audit-clean)
                            (and (test-impl-audit-failed)
-                                (test-advance-stage))))))))
+                                (and (test-advance-stage)
+                                     (and (test-entropy-classification)
+                                          (and (test-pipeline-modes)
+                                               (test-eddie-config)))))))))))
