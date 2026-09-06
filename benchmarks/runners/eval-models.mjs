@@ -1,4 +1,5 @@
 // Empirical Benchmark Runner: Eddie (ASL Harness) vs Claude Code (Standard CLI/JSON)
+// Generated/Transpiled runtime runner from pure AgentScript module: harness/src/eval-runner.asl & harness/src/bench-runners.asl
 // Models: Qwen 2.5 0.5B, Qwen 2.5 3B, Qwen 3 4B, Gemma 4 31B, GPT-5.6 Luna
 
 import fs from 'fs';
