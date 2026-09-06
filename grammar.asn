@@ -741,6 +741,34 @@
           :rationale "Unit test verifying fast in-memory expression evaluation")
     (:sym :name "run-sandbox-tests" :kind :fn :tokens 3
           :rationale "Runs complete test suite for in-memory script sandbox")
+    (:sym :name "ModelArm" :kind :type :tokens 1)
+    (:sym :name "M1Telemetry" :kind :type :tokens 1)
+    (:sym :name "BenchmarkArmResult" :kind :type :tokens 1)
+    (:sym :name "M1BenchmarkReport" :kind :type :tokens 1)
+    (:sym :name "create-model-arm" :kind :fn :tokens 3
+          :rationale "Initializes a ModelArm with explicit budget and WebSearch strictly disabled")
+    (:sym :name "verify-offline-isolation" :kind :fn :tokens 3
+          :rationale "Enforces offline benchmark anti-cheating invariant with WebSearch disabled")
+    (:sym :name "record-m1-telemetry" :kind :fn :tokens 3
+          :rationale "Records hardware telemetry and computes tokens per second throughput")
+    (:sym :name "evaluate-model-arm" :kind :fn :tokens 3
+          :rationale "Executes model arm inference on Apple Silicon hardware")
+    (:sym :name "generate-m1-matrix-report" :kind :fn :tokens 4
+          :rationale "Aggregates evaluation arm results into comprehensive benchmark report")
+    (:sym :name "format-m1-report" :kind :fn :tokens 3
+          :rationale "Formats the M1 benchmark report into a clean markdown table")
+    (:sym :name "test-create-model-arm-budget-label" :kind :fn :tokens 6
+          :rationale "Unit test verifying model arm initialization and explicit budget labels")
+    (:sym :name "test-strict-offline-websearch-disabled" :kind :fn :tokens 5
+          :rationale "Unit test verifying anti-cheating offline verification gate with WebSearch disabled")
+    (:sym :name "test-m1-telemetry-computation" :kind :fn :tokens 4
+          :rationale "Unit test verifying tokens per second throughput calculation")
+    (:sym :name "test-evaluate-model-arms" :kind :fn :tokens 4
+          :rationale "Unit test verifying evaluation of multiple small model arms on M1")
+    (:sym :name "test-format-m1-report" :kind :fn :tokens 4
+          :rationale "Unit test verifying markdown formatting of M1 benchmark matrix report")
+    (:sym :name "run-m1-bench-tests" :kind :fn :tokens 4
+          :rationale "Runs complete test suite for Mac M1 LLM benchmarks")
   ]
 )
 
