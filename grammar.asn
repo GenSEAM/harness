@@ -769,6 +769,44 @@
           :rationale "Unit test verifying markdown formatting of M1 benchmark matrix report")
     (:sym :name "run-m1-bench-tests" :kind :fn :tokens 4
           :rationale "Runs complete test suite for Mac M1 LLM benchmarks")
+    (:sym :name "PluginCapability" :kind :type :tokens 1)
+    (:sym :name "AgentPlugin" :kind :type :tokens 1)
+    (:sym :name "PluginRegistry" :kind :type :tokens 1)
+    (:sym :name "create-plugin" :kind :fn :tokens 2)
+    (:sym :name "registry-create" :kind :fn :tokens 2)
+    (:sym :name "registry-add" :kind :fn :tokens 2)
+    (:sym :name "registry-find" :kind :fn :tokens 2)
+    (:sym :name "registry-get-tools" :kind :fn :tokens 3
+          :rationale "Collects all tool names provided by active plugins")
+    (:sym :name "build-standard-harness-plugins" :kind :fn :tokens 4
+          :rationale "Constructs standard harness plugin registry with native built-ins")
+    (:sym :name "ToolCollision" :kind :type :tokens 1)
+    (:sym :name "PromptContradiction" :kind :type :tokens 1)
+    (:sym :name "DoctorDiagnosis" :kind :type :tokens 1)
+    (:sym :name "diagnose-agent-plugins" :kind :fn :tokens 3
+          :rationale "Performs complete static diagnostic audit on agent plugin ecosystem")
+    (:sym :name "inspect-with-llm" :kind :fn :tokens 3
+          :rationale "Adaptive inspector: skips LLM call if healthy; invokes model review when issues exist")
+    (:sym :name "format-doctor-report" :kind :fn :tokens 3
+          :rationale "Renders a comprehensive markdown diagnosis report")
+    (:sym :name "test-plugin-registry-creation" :kind :fn :tokens 4
+          :rationale "Unit test verifying assembly of standard built-in harness plugins")
+    (:sym :name "test-doctor-clean-baseline" :kind :fn :tokens 4
+          :rationale "Unit test verifying default standard plugins pass doctor inspection with 100 percent health")
+    (:sym :name "test-doctor-detect-tool-collision" :kind :fn :tokens 5
+          :rationale "Unit test verifying detection of duplicate tool names across plugins")
+    (:sym :name "test-doctor-detect-missing-dependency" :kind :fn :tokens 5
+          :rationale "Unit test verifying detection of unfulfilled plugin dependencies")
+    (:sym :name "test-doctor-detect-prompt-contradiction" :kind :fn :tokens 5
+          :rationale "Unit test verifying detection of contradictory prompt directives")
+    (:sym :name "test-doctor-llm-chain-fast-path-skip" :kind :fn :tokens 7
+          :rationale "Unit test verifying that healthy setup skips LLM inspection with zero token cost")
+    (:sym :name "test-doctor-llm-chain-activation-on-issues" :kind :fn :tokens 7
+          :rationale "Unit test verifying that LLM chain inspector is triggered when issues exist")
+    (:sym :name "test-format-doctor-report" :kind :fn :tokens 4
+          :rationale "Unit test verifying markdown formatting of doctor diagnosis report")
+    (:sym :name "run-doctor-tests" :kind :fn :tokens 3
+          :rationale "Runs complete test suite for Agent Doctor and Plugin System")
   ]
 )
 
