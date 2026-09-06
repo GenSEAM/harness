@@ -922,6 +922,27 @@
           :rationale "Verifies default Eddie configuration values")
     (:sym :name "run-steps-pipeline-tests" :kind :fn :tokens 4
           :rationale "Executes complete steps pipeline test suite")
+
+    ;; Phase 107 In-Container Autonomous Daemon Symbols
+    (:sym :name "DaemonConfig" :kind :type :tokens 2)
+    (:sym :name "DaemonCommand" :kind :type :tokens 2)
+    (:sym :name "DaemonResult" :kind :type :tokens 2)
+    (:sym :name "make-daemon-config" :kind :fn :tokens 3
+          :rationale "Constructs in-container daemon configuration")
+    (:sym :name "make-daemon-command" :kind :fn :tokens 3
+          :rationale "Constructs structured in-container daemon command")
+    (:sym :name "make-daemon-result" :kind :fn :tokens 3
+          :rationale "Constructs structured in-container daemon execution result")
+    (:sym :name "format-daemon-result" :kind :fn :tokens 3
+          :rationale "Serializes daemon result into compact ASN S-expression")
+    (:sym :name "read-bounded-lines" :kind :fn :tokens 3
+          :rationale "Extracts bounded line-ranged file slice with line numbering")
+    (:sym :name "apply-string-replacement" :kind :fn :tokens 3
+          :rationale "Applies targeted string replacement in source file")
+    (:sym :name "sanitize-error-output" :kind :fn :tokens 3
+          :rationale "Sanitizes raw error trace to root cause frame bounded to tokens")
+    (:sym :name "evaluate-daemon-command" :kind :fn :tokens 3
+          :rationale "Evaluates and dispatches structured daemon commands")
   ]
 )
 
