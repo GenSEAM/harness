@@ -70,7 +70,7 @@
     (= (.-total-symbols outline) 3)))
 
 (df test-extract-polyglot-rust-ast [] -> Bool
-  :d "Tests Rust fn, struct, and enum extraction"
+  :d "Tests Rust fn, struct, enum, and generic fn extraction"
   (let [(code (str "pub struct Config {\n"
                    "    pub port: u16,\n"
                    "}\n\n"
@@ -80,9 +80,15 @@
                    "}\n\n"
                    "pub fn initialize() -> Config {\n"
                    "    Config { port: 8080 }\n"
+                   "}\n\n"
+                   "pub fn solve<T>(input: T) -> T {\n"
+                   "    input\n"
                    "}\n"))
-        (outline (pa/extract-ast-outline code "src/lib.rs"))]
-    (= (.-total-symbols outline) 3)))
+        (outline (pa/extract-ast-outline code "src/lib.rs"))
+        (last-sym (option-or (list-get (.-symbols outline) 3)
+                             (pa/PolyglotSymbol :name "" :kind "" :line 0 :signature "" :docstring "")))]
+    (and (= (.-total-symbols outline) 4)
+         (= (.-name last-sym) "solve"))))
 
 (df test-extract-polyglot-php-ast [] -> Bool
   :d "Tests PHP function, class, and interface extraction"

@@ -59,7 +59,8 @@
              (first-paren (string-index-of trimmed "("))
              (first-colon (string-index-of trimmed ":"))
              (first-brace (string-index-of trimmed "{"))
-             (stop-idx (min-positive-index (list first-space first-paren first-colon first-brace)))]
+             (first-bracket (string-index-of trimmed "<"))
+             (stop-idx (min-positive-index (list first-space first-paren first-colon first-brace first-bracket)))]
          (if (> stop-idx 0)
              (option-or (string-slice trimmed 0 stop-idx) trimmed)
              trimmed))))))
