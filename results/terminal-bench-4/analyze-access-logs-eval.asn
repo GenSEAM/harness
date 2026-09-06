@@ -3,15 +3,15 @@
 ;; Runtime Architecture: In-Container ASL Daemon with 4-Stage State Machine
 (:terminal-bench-eval
   :task "terminal-bench/analyze-access-logs"
-  :job-id "3a79d6eb-56ae-4853-bc9c-237477472f8b"
+  :job-id "c1b06b68-0358-47c5-bd7c-1eda7b72e859"
   :model "gemma-4-31b-it"
   :environment "modal"
   :daemon "/tmp/eddie_daemon"
   :stages [:scout :plan-and-gap-audit :implement :test-and-verify]
   :reward 1.0
   :status :verified
-  :runtime-seconds 52
-  :input-tokens 13575
-  :output-tokens 2433
+  :runtime-seconds 46
+  :input-tokens 13981
+  :output-tokens 1342
   :exceptions 0
   :asl-first true)
