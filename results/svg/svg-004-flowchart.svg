@@ -1,0 +1,26 @@
+<svg width="600" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define Arrowhead -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Nodes -->
+  <rect x="20" y="70" width="140" height="60" rx="10" fill="#e1f5fe" stroke="#01579b" stroke-width="2" />
+  <text x="90" y="105" font-family="Arial" font-size="14" text-anchor="middle" fill="#01579b">ASN Parser</text>
+
+  <rect x="230" y="70" width="140" height="60" rx="10" fill="#f3e5f5" stroke="#4a148c" stroke-width="2" />
+  <text x="300" y="105" font-family="Arial" font-size="14" text-anchor="middle" fill="#4a148c">Gemma 31B</text>
+
+  <rect x="440" y="70" width="140" height="60" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2" />
+  <text x="510" y="105" font-family="Arial" font-size="14" text-anchor="middle" fill="#1b5e20">SVG Renderer</text>
+
+  <!-- Connecting Arrows -->
+  <line x1="160" y1="100" x2="220" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="370" y1="100" x2="430" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <!-- Labels -->
+  <text x="190" y="90" font-family="Arial" font-size="12" text-anchor="middle" fill="#666">Parsed Data</text>
+  <text x="400" y="90" font-family="Arial" font-size="12" text-anchor="middle" fill="#666">SVG Markup</text>
+</svg>

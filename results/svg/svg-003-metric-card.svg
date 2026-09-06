@@ -1,0 +1,22 @@
+<svg width="300" height="160" viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#9333ea" />
+    </linearGradient>
+  </defs>
+  <!-- Card Background -->
+  <rect x="10" y="10" width="280" height="140" rx="16" fill="#1e1e2e" stroke="#33334d" stroke-width="1" />
+  <!-- Gradient Accent Line -->
+  <rect x="10" y="10" width="280" height="3" rx="1.5" fill="url(#glow)" />
+  <!-- Title/Label -->
+  <text x="25" y="45" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#94a3b8" font-weight="500">Active Agents</text>
+  <!-- Metric Value -->
+  <text x="25" y="80" font-family="Inter, system-ui, sans-serif" font-size="32" fill="#ffffff" font-weight="700">42</text>
+  <!-- Sparkline -->
+  <path d="M25 120 L60 110 L90 125 L120 105 L150 115 L180 90 L210 100 L240 80 L275 95" 
+        fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Sparkline Glow -->
+  <path d="M25 120 L60 110 L90 125 L120 105 L150 115 L180 90 L210 100 L240 80 L275 95" 
+        fill="none" stroke="#818cf8" stroke-width="4" stroke-opacity="0.2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

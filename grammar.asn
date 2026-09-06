@@ -32,6 +32,7 @@
     (:sym :name "ProxyState" :kind :type :tokens 2)
     (:sym :name "ProxyDecision" :kind :type :tokens 2)
     (:sym :name "McpServerConfig" :kind :type :tokens 2)
+    (:sym :name "SvgTask" :kind :type :tokens 2)
 
     ;; Core Functions (<= 2 tokens)
     (:sym :name "find-tool" :kind :fn :tokens 2)
@@ -98,6 +99,30 @@
           :rationale "Aggregates performance telemetry across evaluation arms into ComparisonRow")
     (:sym :name "format-benchmark-matrix" :kind :fn :tokens 3
           :rationale "Renders final SWE-bench comparison markdown table from benchmark rows")
+    (:sym :name "SvgEvalResult" :kind :type :tokens 3
+          :rationale "Record type capturing results and token metrics of vector graphic generation evaluation")
+    (:sym :name "standard-svg-tasks" :kind :fn :tokens 3
+          :rationale "Returns progressive suite of vector generation benchmark tasks")
+    (:sym :name "find-svg-task" :kind :fn :tokens 3
+          :rationale "Finds SVG benchmark task by identifier in task list")
+    (:sym :name "validate-svg-syntax" :kind :fn :tokens 3
+          :rationale "Validates SVG root tags and XML well-formedness")
+    (:sym :name "evaluate-svg-task" :kind :fn :tokens 3
+          :rationale "Evaluates rendered SVG against required primitives, viewbox, and token savings")
+    (:sym :name "format-svg-report" :kind :fn :tokens 3
+          :rationale "Formats benchmark evaluation results into markdown table")
+    (:sym :name "test-svg-tasks" :kind :fn :tokens 3
+          :rationale "Verifies standard SVG benchmark task definitions")
+    (:sym :name "test-svg-syntax" :kind :fn :tokens 3
+          :rationale "Verifies SVG syntax validator correctly flags malformed XML")
+    (:sym :name "test-svg-eval" :kind :fn :tokens 3
+          :rationale "Verifies evaluation of sample vector graphic against SVG-001 task")
+    (:sym :name "test-svg-table" :kind :fn :tokens 3
+          :rationale "Verifies markdown table rendering of SVG benchmark results")
+    (:sym :name "run-baseline-benchmark" :kind :fn :tokens 3
+          :rationale "Executes automated vector generation benchmark evaluation across four task suites")
+    (:sym :name "test-baseline-run" :kind :fn :tokens 3
+          :rationale "Verifies execution of full vector benchmark suite")
     (:sym :name "standard-genseam-servers" :kind :fn :tokens 3
           :rationale "Declares standard trio of GenSEAM MCP servers for benchmark harness")
     (:sym :name "generate-claude-mcp-config" :kind :fn :tokens 4

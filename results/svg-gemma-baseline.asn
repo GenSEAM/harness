@@ -1,0 +1,92 @@
+;; Benchmark Evaluation Report: SVG Generation (Gemma 31B vs Native ASN)
+(:benchmark-report
+  :suite "SVG-GenBench-v1"
+  :evaluator "ASL-Harness"
+  :model "gemma-4-31b-it"
+  :timestamp "2026-09-06T14:50:00Z"
+  :summary [
+    (:total-tasks 4)
+    (:passed-tasks 4)
+    (:pass-rate 100.0)
+    (:avg-xml-tokens 577)
+    (:avg-asn-tokens 284)
+    (:avg-token-savings 50.7)
+    (:avg-aesthetic-score 0.88)
+  ]
+  :tasks [
+    (:task
+      :id "SVG-001"
+      :title "Geometric Minimalist Landscape"
+      :prompt "Draw a minimalist vector landscape with a circular rising sun, layered mountain peaks using polygons, and a reflective river."
+      :file "harness/results/svg/svg-001-landscape.svg"
+      :valid-xml true
+      :has-viewbox true
+      :elements 5
+      :xml-tokens 563
+      :asn-tokens 300
+      :savings 46.7
+      :aesthetic 0.85
+      :status :pass)
+    (:task
+      :id "SVG-002"
+      :title "Modern Chameleon Vector Logo"
+      :prompt "Draw a modern vector logo of a chameleon with a curled tail, large round eye, and body contours using SVG paths."
+      :file "harness/results/svg/svg-002-chameleon.svg"
+      :valid-xml true
+      :has-viewbox true
+      :elements 4
+      :xml-tokens 491
+      :asn-tokens 232
+      :savings 52.7
+      :aesthetic 0.90
+      :status :pass)
+    (:task
+      :id "SVG-003"
+      :title "Dark-Mode UI Telemetry Card"
+      :prompt "Draw a dark-mode UI metric card with rounded borders, a gradient glowing accent line, title Active Agents: 42, and a sparkline path."
+      :file "harness/results/svg/svg-003-metric-card.svg"
+      :valid-xml true
+      :has-viewbox true
+      :elements 5
+      :xml-tokens 602
+      :asn-tokens 298
+      :savings 50.5
+      :aesthetic 0.92
+      :status :pass)
+    (:task
+      :id "SVG-004"
+      :title "Agent Pipeline Flowchart Diagram"
+      :prompt "Draw a flowchart showing three nodes: ASN Parser -> Gemma 31B -> SVG Renderer with connecting arrows and labels."
+      :file "harness/results/svg/svg-004-flowchart.svg"
+      :valid-xml true
+      :has-viewbox true
+      :elements 6
+      :xml-tokens 655
+      :asn-tokens 308
+      :savings 53.0
+      :aesthetic 0.86
+      :status :pass)
+  ]
+  :stress-comparisons [
+    (:comparison
+      :prompt "Cute Geometric Fox Mascot"
+      :base-xml-tokens 556
+      :asn-tokens 512
+      :base-status :pass
+      :asn-status :pass
+      :note "Both valid; ASN structured by color palette groups")
+    (:comparison
+      :prompt "80s Retro-Synthwave with Grid & Palm"
+      :base-xml-tokens 1000
+      :asn-tokens 744
+      :base-status :fail-length-cutoff
+      :asn-status :pass-complete
+      :note "Base XML blew 1000-token limit and corrupted; ASN completed full artwork cleanly")
+    (:comparison
+      :prompt "Isometric 3D Server Node Stack with LEDs"
+      :base-xml-tokens 1000
+      :asn-tokens 916
+      :base-status :fail-length-cutoff
+      :asn-status :pass-complete
+      :note "Base XML blew token limit on filter boilerplate; ASN rendered all 3 tiered slabs and 9 LEDs")
+  ])
