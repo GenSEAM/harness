@@ -1,0 +1,17 @@
+;; Terminal-Bench: analyze-access-logs Evaluation Results
+;; Target Model: openai/gemma-4-31b-it
+;; Runtime Architecture: In-Container ASL Daemon with 4-Stage State Machine
+(:terminal-bench-eval
+  :task "terminal-bench/analyze-access-logs"
+  :job-id "3a79d6eb-56ae-4853-bc9c-237477472f8b"
+  :model "gemma-4-31b-it"
+  :environment "modal"
+  :daemon "/tmp/eddie_daemon"
+  :stages [:scout :plan-and-gap-audit :implement :test-and-verify]
+  :reward 1.0
+  :status :verified
+  :runtime-seconds 52
+  :input-tokens 13575
+  :output-tokens 2433
+  :exceptions 0
+  :asl-first true)
