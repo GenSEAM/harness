@@ -715,6 +715,32 @@
           :rationale "Unit test verifying PHP version compatibility checks")
     (:sym :name "run-polyglot-tests" :kind :fn :tokens 3
           :rationale "Runs complete unit test suite for polyglot AST and PHP engine")
+    (:sym :name "SandboxRuntime" :kind :type :tokens 1)
+    (:sym :name "SandboxConfig" :kind :type :tokens 1)
+    (:sym :name "SandboxExecutionResult" :kind :type :tokens 1)
+    (:sym :name "create-sandbox-config" :kind :fn :tokens 3
+          :rationale "Initializes SandboxConfig with standard default isolation boundaries")
+    (:sym :name "audit-sandbox-safety" :kind :fn :tokens 3
+          :rationale "Audits code for malicious filesystem traversal or dangerous subshell invocations")
+    (:sym :name "run-sandboxed-script" :kind :fn :tokens 3
+          :rationale "Executes a script within the sandboxed runtime boundaries")
+    (:sym :name "evaluate-expression" :kind :fn :tokens 2)
+    (:sym :name "format-sandbox-result" :kind :fn :tokens 3
+          :rationale "Renders markdown summary of sandbox execution result")
+    (:sym :name "test-create-sandbox-config" :kind :fn :tokens 4
+          :rationale "Unit test verifying default configuration of sandbox bounds")
+    (:sym :name "test-sandbox-safety-detection" :kind :fn :tokens 4
+          :rationale "Unit test verifying rejection of dangerous filesystem patterns")
+    (:sym :name "test-run-sandboxed-python-script" :kind :fn :tokens 5
+          :rationale "Unit test verifying execution of safe Python snippet")
+    (:sym :name "test-run-sandboxed-wasm" :kind :fn :tokens 4
+          :rationale "Unit test verifying execution of safe WASM bytecode snippet")
+    (:sym :name "test-sandbox-memory-limit" :kind :fn :tokens 4
+          :rationale "Unit test verifying enforcement of memory quota limits")
+    (:sym :name "test-evaluate-expression" :kind :fn :tokens 3
+          :rationale "Unit test verifying fast in-memory expression evaluation")
+    (:sym :name "run-sandbox-tests" :kind :fn :tokens 3
+          :rationale "Runs complete test suite for in-memory script sandbox")
   ]
 )
 
