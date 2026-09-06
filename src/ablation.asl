@@ -76,14 +76,14 @@
   (let [(hallucinated "(defun calculate [x] (let [(y (+ x 1))] (* y 2")
         (repaired (fsm/repair-syntax-fsm hallucinated))
         (valid (and (string-contains? repaired "(df calculate")
-                    (string-ends-with? repaired "))"))))]
+                    (string-ends-with? repaired "))")))]
     (AblationMetric
       :feature-name "FSM Grammar Normalizer"
       :without-value "SyntaxError: Unexpected 'defun', unclosed parens"
       :with-value "Repaired in 1 pass (<0.01ms)"
       :delta "From syntax crash to valid execution"
       :improvement-factor 12.0
-      :verified-pass valid))
+      :verified-pass valid)))
 
 ;; 5. AST Mutation Gate
 (df measure-ast-gate-ablation [] -> AblationMetric
