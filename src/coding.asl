@@ -1,7 +1,8 @@
 (module asl-harness/coding
   :d "Native Agent Coding Harness with direct built-in tool dispatch and capability execution."
   :x [ToolParam BuiltinTool ToolCall ToolResult
-      standard-coding-tools find-tool execute-builtin-tool format-tool-result]
+      standard-coding-tools find-tool execute-builtin-tool format-tool-result
+      read-bounded-lines apply-string-replacement]
   :i [])
 
 (dfs ToolParam
@@ -161,3 +162,24 @@
   (if (.-success res)
       (str "✓ [" (.-tool-name res) "] " (.-output res))
       (str "✗ [" (.-tool-name res) "] Error: " (.-error-msg res))))
+
+(df read-bounded-lines [(content Str) (start-line I64) (end-line I64)] -> Str
+  :d "Extracts a bounded range of lines with line number prefixes."
+  (let [(lines (string-split content "\n"))
+        (len (list-length lines))
+        (s (if (< start-line 1) 1 start-line))
+        (e (if (> end-line len) len end-line))]
+    (if (> s e)
+        ""
+        (foldl (fn [(acc Str) (idx I64)] -> Str
+                 (let [(line-content (option-or (list-get lines (- idx 1)) ""))]
+                   (str acc (show idx) ": " line-content "\n")))
+               ""
+               (range s (+ e 1))))))
+
+(df apply-string-replacement [(source Str) (old-sub Str) (new-sub Str)] -> (Result Str Str)
+  :d "Applies single contiguous replacement if target string is uniquely found."
+  (if (not (string-contains? source old-sub))
+      (err "Target substring not found in source")
+      (ok (string-replace source old-sub new-sub))))
+

@@ -116,11 +116,71 @@
                                                            (and (.-success res-health)
                                                                 (.-success res-deps)))))))))))))))
 
+(df test-bounded-lines [] -> Bool
+  :d "Verifies bounded line extraction with line numbers and clamping."
+  (let [(content "line 1\nline 2\nline 3\nline 4\nline 5")
+        (normal (c/read-bounded-lines content 2 4))
+        (clamped (c/read-bounded-lines content -1 100))
+        (inverted (c/read-bounded-lines content 5 2))]
+    (and (string-contains? normal "2: line 2")
+         (and (string-contains? normal "4: line 4")
+              (and (not (string-contains? normal "1: line 1"))
+                   (and (string-contains? clamped "1: line 1")
+                        (and (string-contains? clamped "5: line 5")
+                             (= inverted ""))))))))
+
+(df test-string-replacement [] -> Bool
+  :d "Verifies contiguous substring replacement."
+  (let [(source "val x = 10\nval y = 20")
+        (ok-res (c/apply-string-replacement source "10" "99"))
+        (err-res (c/apply-string-replacement source "nonexistent" "99"))]
+    (and (mt ok-res
+           ((ok updated) (= updated "val x = 99\nval y = 20"))
+           ((err _) false))
+         (mt err-res
+           ((ok _) false)
+           ((err msg) (string-contains? msg "not found"))))))
+
+(df test-format-result [] -> Bool
+  :d "Verifies format-tool-result output for both success and failure cases."
+  (let [(ok-res (c/ToolResult :call-id "c1" :tool-name "fs-read" :success true :output "content ok" :error-msg ""))
+        (err-res (c/ToolResult :call-id "c2" :tool-name "exec-cmd" :success false :output "" :error-msg "command not found"))
+        (s-ok (c/format-tool-result ok-res))
+        (s-err (c/format-tool-result err-res))]
+    (and (string-contains? s-ok "✓ [fs-read] content ok")
+         (string-contains? s-err "✗ [exec-cmd] Error: command not found"))))
+
+(df test-all-builtin-tools [] -> Bool
+  :d "Verifies all standard builtin tools execute and return appropriate results."
+  (let [(call-write (c/ToolCall :id "w1" :tool-name "fs-write" :arguments (list (pair "path" "out.txt") (pair "content" "data"))))
+        (call-list (c/ToolCall :id "l1" :tool-name "fs-list" :arguments (list (pair "path" "."))))
+        (call-cmd (c/ToolCall :id "e1" :tool-name "exec-cmd" :arguments (list (pair "command" "echo ok"))))
+        (call-git (c/ToolCall :id "g1" :tool-name "git-status" :arguments (list)))
+        (call-ast (c/ToolCall :id "a1" :tool-name "ast-search" :arguments (list (pair "query" "foo"))))
+        (call-bad (c/ToolCall :id "b1" :tool-name "unknown-tool" :arguments (list)))
+        (r-write (c/execute-builtin-tool call-write))
+        (r-list (c/execute-builtin-tool call-list))
+        (r-cmd (c/execute-builtin-tool call-cmd))
+        (r-git (c/execute-builtin-tool call-git))
+        (r-ast (c/execute-builtin-tool call-ast))
+        (r-bad (c/execute-builtin-tool call-bad))]
+    (and (.-success r-write)
+         (and (.-success r-list)
+              (and (.-success r-cmd)
+                   (and (.-success r-git)
+                        (and (.-success r-ast)
+                             (and (not (.-success r-bad))
+                                  (string-contains? (.-error-msg r-bad) "Unknown tool")))))))))
+
 (df run-tests [] -> Bool
   :d "Executes full harness test suite."
   (and (test-coding-tools)
-       (and (test-normalizer)
-            (and (test-toolcall)
-                 (and (test-provider)
-                      (and (test-local-exec)
-                           (test-intel-tools)))))))
+       (and (test-all-builtin-tools)
+            (and (test-bounded-lines)
+                 (and (test-string-replacement)
+                      (and (test-format-result)
+                           (and (test-normalizer)
+                                (and (test-toolcall)
+                                     (and (test-provider)
+                                          (and (test-local-exec)
+                                               (test-intel-tools)))))))))))
