@@ -40,8 +40,12 @@
         (clean2 (string-replace clean1 "```asl" ""))
         (clean3 (string-replace clean2 "```html" ""))
         (clean4 (string-replace clean3 "```svg" ""))
-        (clean5 (string-replace clean4 "```" ""))]
-    (string-trim clean5)))
+        (clean5 (string-replace clean4 "```javascript" ""))
+        (clean6 (string-replace clean5 "```js" ""))
+        (clean7 (string-replace clean6 "```css" ""))
+        (clean8 (string-replace clean7 "```json" ""))
+        (clean9 (string-replace clean8 "```" ""))]
+    (string-trim clean9)))
 
 (df balance-delimiters [(raw Str)] -> Str
   :d "Balances unclosed parentheses in S-expressions"
@@ -60,6 +64,7 @@
       [(string-contains? clean "<svg") (ToolCallResult :code clean :tool-kind "svg")]
       [(or (string-contains? clean "<html") (string-contains? clean "<!DOCTYPE")) (ToolCallResult :code clean :tool-kind "html")]
       [(string-contains? clean "<canvas") (ToolCallResult :code clean :tool-kind "html")]
+      [(string-contains? clean ":call") (ToolCallResult :code clean :tool-kind "html")]
       [true (ToolCallResult :code clean :tool-kind "direct")])))
 
 (df repair-and-normalize [(raw Str)] -> FsmRepairReport

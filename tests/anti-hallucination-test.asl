@@ -16,6 +16,17 @@
         (res (ah/strip-markdown-fences raw))]
     (= res "(:svg :w 320 :h 320)")))
 
+(df test-strip-js-fences [] -> Bool
+  :d "Verifies javascript markdown fences are completely removed"
+  (let [(raw "```javascript\nconst x = 1;\n```")
+        (res (ah/strip-markdown-fences raw))]
+    (= res "const x = 1;")))
+
+(df test-toolcall-kind [] -> Bool
+  :d "Verifies toolcall kind classification"
+  (let [(rep (ah/repair-and-normalize "(:call :tool \"write\" :path \"index.html\" :content \"<h1>test</h1>\")"))]
+    (= (.-tool-kind rep) "html")))
+
 (df test-balance-delimiters [] -> Bool
   :d "Verifies unclosed parentheses are appended to match open count"
   (let [(raw "(:svg :w 320 (:rc :x 0 :y 0")
@@ -34,5 +45,7 @@
   :d "Executes all test cases in suite"
   (and (test-extract-thinking)
        (and (test-strip-fences)
-            (and (test-balance-delimiters)
-                 (test-repair-and-normalize)))))
+            (and (test-strip-js-fences)
+                 (and (test-toolcall-kind)
+                      (and (test-balance-delimiters)
+                           (test-repair-and-normalize)))))))
