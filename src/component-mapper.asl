@@ -155,19 +155,48 @@
       :total-components comp-count
       :total-native nat-count)))
 
+(df count-delimited-matches [(src Str) (target Str)] -> I64
+  :d "Counts occurrences of target class bounded by quotes or whitespace."
+  (let [(c1 (- (list-length (string-split src (str "\"" target "\""))) 1))
+        (c2 (- (list-length (string-split src (str "\"" target " "))) 1))
+        (c3 (- (list-length (string-split src (str " " target "\""))) 1))
+        (c4 (- (list-length (string-split src (str " " target " "))) 1))
+        (c5 (- (list-length (string-split src (str "'" target "'"))) 1))
+        (c6 (- (list-length (string-split src (str "'" target " "))) 1))
+        (c7 (- (list-length (string-split src (str " " target "'"))) 1))]
+    (+ c1 (+ c2 (+ c3 (+ c4 (+ c5 (+ c6 c7))))))))
+
+(df replace-delimited-class [(src Str) (target Str) (replacement Str)] -> Str
+  :d "Replaces target class only when delimited by whitespace or quote boundaries."
+  (let [(s1 (string-replace src (str "\"" target "\"") (str "\"" replacement "\"")))
+        (s2 (string-replace s1 (str "\"" target " ") (str "\"" replacement " ")))
+        (s3 (string-replace s2 (str " " target "\"") (str " " replacement "\"")))
+        (s4 (string-replace s3 (str " " target " ") (str " " replacement " ")))
+        (s5 (string-replace s4 (str "'" target "'") (str "'" replacement "'")))
+        (s6 (string-replace s5 (str "'" target " ") (str "'" replacement " ")))
+        (s7 (string-replace s6 (str " " target "'") (str " " replacement "'")))]
+    s7))
+
 (df batch-transform-classes [(source-code Str) (rule BatchTransformRule)] -> BatchTransformResult
-  :d "Replaces target class names across matching file scope in a single operation."
+  :d "Replaces target class names across matching file scope with word-boundary delimiters."
   (let [(target-str (.-old-class rule))
-        (replace-str (.-new-class rule))]
-    (if (string-contains? source-code target-str)
-        (let [(occurrences (- (list-length (string-split source-code target-str)) 1))
-              (modified (string-replace source-code target-str replace-str))]
+        (replace-str (.-new-class rule))
+        (delimited-count (count-delimited-matches source-code target-str))]
+    (if (> delimited-count 0)
+        (let [(modified (replace-delimited-class source-code target-str replace-str))]
           (BatchTransformResult
-            :occurrences-replaced occurrences
+            :occurrences-replaced delimited-count
             :modified-content modified))
-        (BatchTransformResult
-          :occurrences-replaced 0
-          :modified-content source-code))))
+        (if (string-contains? source-code target-str)
+            ;; Fallback for non-standard delimiters
+            (let [(occurrences (- (list-length (string-split source-code target-str)) 1))
+                  (modified (string-replace source-code target-str replace-str))]
+              (BatchTransformResult
+                :occurrences-replaced occurrences
+                :modified-content modified))
+            (BatchTransformResult
+              :occurrences-replaced 0
+              :modified-content source-code)))))
 
 (df audit-design-policy [(map ComponentMap) (forbidden-native-tags (List Str)) (replacement-component Str)] -> PolicyAuditReport
   :d "Audits component map against forbidden native elements in design policy."

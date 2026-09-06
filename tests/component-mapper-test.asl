@@ -37,10 +37,19 @@
                 :old-class "btn-old"
                 :new-class "btn-primary"
                 :scope-pattern "/pages/"))
-        (res (cm/batch-transform-classes (sample-jsx-code) rule))]
+        (res (cm/batch-transform-classes (sample-jsx-code) rule))
+        ;; Substring collision guard test
+        (rule-collision (cm/BatchTransformRule
+                          :target-tag ""
+                          :old-class "btn"
+                          :new-class "btn-new"
+                          :scope-pattern ""))
+        (res-collision (cm/batch-transform-classes "<div className=\"btn-primary\">" rule-collision))]
     (and (= (.-occurrences-replaced res) 2)
-         (and (string-contains? (.-modified-content res) "btn-primary")
-              (not (string-contains? (.-modified-content res) "btn-old"))))))
+         (string-contains? (.-modified-content res) "btn-primary")
+         (not (string-contains? (.-modified-content res) "btn-old"))
+         (= (.-occurrences-replaced res-collision) 0)
+         (= (.-modified-content res-collision) "<div className=\"btn-primary\">"))))
 
 (df test-audit-design-policy [] -> Bool
   :d "Tests design policy check flagging raw native inputs"
