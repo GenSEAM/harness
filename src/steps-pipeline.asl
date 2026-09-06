@@ -36,7 +36,6 @@
 (dfs EddieConfig
   (:f model Str "Inference model identifier")
   (:f pipeline Str "Default pipeline: full | adaptive | standard | fast")
-  (:f anti-overthinking Bool "Enforce strict stopping on clean audit")
   (:f asl-first Bool "Use dense ASN tool calls and telemetry")
   (:f scout-polyglot Bool "Inspect polyglot runtimes in scout phase"))
 
@@ -45,7 +44,6 @@
   (EddieConfig
     :model "openai/gemma-4-31b-it"
     :pipeline "full"
-    :anti-overthinking true
     :asl-first true
     :scout-polyglot true))
 

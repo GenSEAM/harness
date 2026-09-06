@@ -93,9 +93,8 @@
   :d "Verifies default Eddie configuration"
   (let [(cfg (sp/default-eddie-config))]
     (and (= (.-pipeline cfg) "full")
-         (and (.-anti-overthinking cfg)
-              (and (.-asl-first cfg)
-                   (.-scout-polyglot cfg))))))
+         (and (.-asl-first cfg)
+              (.-scout-polyglot cfg)))))
 
 (df run-steps-pipeline-tests [] -> Bool
   :d "Runs all steps pipeline test cases"
