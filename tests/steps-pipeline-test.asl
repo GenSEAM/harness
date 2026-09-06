@@ -1,0 +1,76 @@
+(module asl-harness/steps-pipeline-test
+  :d "Unit tests for Steps & GAP Cognitive Pipeline Engine"
+  :x [test-create-pipeline
+      test-gap-audit-clean
+      test-gap-audit-omission
+      test-gap-audit-bloat
+      test-impl-audit-clean
+      test-impl-audit-failed
+      test-advance-stage
+      run-steps-pipeline-tests]
+  :i [(steps-pipeline :a sp)])
+
+(df test-create-pipeline [] -> Bool
+  :d "Verifies instantiation of steps pipeline with standard 5 phases"
+  (let [(p (sp/create-steps-pipeline "task-x" "Build an HTML sanitizer in /app/filter.py"))]
+    (and (= (.-task-id p) "task-x")
+         (and (= (.-active-stage p) "scout")
+              (and (= (len (.-phases p)) 5)
+                   (not (.-is-completed p)))))))
+
+(df test-gap-audit-clean [] -> Bool
+  :d "Verifies plan gap audit approves a complete, minimal plan"
+  (let [(inst "Write a script taking argv[1] and exit 1 on error")
+        (steps ["1. Check argv[1] input" "2. Parse payload" "3. If error exit 1" "4. Test runner"])
+        (audit (sp/audit-plan-gaps inst steps))]
+    (and (= (.-verdict audit) "approve")
+         (.-invariants-preserved audit))))
+
+(df test-gap-audit-omission [] -> Bool
+  :d "Verifies plan gap audit flags omitted CLI argument handling"
+  (let [(inst "Write a script taking argv[1] and modifying in-place")
+        (steps ["1. Just process hardcoded file" "2. Done"])
+        (audit (sp/audit-plan-gaps inst steps))]
+    (and (= (.-verdict audit) "approve-with-amendments")
+         (and (not (.-invariants-preserved audit))
+              (> (len (.-omissions audit)) 0)))))
+
+(df test-gap-audit-bloat [] -> Bool
+  :d "Verifies plan gap audit flags over-engineering and excessive phases"
+  (let [(inst "Simple string replace")
+        (steps ["1. A" "2. B" "3. C" "4. D" "5. E" "6. F" "7. G" "8. H" "9. I" "10. J"])
+        (audit (sp/audit-plan-gaps inst steps))]
+    (and (= (.-verdict audit) "approve-with-amendments")
+         (> (len (.-bloat-warnings audit)) 0))))
+
+(df test-impl-audit-clean [] -> Bool
+  :d "Verifies implementation gap audit approves verified code diff"
+  (let [(inst "Modify in-place")
+        (diff "+ with open(p, 'w') as f: f.write(res)")
+        (audit (sp/audit-impl-gaps inst diff true))]
+    (and (= (.-verdict audit) "approve")
+         (.-invariants-preserved audit))))
+
+(df test-impl-audit-failed [] -> Bool
+  :d "Verifies implementation gap audit rejects when test gate fails"
+  (let [(inst "Modify in-place")
+        (diff "+ bad code")
+        (audit (sp/audit-impl-gaps inst diff false))]
+    (= (.-verdict audit) "reject")))
+
+(df test-advance-stage [] -> Bool
+  :d "Verifies stage transitions through the pipeline"
+  (let [(p (sp/create-steps-pipeline "task-1" "Simple task"))
+        (p1 (sp/advance-pipeline-stage p true "ls ok"))]
+    (and (= (.-current-phase-idx p1) 1)
+         (= (.-active-stage p1) "plan"))))
+
+(df run-steps-pipeline-tests [] -> Bool
+  :d "Runs all steps pipeline test cases"
+  (and (test-create-pipeline)
+       (and (test-gap-audit-clean)
+            (and (test-gap-audit-omission)
+                 (and (test-gap-audit-bloat)
+                      (and (test-impl-audit-clean)
+                           (and (test-impl-audit-failed)
+                                (test-advance-stage))))))))
