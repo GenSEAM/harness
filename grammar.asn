@@ -636,6 +636,36 @@
           :rationale "Unit test asserting completion approval when all gates have executed with exit code 0")
     (:sym :name "run-in-harness-tests" :kind :fn :tokens 4
           :rationale "Executes complete in-harness verifier unit test suite")
+    (:sym :name "ElementUsage" :kind :type :tokens 1)
+    (:sym :name "ComponentMap" :kind :type :tokens 1)
+    (:sym :name "BatchTransformRule" :kind :type :tokens 1)
+    (:sym :name "BatchTransformResult" :kind :type :tokens 1)
+    (:sym :name "PolicyViolation" :kind :type :tokens 1)
+    (:sym :name "PolicyAuditReport" :kind :type :tokens 1)
+    (:sym :name "ResidueMatch" :kind :type :tokens 1)
+    (:sym :name "ResidueReport" :kind :type :tokens 1)
+    (:sym :name "scan-component-usages" :kind :fn :tokens 3
+          :rationale "Scans JSX and TSX code to extract custom components and native DOM elements")
+    (:sym :name "batch-transform-classes" :kind :fn :tokens 3
+          :rationale "Executes 1-tool atomic batch replacement of CSS classes or tags across codebase")
+    (:sym :name "audit-design-policy" :kind :fn :tokens 3
+          :rationale "Audits source code against design system policies such as disallowing raw input tags")
+    (:sym :name "hunt-library-residues" :kind :fn :tokens 3
+          :rationale "Scans codebase for lingering imports or usages of decommissioned libraries")
+    (:sym :name "format-component-map" :kind :fn :tokens 3
+          :rationale "Renders human and agent-readable summary of component usage metrics")
+    (:sym :name "test-scan-component-usages" :kind :fn :tokens 4
+          :rationale "Unit test verifying JSX component and native element scanning")
+    (:sym :name "test-batch-transform-classes" :kind :fn :tokens 4
+          :rationale "Unit test verifying batch replacement of class names")
+    (:sym :name "test-audit-design-policy" :kind :fn :tokens 4
+          :rationale "Unit test verifying design policy violation detection")
+    (:sym :name "test-hunt-library-residues" :kind :fn :tokens 4
+          :rationale "Unit test verifying detection of decommissioned library residues")
+    (:sym :name "test-format-component-map" :kind :fn :tokens 4
+          :rationale "Unit test verifying component map markdown formatting")
+    (:sym :name "run-component-tests" :kind :fn :tokens 3
+          :rationale "Runs complete unit test suite for component mapper and design guard")
   ]
 )
 
