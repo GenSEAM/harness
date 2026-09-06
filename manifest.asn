@@ -2,4 +2,5 @@
  :version "0.1.0"
  :entry "src/harness.asl"
  :description "Capability test harness and browser integration runner"
+ :asl-first true
  :dependencies [])
