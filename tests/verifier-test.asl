@@ -71,7 +71,7 @@
   :d "Verifies pre-execution structural action gate across languages."
   (let [(res-good-ts (v/verify-structural-action "str-replace" "main.ts" "const x = { a: 1 };"))
         (res-bad-tsx (v/verify-structural-action "str-replace" "App.tsx" "<div className=\"box\"><span>hi</div>"))
-        (res-bad-yaml (v/verify-structural-action "str-replace" "ci.yaml" "build:\n\tsteps:\n")))
+        (res-bad-yaml (v/verify-structural-action "str-replace" "ci.yaml" "build:\n\tsteps:\n"))]
     (and (.-allowed res-good-ts)
          (and (not (.-allowed res-bad-tsx))
               (not (.-allowed res-bad-yaml))))))
