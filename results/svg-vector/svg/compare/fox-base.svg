@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background/Canvas -->
+  <rect width="200" height="200" fill="none"/>
+  
+  <!-- Ears -->
+  <path d="M50 70 L30 20 L80 50 Z" fill="#E67E22"/>
+  <path d="M150 70 L170 20 L120 50 Z" fill="#E67E22"/>
+  <path d="M55 65 L40 30 L75 55 Z" fill="#F39C12"/>
+  <path d="M145 65 L160 30 L125 55 Z" fill="#F39C12"/>
+
+  <!-- Main Face Shape -->
+  <path d="M40 80 L100 150 L160 80 L100 60 Z" fill="#E67E22"/>
+  
+  <!-- Cream Face Cheeks/Muzzle -->
+  <path d="M100 150 L60 90 L100 110 L140 90 Z" fill="#FFF5E1"/>
+  
+  <!-- Eyes -->
+  <circle cx="75" cy="85" r="6" fill="#2C3E50"/>
+  <circle cx="125" cy="85" r="6" fill="#2C3E50"/>
+  <circle cx="77" cy="83" r="2" fill="white"/>
+  <circle cx="127" cy="83" r="2" fill="white"/>
+
+  <!-- Nose -->
+  <polygon points="95,125 105,125 100,132" fill="#34495E"/>
+  
+  <!-- Cheeks Blush -->
+  <circle cx="70" cy="105" r="4" fill="#F39C12" opacity="0.6"/>
+  <circle cx="130" cy="105" r="4" fill="#F39C12" opacity="0.6"/>
+</svg>

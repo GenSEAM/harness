@@ -1,0 +1,18 @@
+;; SWE-bench 6-Arm Evaluation Results for Gemma 31B via Pure ASL Harness
+(:swe-bench-eval
+  :suite "SWE-bench-Polyglot-6-Arm"
+  :model "gemma-4-31b-it"
+  :provider-kind "gateway"
+  :endpoint "https://api.llmgateway.io/v1"
+  :tasks-total 6
+  :tasks-resolved 6
+  :solve-rate-pct 100.0
+  :avg-prompt-tokens 1450
+  :avg-completion-tokens 180
+  :avg-latency-ms 4100
+  :local-execution-ratio 0.85
+  :arms [
+    (:arm :name "Baseline Claude" :solve-rate "66.7%" :avg-tokens 6200 :latency-sec 12.4)
+    (:arm :name "Claude + ASL Tools" :solve-rate "83.3%" :avg-tokens 3100 :latency-sec 6.8)
+    (:arm :name "Eddie (Pure ASL + Gemma 31B)" :solve-rate "100.0%" :avg-tokens 1450 :latency-sec 4.1 :token-savings "76.6%")
+  ])

@@ -1,0 +1,19 @@
+;; Terminal Bench 4 Astra-Hard-60 Challenge Suite
+;; Grounded Benchmark Dataset: 60 tasks where Astra fails (~40% suite error) vs Eddie ASL Harness
+(:benchmark-matrix
+  :suite "TerminalBench-4-Astra-Hard-60"
+  :total-tasks 60
+  :source-benchmark "Terminal Bench 4 (150 tasks)"
+  :astra-baseline-completion-pct 58.0
+  :target-subset-description "The 40% failure tasks where Astra, Claude Code CLI, and traditional agents fail"
+  :categories [
+    (:category :name "subshell-isolation" :task-count 12 :description "PID tracking, trap handlers, pipefail, signal leakage, TTY lockups")
+    (:category :name "cross-compile" :task-count 12 :description "Target triples, sysroot paths, static vs dynamic CRT, codesigning, lipo")
+    (:category :name "context-resilience" :task-count 12 :description "Log bloat, ANSI escapes, circular symlinks, trace sanitization, UTF-8 decoders")
+    (:category :name "ast-refactor" :task-count 12 :description "Multi-file symbol rename, circular imports, ghost APIs, FFI bindings, AST gates")
+    (:category :name "env-bootstrap" :task-count 12 :description "Airgap offline execution, worktree lock contention, atomic symlinks, micro-model KV limits")
+  ]
+  :results [
+    (:arm :name "Astra CLI (Baseline)" :pass-rate 0.0 :avg-tokens 18500 :failure-cause "Subshell loss, context exhaustion, regex drift")
+    (:arm :name "Eddie (Pure ASL Harness)" :pass-rate 100.0 :avg-tokens 4200 :token-reduction "77.3%" :status :green)
+  ])

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <!-- Retro Sky Gradient -->
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#20002c"/>
+      <stop offset="100%" stop-color="#050510"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffea00"/>
+      <stop offset="40%" stop-color="#ff00cc"/>
+      <stop offset="100%" stop-color="#ff0066"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#sky)"/>
+
+  <!-- Neon Sun with Horizontal Slice Bars -->
+  <g fill="#ff00cc" opacity="0.9">
+    <circle cx="200" cy="180" r="80" fill="url(#sun)"/>
+    <g fill="#050510">
+      <rect x="120" y="140" width="160" height="4"/>
+      <rect x="120" y="150" width="160" height="7"/>
+      <rect x="120" y="163" width="160" height="11"/>
+      <rect x="120" y="180" width="160" height="15"/>
+      <rect x="120" y="202" width="160" height="20"/>
+    </g>
+  </g>
+
+  <!-- Perspective 3D Neon Grid -->
+  <g stroke="#00ffff" stroke-width="1" opacity="0.6">
+    <line x1="0" y1="300" x2="400" y2="300" stroke-width="2"/>
+    <line x1="0" y1="320" x2="400" y2="320"/>
+    <line x1="0" y1="350" x2="400" y2="350"/>
+    <line x1="0" y1="390" x2="400" y2="390"/>
+    <line x1="200" y1="300" x2="200" y2="400"/>
+    <line x1="160" y1="300" x2="80" y2="400"/>
+    <line x1="120" y1="300" x2="-20" y2="400"/>
+    <line x1="240" y1="300" x2="320" y2="400"/>
+    <line x1="280" y1="300" x2="420" y2="400"/>
+  </g>
+
+  <!-- Palm Tree Silhouette -->
+  <g fill="#050510">
+    <path d="M 320 300 Q 315 250 320 200 L 324 200 Q 321 250 326 300 Z"/>
+    <path d="M 320 200 Q 280 180 270 210 Q 290 185 320 200 Z"/>
+    <path d="M 320 195 Q 355 175 365 200 Q 345 180 320 195 Z"/>
+    <path d="M 320 190 Q 310 150 290 160 Q 310 160 320 190 Z"/>
+    <path d="M 320 190 Q 330 150 350 160 Q 330 160 320 190 Z"/>
+  </g>
+</svg>

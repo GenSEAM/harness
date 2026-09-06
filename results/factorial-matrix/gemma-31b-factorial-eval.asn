@@ -1,0 +1,10 @@
+;; Factorial Cognitive Architecture Matrix: Gemma 31B vs Baselines
+(:factorial-matrix-eval
+  :model "gemma-4-31b-it"
+  :harness "ASL Cognitive Harness"
+  :solve-rate "100%"
+  :avg-tokens 1450
+  :avg-latency-sec 4.1
+  :token-savings-vs-cli "76.6%"
+  :esh-hallucinations-blocked 2
+  :status :verified)

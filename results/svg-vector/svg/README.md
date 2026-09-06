@@ -1,0 +1,1 @@
+# SVG Benchmark Results Directory

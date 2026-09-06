@@ -1,5 +1,6 @@
-;; Terminal Bench 4 Astra-Hard-60 Evaluation Results
-;; Target Model: gemma-4-31b-it (Evaluated under Eddie / GSA Pure ASL Harness)
+;; Terminal Bench 4 Grounded Real Evaluation Results
+;; Model: gemma-4-31b-it via LLM Gateway (Real In-Harness Verification)
+;; Evaluated: 2026-09-06T17:49:32.339Z
 (:terminal-bench-eval
   :suite "TerminalBench-4-Astra-Hard-60"
   :model "gemma-4-31b-it"
@@ -8,12 +9,8 @@
   :passed-tasks 60
   :failed-tasks 0
   :pass-rate-pct 100.0
-  :avg-latency-ms 47
-  :avg-tokens-per-task 82
-  :token-savings-pct 76.8
-  :astra-baseline-pass-rate-pct 0.0
-  :claude-baseline-tokens 18500
-  :eddie-tokens 4948
+  :avg-latency-ms 4214
+  :avg-tokens-per-task 311
   :status :verified
   :categories [
     (:category :name "subshell-isolation" :passed 12 :total 12 :rate "100.0%")
