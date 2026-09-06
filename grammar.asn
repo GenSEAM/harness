@@ -632,7 +632,6 @@
     ;; Phase 22 In-Harness Verifier Symbols
     (:sym :name "PlanGateItem" :kind :type :tokens 1)
     (:sym :name "HarnessTurnState" :kind :type :tokens 1)
-    (:sym :name "VerificationResult" :kind :type :tokens 1)
     (:sym :name "init-turn-state" :kind :fn :tokens 3
           :rationale "Initializes clean turn state for in-harness verification")
     (:sym :name "register-plan-item" :kind :fn :tokens 3
