@@ -33,6 +33,8 @@
     (:sym :name "ProxyDecision" :kind :type :tokens 2)
     (:sym :name "McpServerConfig" :kind :type :tokens 2)
     (:sym :name "SvgTask" :kind :type :tokens 2)
+    (:sym :name "TerminalTask" :kind :type :tokens 2)
+    (:sym :name "TerminalReport" :kind :type :tokens 2)
 
     ;; Core Functions (<= 2 tokens)
     (:sym :name "find-tool" :kind :fn :tokens 2)
@@ -855,6 +857,24 @@
           :rationale "Verifies serialization of calibration results into ASN")
     (:sym :name "run-calibration-tests" :kind :fn :tokens 3
           :rationale "Runs complete test suite for prompt calibration benchmark")
+    (:sym :name "make-terminal-task" :kind :fn :tokens 3
+          :rationale "Constructs Terminal Bench challenge task entry")
+    (:sym :name "canonical-astra-hard-tasks" :kind :fn :tokens 4
+          :rationale "Returns the 60 canonical Terminal Bench tasks where Astra fails")
+    (:sym :name "evaluate-terminal-suite" :kind :fn :tokens 3
+          :rationale "Computes resolution metrics and token savings for Terminal Bench suite")
+    (:sym :name "format-terminal-report" :kind :fn :tokens 3
+          :rationale "Serializes Terminal Bench report to canonical ASN S-expression")
+    (:sym :name "filter-terminal-category" :kind :fn :tokens 3
+          :rationale "Filters Terminal Bench tasks by failure category")
+    (:sym :name "test-terminal-task-count" :kind :fn :tokens 4
+          :rationale "Verifies challenge suite contains exactly 60 tasks")
+    (:sym :name "test-category-distribution" :kind :fn :tokens 3
+          :rationale "Verifies equal 12-task distribution across all 5 failure categories")
+    (:sym :name "test-suite-evaluation" :kind :fn :tokens 3
+          :rationale "Verifies terminal suite telemetry metrics")
+    (:sym :name "test-report-formatting" :kind :fn :tokens 3
+          :rationale "Verifies ASN report serialization formatting")
   ]
 )
 
