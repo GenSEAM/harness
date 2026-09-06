@@ -666,6 +666,55 @@
           :rationale "Unit test verifying component map markdown formatting")
     (:sym :name "run-component-tests" :kind :fn :tokens 3
           :rationale "Runs complete unit test suite for component mapper and design guard")
+    (:sym :name "SourceLanguage" :kind :type :tokens 1)
+    (:sym :name "PolyglotSymbol" :kind :type :tokens 1)
+    (:sym :name "PolyglotOutline" :kind :type :tokens 1)
+    (:sym :name "PhpAttribute" :kind :type :tokens 1)
+    (:sym :name "PhpCompatibilityReport" :kind :type :tokens 1)
+    (:sym :name "detect-source-language" :kind :fn :tokens 3
+          :rationale "Determines source code language classification from file path extension")
+    (:sym :name "extract-python-symbols" :kind :fn :tokens 3
+          :rationale "Extracts top-level functions and class definitions from Python code")
+    (:sym :name "extract-typescript-symbols" :kind :fn :tokens 3
+          :rationale "Extracts functions, interfaces, classes, and types from TypeScript code")
+    (:sym :name "extract-go-symbols" :kind :fn :tokens 3
+          :rationale "Extracts functions, structs, and interface types from Go code")
+    (:sym :name "extract-rust-symbols" :kind :fn :tokens 3
+          :rationale "Extracts functions, structs, enums, and trait impls from Rust code")
+    (:sym :name "extract-php-symbols" :kind :fn :tokens 3
+          :rationale "Extracts functions, classes, interfaces, and enums from PHP code")
+    (:sym :name "extract-ast-outline" :kind :fn :tokens 3
+          :rationale "Detects language and extracts structural symbol outline into PolyglotOutline")
+    (:sym :name "format-ast-outline" :kind :fn :tokens 3
+          :rationale "Renders compact markdown representation of polyglot AST outline")
+    (:sym :name "extract-composer-version" :kind :fn :tokens 3
+          :rationale "Extracts pinned package version from composer.lock JSON file content")
+    (:sym :name "extract-php-attributes" :kind :fn :tokens 3
+          :rationale "Extracts PHP 8.x modern attributes and binds them to target declarations")
+    (:sym :name "audit-php-compatibility" :kind :fn :tokens 3
+          :rationale "Audits PHP source code for backward compatibility issues across major versions")
+    (:sym :name "format-php-compatibility" :kind :fn :tokens 3
+          :rationale "Renders human-readable summary of PHP compatibility audit results")
+    (:sym :name "test-detect-source-language" :kind :fn :tokens 4
+          :rationale "Unit test verifying file extension based source language detection")
+    (:sym :name "test-extract-polyglot-python-ast" :kind :fn :tokens 5
+          :rationale "Unit test verifying Python AST outline extraction")
+    (:sym :name "test-extract-polyglot-typescript-ast" :kind :fn :tokens 5
+          :rationale "Unit test verifying TypeScript AST outline extraction")
+    (:sym :name "test-extract-polyglot-go-ast" :kind :fn :tokens 5
+          :rationale "Unit test verifying Go AST outline extraction")
+    (:sym :name "test-extract-polyglot-rust-ast" :kind :fn :tokens 5
+          :rationale "Unit test verifying Rust AST outline extraction")
+    (:sym :name "test-extract-polyglot-php-ast" :kind :fn :tokens 5
+          :rationale "Unit test verifying PHP AST outline extraction")
+    (:sym :name "test-extract-composer-version" :kind :fn :tokens 4
+          :rationale "Unit test verifying composer.lock version extraction")
+    (:sym :name "test-extract-php-attributes" :kind :fn :tokens 4
+          :rationale "Unit test verifying PHP 8.x modern attribute extraction")
+    (:sym :name "test-audit-php-compatibility" :kind :fn :tokens 4
+          :rationale "Unit test verifying PHP version compatibility checks")
+    (:sym :name "run-polyglot-tests" :kind :fn :tokens 3
+          :rationale "Runs complete unit test suite for polyglot AST and PHP engine")
   ]
 )
 
