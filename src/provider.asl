@@ -24,7 +24,7 @@
 (df default-gateway-config [] -> OpenAiConfig
   :d "Constructs default LLM Gateway configuration pointed at https://api.llmgateway.io/v1 for Gemma 31B."
   (OpenAiConfig
-    :api-key "llmgtwy_vLHJNl0D6XpsifrNXg2zKVtXDEX26m93H5E4g8RX"
+    :api-key ""
     :base-url "https://api.llmgateway.io/v1"
     :model "gemma-4-31b-it"
     :temperature 0.2

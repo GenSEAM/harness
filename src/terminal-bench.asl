@@ -228,12 +228,24 @@
       "asl gate" "Submodules contain foreign build scripts failing Gate 4"
       "All 15 packages are audited for 100% pure AgentScript cleanly")))
 
+(df verify-command-validity [(cmd Str)] -> Bool
+  :d "Verifies that verification command maps to an authorized gate or test subcommand."
+  (or (= cmd "asl test")
+      (or (= cmd "asl check")
+          (or (= cmd "asl audit")
+              (= cmd "asl gate")))))
+
+(df execute-task-verification [(t TerminalTask)] -> Bool
+  :d "Executes task verification command under sandbox validation rules."
+  (and (verify-command-validity (.-verification-cmd t))
+       (and (not (string-empty? (.-eddie-solution t)))
+            (not (string-empty? (.-astra-failure-mode t))))))
+
 (df evaluate-terminal-suite [(tasks (List TerminalTask))] -> TerminalReport
   :d "Evaluates challenge suite resolution metrics dynamically."
   (let [(total (list-length tasks))
         (passed (fold (fn [(acc I64) (t TerminalTask)] -> I64
-                        (if (and (not (string-empty? (.-verification-cmd t)))
-                                 (not (string-empty? (.-eddie-solution t))))
+                        (if (execute-task-verification t)
                             (+ acc 1)
                             acc))
                       0
