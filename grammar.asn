@@ -875,6 +875,40 @@
           :rationale "Verifies terminal suite telemetry metrics")
     (:sym :name "test-report-formatting" :kind :fn :tokens 3
           :rationale "Verifies ASN report serialization formatting")
+    ;; Steps & GAP Cognitive Pipeline Symbols
+    (:sym :name "StepPhase" :kind :type :tokens 2)
+    (:sym :name "GapAuditResult" :kind :type :tokens 2)
+    (:sym :name "StepsPipeline" :kind :type :tokens 2)
+    (:sym :name "create-steps-pipeline" :kind :fn :tokens 3
+          :rationale "Instantiates autonomous Steps & GAP cognitive pipeline")
+    (:sym :name "add-pipeline-phase" :kind :fn :tokens 3
+          :rationale "Appends a phase to the cognitive pipeline")
+    (:sym :name "audit-plan-gaps" :kind :fn :tokens 3
+          :rationale "Audits proposed plan against user instruction for omissions and bloat")
+    (:sym :name "audit-impl-gaps" :kind :fn :tokens 3
+          :rationale "Audits completed implementation against spec and test results")
+    (:sym :name "advance-pipeline-stage" :kind :fn :tokens 3
+          :rationale "Transitions cognitive pipeline to next execution stage upon gate pass")
+    (:sym :name "pipeline-status-summary" :kind :fn :tokens 3
+          :rationale "Generates concise human-readable pipeline status summary")
+    (:sym :name "make-standard-phases" :kind :fn :tokens 3
+          :rationale "Constructs standard 5-stage Steps & GAP phases")
+    (:sym :name "test-create-pipeline" :kind :fn :tokens 3
+          :rationale "Verifies creation of steps pipeline")
+    (:sym :name "test-gap-audit-clean" :kind :fn :tokens 4
+          :rationale "Verifies gap audit on clean plan")
+    (:sym :name "test-gap-audit-omission" :kind :fn :tokens 4
+          :rationale "Verifies gap audit on omitted requirements")
+    (:sym :name "test-gap-audit-bloat" :kind :fn :tokens 4
+          :rationale "Verifies gap audit on over-engineered plan")
+    (:sym :name "test-impl-audit-clean" :kind :fn :tokens 4
+          :rationale "Verifies implementation gap audit on passing test")
+    (:sym :name "test-impl-audit-failed" :kind :fn :tokens 4
+          :rationale "Verifies implementation gap audit on failing test")
+    (:sym :name "test-advance-stage" :kind :fn :tokens 3
+          :rationale "Verifies pipeline stage transitions")
+    (:sym :name "run-steps-pipeline-tests" :kind :fn :tokens 4
+          :rationale "Executes complete steps pipeline test suite")
   ]
 )
 
