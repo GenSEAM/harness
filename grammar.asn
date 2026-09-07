@@ -985,6 +985,45 @@
           :rationale "Verifies factual environment contract generation")
     (:sym :name "test-compute-bench-metrics" :kind :fn :tokens 4
           :rationale "Verifies computation of benchmark metrics and honest zero padding")
+
+    ;; Circuit Breaker & Two-Tier Escalation Symbols
+    (:sym :name "CircuitState" :kind :type :tokens 2)
+    (:sym :name "CircuitBreaker" :kind :type :tokens 2)
+    (:sym :name "make-circuit-breaker" :kind :fn :tokens 3
+          :rationale "Constructs initialized circuit breaker with threshold and state tracking")
+    (:sym :name "record-success" :kind :fn :tokens 2)
+    (:sym :name "record-failure" :kind :fn :tokens 2)
+    (:sym :name "is-tripped?" :kind :fn :tokens 2)
+    (:sym :name "resolve-escalation" :kind :fn :tokens 2)
+    (:sym :name "reset-circuit" :kind :fn :tokens 2)
+    (:sym :name "test-circuit-breaker-lifecycle" :kind :fn :tokens 4
+          :rationale "Verifies lifecycle transitions and trip condition of circuit breaker")
+    (:sym :name "test-escalation-tiers" :kind :fn :tokens 3
+          :rationale "Verifies tier 1 approver and tier 2 operator escalation thresholds")
+
+    ;; Sufficiency, Budget & Checkpoint Symbols
+    (:sym :name "SufficiencyState" :kind :type :tokens 2)
+    (:sym :name "SufficiencyReport" :kind :type :tokens 2)
+    (:sym :name "evaluate-sufficiency" :kind :fn :tokens 2)
+    (:sym :name "is-sufficient?" :kind :fn :tokens 2)
+    (:sym :name "test-sufficiency-complete" :kind :fn :tokens 3
+          :rationale "Verifies complete sufficiency evaluation")
+    (:sym :name "test-sufficiency-partial" :kind :fn :tokens 3
+          :rationale "Verifies partial sufficiency evaluation")
+    (:sym :name "BudgetLimits" :kind :type :tokens 2)
+    (:sym :name "BudgetTracker" :kind :type :tokens 2)
+    (:sym :name "make-budget" :kind :fn :tokens 2)
+    (:sym :name "record-turn" :kind :fn :tokens 2)
+    (:sym :name "is-budget-exceeded?" :kind :fn :tokens 3
+          :rationale "Checks whether token turn or duration budget ceiling is exceeded")
+    (:sym :name "test-budget-tracking" :kind :fn :tokens 3
+          :rationale "Verifies token and turn tracking in budget tracker")
+    (:sym :name "test-budget-limits" :kind :fn :tokens 3
+          :rationale "Verifies budget ceiling violation check")
+    (:sym :name "CheckpointRecord" :kind :type :tokens 2)
+    (:sym :name "create-checkpoint" :kind :fn :tokens 2)
+    (:sym :name "is-checkpoint-valid?" :kind :fn :tokens 3
+          :rationale "Validates checkpoint record state integrity")
   ]
 )
 
