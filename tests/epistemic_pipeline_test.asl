@@ -7,8 +7,10 @@
       test-task-entropy-formula
       test-adaptive-entropy-thresholds
       test-7-stage-pipeline-construction
+      test-operational-model-construction-and-formatting
+      test-epistemic-pipeline-execution
       run-tests]
-  :i [(steps-pipeline :a sp)])
+  :i [(steps-pipeline :a sp) (operational-model :a op)])
 
 (df test-pipeline-stage-enumeration [] -> Bool
   :d "Verifies PipelineStage enum variants."
@@ -26,32 +28,32 @@
 (df test-reflection-config-defaults [] -> Bool
   :d "Verifies default reflection configuration invariants."
   (let [(cfg (sp/default-reflection-config))]
-    (and (= (.-max-hops cfg) 2)
-         (and (.-quarantined-channel cfg)
-              (and (>= (.-fidelity-threshold cfg) 0.90)
-                   (.-echo-suppression cfg))))))
+    (and (= (list-length (.-enabled-stages cfg)) 7)
+         (and (not (.-allow-fast-path cfg))
+              (and (>= (.-min-fidelity-score cfg) 0.95)
+                   (.-strict-falsify cfg))))))
 
 (df test-fidelity-gate-evaluation [] -> Bool
   :d "Verifies fidelity gate accepts high confidence and rejects low or failed verdicts."
   (let [(cfg (sp/default-reflection-config))
         (v-pass (sp/ReflectionVerdict
                   :stage (sp/s7-verify)
-                  :fidelity-score 0.98
-                  :omissions (list)
-                  :unsupported-claims (list)
-                  :passed true))
+                  :passed true
+                  :hallucinations (list)
+                  :omitted-constraints (list)
+                  :confidence-score 0.98))
         (v-low (sp/ReflectionVerdict
                  :stage (sp/s7-verify)
-                 :fidelity-score 0.82
-                 :omissions (list "missing corner case")
-                 :unsupported-claims (list)
-                 :passed true))
+                 :passed true
+                 :hallucinations (list)
+                 :omitted-constraints (list "missing corner case")
+                 :confidence-score 0.82))
         (v-fail (sp/ReflectionVerdict
                   :stage (sp/s7-verify)
-                  :fidelity-score 0.99
-                  :omissions (list)
-                  :unsupported-claims (list "unsupported claim")
-                  :passed false))]
+                  :passed false
+                  :hallucinations (list "unsupported claim")
+                  :omitted-constraints (list)
+                  :confidence-score 0.99))]
     (and (sp/evaluate-fidelity-gate v-pass cfg)
          (and (not (sp/evaluate-fidelity-gate v-low cfg))
               (not (sp/evaluate-fidelity-gate v-fail cfg))))))
@@ -64,10 +66,10 @@
         (v-good (sp/evaluate-prompt-fidelity prompt good-ref 0.8))
         (v-bad (sp/evaluate-prompt-fidelity prompt bad-ref 0.8))]
     (and (.-passed v-good)
-         (and (>= (.-fidelity-score v-good) 0.8)
+         (and (>= (.-confidence-score v-good) 0.8)
               (and (not (.-passed v-bad))
-                   (and (< (.-fidelity-score v-bad) 0.8)
-                        (> (list-length (.-omissions v-bad)) 0)))))))
+                   (and (< (.-confidence-score v-bad) 0.8)
+                        (> (list-length (.-omitted-constraints v-bad)) 0)))))))
 
 (df test-task-entropy-formula [] -> Bool
   :d "Verifies task entropy meta-controller computation."
@@ -97,6 +99,57 @@
               (and (= (list-length phases) 7)
                    (= (.-stage (option-or (list-head phases) (sp/StepPhase :id "" :name "" :stage "" :gate-command "" :status "" :findings (list)))) "s1-ingest"))))))
 
+(df test-operational-model-construction-and-formatting [] -> Bool
+  :d "Verifies operational model constructor and ASN serializer."
+  (let [(model (op/make-operational-model
+                 (list "harness/src/steps-pipeline.asl" "harness/src/operational-model.asl")
+                 (list "execute-epistemic-pipeline" "OperationalModel")
+                 "asl test --strict-falsify"
+                 (list "no foreign deps" "zero comments")))
+        (formatted (op/format-operational-model model))]
+    (and (= (list-length (.-target-files model)) 2)
+         (and (= (list-length (.-required-symbols model)) 2)
+              (and (= (.-expected-exit-behavior model) "asl test --strict-falsify")
+                   (and (= (list-length (.-forbidden-side-effects model)) 2)
+                        (and (string-contains? formatted ":operational-model")
+                             (and (string-contains? formatted ":target-files")
+                                  (and (string-contains? formatted "harness/src/steps-pipeline.asl")
+                                       (and (string-contains? formatted ":required-symbols")
+                                            (string-contains? formatted ":forbidden-side-effects")))))))))))
+
+(df test-epistemic-pipeline-execution [] -> Bool
+  :d "Verifies Stage 3 Intent-Fidelity Gate and multi-stage verification engine."
+  (let [(cfg (sp/default-reflection-config))
+        (inst-clean "Refactor harness/src/steps-pipeline.asl to implement execute-epistemic-pipeline with zero foreign files and verify via asl test --strict-falsify")
+        (model-clean (op/make-operational-model
+                       (list "harness/src/steps-pipeline.asl")
+                       (list "execute-epistemic-pipeline")
+                       "asl test --strict-falsify harness/tests/epistemic_pipeline_test.asl"
+                       (list "zero foreign files" "never use foreign packages")))
+        (v-clean (sp/execute-epistemic-pipeline inst-clean model-clean cfg))
+        (inst-omitted "Refactor harness/src/steps-pipeline.asl and harness/src/operational-model.asl to implement execute-epistemic-pipeline with zero foreign files and verify via asl test --strict-falsify")
+        (model-omitted (op/make-operational-model
+                         (list "harness/src/steps-pipeline.asl")
+                         (list "execute-epistemic-pipeline")
+                         "asl test --strict-falsify"
+                         (list "zero foreign files")))
+        (v-omitted (sp/execute-epistemic-pipeline inst-omitted model-omitted cfg))
+        (inst-hallucinated "Refactor harness/src/steps-pipeline.asl to implement execute-epistemic-pipeline with zero foreign files and verify via asl test --strict-falsify")
+        (model-hallucinated (op/make-operational-model
+                              (list "harness/src/steps-pipeline.asl")
+                              (list "execute-epistemic-pipeline" "axios-http-client")
+                              "asl test --strict-falsify"
+                              (list "zero foreign files")))
+        (v-hallucinated (sp/execute-epistemic-pipeline inst-hallucinated model-hallucinated cfg))]
+    (and (.-passed v-clean)
+         (and (>= (.-confidence-score v-clean) 0.95)
+              (and (= (list-length (.-omitted-constraints v-clean)) 0)
+                   (and (= (list-length (.-hallucinations v-clean)) 0)
+                        (and (not (.-passed v-omitted))
+                             (and (> (list-length (.-omitted-constraints v-omitted)) 0)
+                                  (and (not (.-passed v-hallucinated))
+                                       (> (list-length (.-hallucinations v-hallucinated)) 0))))))))))
+
 (df run-tests [] -> Bool
   :d "Executes all epistemic pipeline assertions."
   (do
@@ -106,4 +159,6 @@
     (assert (test-fidelity-gate-prompt-overlap))
     (assert (test-task-entropy-formula))
     (assert (test-adaptive-entropy-thresholds))
-    (assert (test-7-stage-pipeline-construction))))
+    (assert (test-7-stage-pipeline-construction))
+    (assert (test-operational-model-construction-and-formatting))
+    (assert (test-epistemic-pipeline-execution))))

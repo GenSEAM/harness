@@ -9,8 +9,9 @@
       audit-plan-gaps audit-impl-gaps
       advance-pipeline-stage pipeline-status-summary
       make-standard-phases classify-task-entropy
-      make-pipeline-by-mode default-eddie-config]
-  :i [])
+      make-pipeline-by-mode default-eddie-config
+      make-reflection-config execute-epistemic-pipeline]
+  :i [(operational-model :a op)])
 
 (dfs StepPhase
   (:f id Str "Unique phase identifier")
@@ -47,30 +48,38 @@
   (:c s7-verify      [] "Post-execution verification against genuine execution receipts"))
 
 (dfs ReflectionConfig
-  (:f max-hops I64 "Speculative reasoning hop ceiling (max 2)")
-  (:f quarantined-channel Bool "Whether thinking tokens are quarantined from context")
-  (:f fidelity-threshold F64 "Minimum confidence threshold for stage gate passage (e.g. 0.95)")
-  (:f echo-suppression Bool "True if duplicate / echo reasoning loops are suppressed"))
+  (:f enabled-stages (List PipelineStage) "Active pipeline stages enabled for epistemic verification")
+  (:f min-fidelity-score F64 "Minimum confidence threshold for stage gate passage")
+  (:f allow-fast-path Bool "Whether fast-path stage skipping is permitted")
+  (:f strict-falsify Bool "Enforce strict falsifiability assertions on gate commands"))
 
 (dfs ReflectionVerdict
   (:f stage PipelineStage "Epistemic pipeline stage under evaluation")
-  (:f fidelity-score F64 "Measured fidelity score in range [0.0, 1.0]")
-  (:f omissions (List Str) "Identified domain invariant omissions")
-  (:f unsupported-claims (List Str) "Unanchored or hallucinated claims")
-  (:f passed Bool "True if stage fidelity gate satisfied"))
+  (:f passed Bool "True if stage fidelity gate satisfied")
+  (:f hallucinations (List Str) "Unanchored or hallucinated claims")
+  (:f omitted-constraints (List Str) "Identified domain invariant omissions")
+  (:f confidence-score F64 "Measured fidelity score in range 0.0 to 1.0"))
+
+(df make-reflection-config [(stages (List PipelineStage)) (min-score F64) (fast-path Bool) (strict Bool)] -> ReflectionConfig
+  :d "Constructs a ReflectionConfig with specified stages and fidelity threshold."
+  (ReflectionConfig
+    :enabled-stages stages
+    :min-fidelity-score min-score
+    :allow-fast-path fast-path
+    :strict-falsify strict))
 
 (df default-reflection-config [] -> ReflectionConfig
-  :d "Constructs standard canonical ReflectionConfig."
+  :d "Constructs standard canonical ReflectionConfig enabling all 7 stages."
   (ReflectionConfig
-    :max-hops 2
-    :quarantined-channel true
-    :fidelity-threshold 0.95
-    :echo-suppression true))
+    :enabled-stages [(s1-ingest) (s2-reformulate) (s3-intent-gate) (s4-plan) (s5-plan-gate) (s6-implement) (s7-verify)]
+    :min-fidelity-score 0.95
+    :allow-fast-path false
+    :strict-falsify true))
 
 (df evaluate-fidelity-gate [(verdict ReflectionVerdict) (cfg ReflectionConfig)] -> Bool
   :d "Evaluates whether reflection verdict passes the configured fidelity threshold."
   (and (.-passed verdict)
-       (>= (.-fidelity-score verdict) (.-fidelity-threshold cfg))))
+       (>= (.-confidence-score verdict) (.-min-fidelity-score cfg))))
 
 (df evaluate-prompt-fidelity [(original-prompt Str) (agent-reformulation Str) (threshold F64)] -> ReflectionVerdict
   :d "Audits agent reformulation against original prompt to prevent scope hallucination and omitted constraints."
@@ -80,10 +89,10 @@
     (if (not has-content)
       (ReflectionVerdict
         :stage (s3-intent-gate)
-        :fidelity-score 0.0
-        :omissions (list "Empty prompt or reformulation provided")
-        :unsupported-claims (list)
-        :passed false)
+        :passed false
+        :hallucinations (list)
+        :omitted-constraints (list "Empty prompt or reformulation provided")
+        :confidence-score 0.0)
       (let [(words (string-split norm-prompt " "))
             (matched-count (list-length (filter (fn [(w Str)] -> Bool (and (> (string-length w) 3) (string-contains? norm-ref w))) words)))
             (candidate-count (list-length (filter (fn [(w Str)] -> Bool (> (string-length w) 3)) words)))
@@ -94,10 +103,90 @@
             (omissions (if is-passed (list) (list "Reformulation omitted critical constraint terms from original prompt")))]
         (ReflectionVerdict
           :stage (s3-intent-gate)
-          :fidelity-score score
-          :omissions omissions
-          :unsupported-claims (list)
-          :passed is-passed)))))
+          :passed is-passed
+          :hallucinations (list)
+          :omitted-constraints omissions
+          :confidence-score score)))))
+
+(df clean-path-token [(tok Str)] -> Str
+  :d "Strips common syntax delimiters from path or identifier tokens."
+  (let [(t1 (string-replace tok "," ""))
+        (t2 (string-replace t1 ";" ""))
+        (t3 (string-replace t2 "\"" ""))
+        (t4 (string-replace t3 "'" ""))
+        (t5 (string-replace t4 "`" ""))
+        (t6 (string-replace t5 "(" ""))
+        (t7 (string-replace t6 ")" ""))]
+    t7))
+
+(df execute-epistemic-pipeline [(instruction Str) (model op/OperationalModel) (cfg ReflectionConfig)] -> ReflectionVerdict
+  :d "Executes epistemic reflection verification against the operational model, detecting invariant omissions and hallucinations."
+  (let [(norm-inst (string-lower instruction))
+        (norm-exit (string-lower (.-expected-exit-behavior model)))
+        (words (string-split instruction " "))
+        (cleaned-words (map (fn [(w Str)] -> Str (clean-path-token w)) words))
+        (candidate-paths (filter (fn [(w Str)] -> Bool
+                                   (and (> (string-length w) 3)
+                                        (or (string-contains? w "/")
+                                            (or (string-ends-with? w ".asl")
+                                                (or (string-ends-with? w ".asn")
+                                                    (string-ends-with? w ".ts"))))))
+                                 cleaned-words))
+        (omitted-files (filter (fn [(cp Str)] -> Bool
+                                 (= (list-length (filter (fn [(tf Str)] -> Bool
+                                                           (or (= tf cp)
+                                                               (string-contains? tf cp)))
+                                                         (.-target-files model))) 0))
+                               candidate-paths))
+        (omitted-file-msgs (map (fn [(f Str)] -> Str (str "Missing target file in operational model: " f)) omitted-files))
+        (flags-1 (if (and (string-contains? norm-inst "argv")
+                          (not (string-contains? norm-exit "argv")))
+                     (list "Missing command-line argument handling requirement (argv)")
+                     (list)))
+        (flags-2 (if (and (string-contains? norm-inst "exit")
+                          (not (string-contains? norm-exit "exit")))
+                     (list-concat flags-1 (list "Missing verification exit behavior expectation"))
+                     flags-1))
+        (flags-3 (if (and (string-contains? norm-inst "strict-falsify")
+                          (not (string-contains? norm-exit "strict-falsify")))
+                     (list-concat flags-2 (list "Missing strict-falsify verification expectation"))
+                     flags-2))
+        (has-neg (or (string-contains? norm-inst "forbidden")
+                     (or (string-contains? norm-inst "do not")
+                         (or (string-contains? norm-inst "never")
+                             (or (string-contains? norm-inst "without")
+                                 (or (string-contains? norm-inst "no foreign")
+                                     (string-contains? norm-inst "zero foreign")))))))
+        (omitted-flags (if (and has-neg (list-empty? (.-forbidden-side-effects model)))
+                           (list-concat flags-3 (list "Omitted negative constraint preservation from instruction into forbidden side-effects"))
+                           flags-3))
+        (all-omissions (list-concat omitted-file-msgs omitted-flags))
+        (hallucinated-files (filter (fn [(tf Str)] -> Bool
+                                      (not (or (string-contains? instruction tf)
+                                               (> (list-length (filter (fn [(cp Str)] -> Bool
+                                                                         (or (string-contains? tf cp)
+                                                                             (string-contains? cp tf)))
+                                                                       candidate-paths))
+                                                  0))))
+                                    (.-target-files model)))
+        (hallucinated-file-msgs (map (fn [(f Str)] -> Str (str "Hallucinated unanchored target file: " f)) hallucinated-files))
+        (hallucinated-symbols (filter (fn [(sym Str)] -> Bool
+                                        (not (string-contains? norm-inst (string-lower sym))))
+                                      (.-required-symbols model)))
+        (hallucinated-symbol-msgs (map (fn [(s Str)] -> Str (str "Hallucinated ungrounded required symbol or external dependency: " s)) hallucinated-symbols))
+        (all-hallucinations (list-concat hallucinated-file-msgs hallucinated-symbol-msgs))
+        (o-count (list-length all-omissions))
+        (h-count (list-length all-hallucinations))
+        (penalty (+ (* (float-from-int64 o-count) 0.3) (* (float-from-int64 h-count) 0.4)))
+        (raw-score (- 1.0 penalty))
+        (confidence-score (if (< raw-score 0.0) 0.0 raw-score))
+        (is-passed (and (= o-count 0) (and (= h-count 0) (>= confidence-score (.-min-fidelity-score cfg)))))]
+    (ReflectionVerdict
+      :stage (s3-intent-gate)
+      :passed is-passed
+      :hallucinations all-hallucinations
+      :omitted-constraints all-omissions
+      :confidence-score confidence-score)))
 
 (dfs EddieConfig
   (:f model Str "Inference model identifier")
@@ -353,7 +442,6 @@
   :d "Audits a proposed plan against the original instruction to detect omissions and bloat."
   (let ((omissions [])
         (bloat []))
-    ;; Check edge-case omission heuristics
     (when (and (string-contains? instruction "argv")
                (not (string-contains? (join " " planned-steps) "arg")))
       (set! omissions (concat omissions ["Missing command-line argument handling (argv)"])))
@@ -363,7 +451,6 @@
     (when (and (string-contains? instruction "in-place")
                (not (string-contains? (join " " planned-steps) "in-place")))
       (set! omissions (concat omissions ["Missing in-place file modification check"])))
-    ;; Check anti-overengineering bloat heuristics
     (when (> (len planned-steps) 8)
       (set! bloat (concat bloat ["Excessive phase count: plan exceeds 8 steps, risk of over-engineering"])))
     

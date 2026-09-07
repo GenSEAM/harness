@@ -1084,6 +1084,23 @@
           :rationale "Evaluates whether hook predicate matches target tool name and context tag")
     (:sym :name "evaluate-plugin-guards" :kind :fn :tokens 3
           :rationale "Evaluates plugin lifecycle hooks and hook predicates against tool invocation")
+
+    ;; Phase 271 Epistemic Reflection Pipeline & Operational Model Symbols
+    (:sym :name "PipelineStage" :kind :type :tokens 2)
+    (:sym :name "ReflectionConfig" :kind :type :tokens 2)
+    (:sym :name "OperationalModel" :kind :type :tokens 2)
+    (:sym :name "default-reflection-config" :kind :fn :tokens 3
+          :rationale "Returns canonical default reflection configuration enabling all 7 stages")
+    (:sym :name "evaluate-fidelity-gate" :kind :fn :tokens 3
+          :rationale "Evaluates whether reflection verdict meets minimum fidelity score threshold")
+    (:sym :name "make-reflection-config" :kind :fn :tokens 3
+          :rationale "Constructs reflection configuration with custom stages and fidelity threshold")
+    (:sym :name "make-operational-model" :kind :fn :tokens 3
+          :rationale "Constructs Stage 2 operational mental model of task goal and constraints")
+    (:sym :name "format-operational-model" :kind :fn :tokens 3
+          :rationale "Serializes Stage 2 operational model into formatted S-expression string")
+    (:sym :name "execute-epistemic-pipeline" :kind :fn :tokens 3
+          :rationale "Executes 7-stage epistemic reflection pipeline across cognitive stages")
   ]
 )
 
