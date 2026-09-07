@@ -1,0 +1,120 @@
+(:benchmark_results
+ :metadata (:metadata
+ :benchmark "terminal-bench-4.0"
+ :benchmark_url "https://tbench.ai"
+ :evaluation_protocol "full-in-container-state-machine"
+ :submission_date "2026-09-07T07:24:04.615484+00:00"
+ :git_commit "7e829a4663d1dec023617d2840644259329aa28f"
+ :agent (:agent
+         :name "eddie"
+         :version "0.1.0"
+         :architecture "Eddie Autonomous Agent (Continuous Action-Observation Loop)"
+         :asl_pure true
+         :stages ["action-observation-loop"])
+ :model (:model
+         :name "gemma-4-31b-it"
+         :canonical_id "gemma-4-31b-it"
+         :provider "llm-gateway")
+ :environment (:environment
+               :platform "modal"
+               :container_os "Linux x86_64"
+               :isolation "hermetic-microvm")
+ :results_summary (:results_summary
+                   :total_tasks 89
+                   :evaluated_tasks 89
+                   :passed_tasks 12
+                   :failed_tasks 77
+                   :pass_rate_pct 13.48314606741573
+                   :astra_baseline_pass_rate_pct 0
+                   :status "verified"))
+ :tasks [
+  (:task :task_id "llm-inference-batching-scheduler" :trial_id "llm-inference-batching-scheduler__DwSki9D" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "break-filter-js-from-html" :trial_id "break-filter-js-from-html__4VLsVnY" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "reshard-c4-data" :trial_id "reshard-c4-data__2CiPD4L" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "write-compressor" :trial_id "write-compressor__s4j2tkf" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "merge-diff-arc-agi-task" :trial_id "merge-diff-arc-agi-task__8yEkVCy" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "winning-avg-corewars" :trial_id "winning-avg-corewars__PzCQbTa" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "log-summary-date-ranges" :trial_id "log-summary-date-ranges__FkKQBY4" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "pytorch-model-cli" :trial_id "pytorch-model-cli__m28Ldmi" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "password-recovery" :trial_id "password-recovery__ojkcNsp" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "path-tracing-reverse" :trial_id "path-tracing-reverse__4dTC3nX" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "regex-chess" :trial_id "regex-chess__9HRhGBH" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "torch-tensor-parallelism" :trial_id "torch-tensor-parallelism__jYcV5SD" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "path-tracing" :trial_id "path-tracing__iMDG8bC" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "prove-plus-comm" :trial_id "prove-plus-comm__i9MYMEf" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "caffe-cifar-10" :trial_id "caffe-cifar-10__o6piBbs" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "distribution-search" :trial_id "distribution-search__3Ub4xJX" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "mteb-retrieve" :trial_id "mteb-retrieve__FG5du39" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "custom-memory-heap-crash" :trial_id "custom-memory-heap-crash__Uianazx" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "adaptive-rejection-sampler" :trial_id "adaptive-rejection-sampler__UECfQvr" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "crack-7z-hash" :trial_id "crack-7z-hash__BAkoKiz" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "overfull-hbox" :trial_id "overfull-hbox__RuLhuqo" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "polyglot-rust-c" :trial_id "polyglot-rust-c__GFPvrxG" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "compile-compcert" :trial_id "compile-compcert__Xp2CdoM" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "db-wal-recovery" :trial_id "db-wal-recovery__hgc2vgg" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "fix-git" :trial_id "fix-git__2Zb8r3d" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "build-pov-ray" :trial_id "build-pov-ray__g4CWxeH" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "train-fasttext" :trial_id "train-fasttext__Q4cGedo" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "video-processing" :trial_id "video-processing__GMMie7T" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "qemu-alpine-ssh" :trial_id "qemu-alpine-ssh__iSejSMA" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "kv-store-grpc" :trial_id "kv-store-grpc__s6uHEWi" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "install-windows-3.11" :trial_id "install-windows-3.11__Ss6kM6G" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "make-doom-for-mips" :trial_id "make-doom-for-mips__moXzTV5" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "torch-pipeline-parallelism" :trial_id "torch-pipeline-parallelism__jgqQs6w" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "tune-mjcf" :trial_id "tune-mjcf__YWbnHTE" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "extract-moves-from-video" :trial_id "extract-moves-from-video__C7BT63T" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "make-mips-interpreter" :trial_id "make-mips-interpreter__5cNnwuS" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "count-dataset-tokens" :trial_id "count-dataset-tokens__8sqypgp" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "circuit-fibsqrt" :trial_id "circuit-fibsqrt__4jofdBe" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "mteb-leaderboard" :trial_id "mteb-leaderboard__axbSGPr" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "mailman" :trial_id "mailman__E6HraaK" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "raman-fitting" :trial_id "raman-fitting__C7ZtjAS" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "extract-elf" :trial_id "extract-elf__UVAA5my" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "fix-code-vulnerability" :trial_id "fix-code-vulnerability__VhGcum5" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "mcmc-sampling-stan" :trial_id "mcmc-sampling-stan__h755ckA" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "regex-log" :trial_id "regex-log__btH9z9X" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "filter-js-from-html" :trial_id "filter-js-from-html__obn4KeZ" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "polyglot-c-py" :trial_id "polyglot-c-py__Te8j2cA" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "bn-fit-modify" :trial_id "bn-fit-modify__89BrbXN" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "fix-ocaml-gc" :trial_id "fix-ocaml-gc__doziqAS" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "build-cython-ext" :trial_id "build-cython-ext__uGet8Ho" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "pytorch-model-recovery" :trial_id "pytorch-model-recovery__nr4K9aQ" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "sam-cell-seg" :trial_id "sam-cell-seg__EremSUs" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "large-scale-text-editing" :trial_id "large-scale-text-editing__X98GPvH" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "sqlite-db-truncate" :trial_id "sqlite-db-truncate__dw4aqih" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "sanitize-git-repo" :trial_id "sanitize-git-repo__iHGq3xx" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "build-pmars" :trial_id "build-pmars__2raeich" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "rstan-to-pystan" :trial_id "rstan-to-pystan__6sG4CYf" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "sqlite-with-gcov" :trial_id "sqlite-with-gcov__sPfbAfn" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "openssl-selfsigned-cert" :trial_id "openssl-selfsigned-cert__myDZ2pX" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "dna-insert" :trial_id "dna-insert__T2oDoMs" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "vulnerable-secret" :trial_id "vulnerable-secret__EdAgQhz" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "dna-assembly" :trial_id "dna-assembly__cPizW9s" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "multi-source-data-merger" :trial_id "multi-source-data-merger__22APg28" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "configure-git-webserver" :trial_id "configure-git-webserver__aoqiTr9" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "cobol-modernization" :trial_id "cobol-modernization__2SRdUSu" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "hf-model-inference" :trial_id "hf-model-inference__fsDVGVJ" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "headless-terminal" :trial_id "headless-terminal__8LKh3Lu" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "qemu-startup" :trial_id "qemu-startup__vg7HYUg" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "git-multibranch" :trial_id "git-multibranch__wNJ7Ajp" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "query-optimize" :trial_id "query-optimize__6JKwHQ9" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "cancel-async-tasks" :trial_id "cancel-async-tasks__Jtmw3jW" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "git-leak-recovery" :trial_id "git-leak-recovery__XUusTyX" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "nginx-request-logging" :trial_id "nginx-request-logging__oGgtk5F" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "constraints-scheduling" :trial_id "constraints-scheduling__knLS8RU" :status "passed" :reward 1.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"])
+  (:task :task_id "gpt2-codegolf" :trial_id "gpt2-codegolf__XoahTM8" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "largest-eigenval" :trial_id "largest-eigenval__zrYnYfS" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "portfolio-optimization" :trial_id "portfolio-optimization__VgXfgap" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "modernize-scientific-stack" :trial_id "modernize-scientific-stack__5pGaDui" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "feal-linear-cryptanalysis" :trial_id "feal-linear-cryptanalysis__3LVp4nC" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "pypi-server" :trial_id "pypi-server__9jUY6B2" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "chess-best-move" :trial_id "chess-best-move__zXVy7Da" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "schemelike-metacircular-eval" :trial_id "schemelike-metacircular-eval__fTgcFwc" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "gcode-to-text" :trial_id "gcode-to-text__9AtdznR" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "protein-assembly" :trial_id "protein-assembly__wpb2Pas" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "code-from-image" :trial_id "code-from-image__djS5KjS" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "financial-document-processor" :trial_id "financial-document-processor__cesrTx3" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "feal-differential-cryptanalysis" :trial_id "feal-differential-cryptanalysis__v6Y4mni" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "sparql-university" :trial_id "sparql-university__wKqn6uQ" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "TypeError")
+  (:task :task_id "model-extraction-relu-logits" :trial_id "model-extraction-relu-logits__ML4qQyz" :status "failed" :reward 0.0 :verification_method "harbor-verifier" :stages_completed ["action-observation-loop"] :error "VerifierTimeoutError")
+ ])

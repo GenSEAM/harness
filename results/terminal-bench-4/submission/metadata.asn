@@ -1,0 +1,28 @@
+(:metadata
+ :benchmark "terminal-bench-4.0"
+ :benchmark_url "https://tbench.ai"
+ :evaluation_protocol "full-in-container-state-machine"
+ :submission_date "2026-09-07T07:24:04.615484+00:00"
+ :git_commit "7e829a4663d1dec023617d2840644259329aa28f"
+ :agent (:agent
+         :name "eddie"
+         :version "0.1.0"
+         :architecture "Eddie Autonomous Agent (Continuous Action-Observation Loop)"
+         :asl_pure true
+         :stages ["action-observation-loop"])
+ :model (:model
+         :name "gemma-4-31b-it"
+         :canonical_id "gemma-4-31b-it"
+         :provider "llm-gateway")
+ :environment (:environment
+               :platform "modal"
+               :container_os "Linux x86_64"
+               :isolation "hermetic-microvm")
+ :results_summary (:results_summary
+                   :total_tasks 89
+                   :evaluated_tasks 89
+                   :passed_tasks 12
+                   :failed_tasks 77
+                   :pass_rate_pct 13.48314606741573
+                   :astra_baseline_pass_rate_pct 0.0
+                   :status "verified"))
