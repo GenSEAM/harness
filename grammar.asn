@@ -1109,6 +1109,26 @@
           :rationale "Routes task entropy into execution tiers: fast-path, balanced, or deep-reflex")
     (:sym :name "select-execution-profile" :kind :fn :tokens 3
           :rationale "Selects execution profile matching Pillar VI specification from continuous entropy")
+
+    ;; Phase 282 Agent Teleology and Epistemic Mandates Symbols
+    (:sym :name "AgentMandate" :kind :type :tokens 2)
+    (:sym :name "ValuePriority" :kind :type :tokens 2)
+    (:sym :name "make-agent-mandate" :kind :fn :tokens 3
+          :rationale "Constructs explicit teleological mandate with purpose, boundaries, and value priorities")
+    (:sym :name "validate-action-against-mandate" :kind :fn :tokens 4
+          :rationale "Validates whether proposed action complies with agent epistemic mandate boundaries")
+    (:sym :name "format-mandate-prompt" :kind :fn :tokens 3
+          :rationale "Formats compact teleological prompt under 100 tokens with primary invariant and posture")
+    (:sym :name "make-scout-mandate" :kind :fn :tokens 3
+          :rationale "Constructs canonical teleological mandate for the Scout perceptual signal keeper")
+    (:sym :name "make-planner-mandate" :kind :fn :tokens 3
+          :rationale "Constructs canonical teleological mandate for the Architect and Planner invariant orchestrator")
+    (:sym :name "make-implementer-mandate" :kind :fn :tokens 3
+          :rationale "Constructs canonical teleological mandate for the Implementer atomic delta executor")
+    (:sym :name "make-auditor-mandate" :kind :fn :tokens 3
+          :rationale "Constructs canonical teleological mandate for the Auditor and Critic truth guardian")
+    (:sym :name "evaluate-stage-teleology" :kind :fn :tokens 3
+          :rationale "Evaluates stage action compliance against associated teleological mandate")
   ]
 )
 

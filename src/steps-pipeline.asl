@@ -10,8 +10,10 @@
       advance-pipeline-stage pipeline-status-summary
       make-standard-phases classify-task-entropy
       make-pipeline-by-mode default-eddie-config
-      make-reflection-config execute-epistemic-pipeline]
-  :i [(operational-model :a op)])
+      make-reflection-config execute-epistemic-pipeline
+      evaluate-stage-teleology]
+  :i [(operational-model :a op)
+      (teleology :a tel)])
 
 (dfs StepPhase
   (:f id Str "Unique phase identifier")
@@ -438,6 +440,20 @@
     :is-completed (.-is-completed pipeline)
     :final-status (.-final-status pipeline)))
 
+(df evaluate-stage-teleology [(stage-name Str) (proposed-action Str)] -> Bool
+  :d "Evaluates whether an action in the current pipeline stage adheres to the appropriate teleological mandate."
+  (let ((lower-stage (string-lower stage-name)))
+    (cond
+      ((or (string-contains? lower-stage "scout") (= lower-stage "s1-ingest"))
+       (tel/validate-action-against-mandate (tel/make-scout-mandate) proposed-action))
+      ((or (string-contains? lower-stage "plan") (= lower-stage "s4-plan"))
+       (tel/validate-action-against-mandate (tel/make-planner-mandate) proposed-action))
+      ((or (string-contains? lower-stage "impl") (= lower-stage "s6-implement"))
+       (tel/validate-action-against-mandate (tel/make-implementer-mandate) proposed-action))
+      ((or (string-contains? lower-stage "gap") (string-contains? lower-stage "verify") (= lower-stage "s7-verify"))
+       (tel/validate-action-against-mandate (tel/make-auditor-mandate) proposed-action))
+      (:else true))))
+
 (df audit-plan-gaps [(instruction Str) (planned-steps (List Str))] -> GapAuditResult
   :d "Audits a proposed plan against the original instruction to detect omissions and bloat."
   (let ((omissions [])
@@ -453,6 +469,8 @@
       (set! omissions (concat omissions ["Missing in-place file modification check"])))
     (when (> (len planned-steps) 8)
       (set! bloat (concat bloat ["Excessive phase count: plan exceeds 8 steps, risk of over-engineering"])))
+    (when (not (tel/validate-action-against-mandate (tel/make-planner-mandate) (join " " planned-steps)))
+      (set! omissions (concat omissions ["Teleological mandate violation: plan contains ungrounded steps without verification gates"])))
     
     (let ((has-omissions (> (len omissions) 0))
           (has-bloat (> (len bloat) 0)))
@@ -496,6 +514,13 @@
        :bloat-warnings []
        :invariants-preserved false
        :recommendations ["Produce required code implementation."]))
+    ((not (tel/validate-action-against-mandate (tel/make-implementer-mandate) diff))
+     (GapAuditResult
+       :verdict "reject"
+       :omissions ["Teleological mandate violation: implementation attempted gate tampering or unauthorized modification"]
+       :bloat-warnings []
+       :invariants-preserved false
+       :recommendations ["Preserve all verification gates without weakening or skipping."]))
     ((and (string-contains? instruction "in-place")
           (not (string-contains? diff "write")))
      (GapAuditResult
