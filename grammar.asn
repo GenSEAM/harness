@@ -1044,6 +1044,27 @@
           :rationale "Selects execution profile based on continuous task entropy")
     (:sym :name "test-adaptive-entropy-thresholds" :kind :fn :tokens 4
           :rationale "Unit test verifying adaptive entropy profile selection thresholds")
+
+    ;; Phase 258 Pre-Mortem & 5-Section Synthesis Delivery Symbols
+    (:sym :name "ConsequenceRisk" :kind :type :tokens 2)
+    (:sym :name "PreMortemVerdict" :kind :type :tokens 2)
+    (:sym :name "evaluate-pre-mortem" :kind :fn :tokens 3
+          :rationale "Stage 4 pre-mortem reasoning engine evaluating risks and 2-hop ceiling")
+    (:sym :name "generate-falsification-trigger" :kind :fn :tokens 3
+          :rationale "Generates executable falsification assertion commands for risk verification")
+    (:sym :name "test-pre-mortem-2-hop-ceiling" :kind :fn :tokens 5
+          :rationale "Verifies pre-mortem speculation depth limits and 2-hop ceiling enforcement")
+    (:sym :name "test-pre-mortem-falsification-triggers" :kind :fn :tokens 4
+          :rationale "Verifies falsification trigger command generation and risk gating")
+    (:sym :name "EpistemicScorecard" :kind :type :tokens 2)
+    (:sym :name "CanonicalDeliveryReport" :kind :type :tokens 3
+          :rationale "Data structure holding the 5 canonical delivery report sections")
+    (:sym :name "format-5-section-delivery" :kind :fn :tokens 4
+          :rationale "Renders the canonical 5-section delivery report adhering to epistemic standards")
+    (:sym :name "test-synthesis-5-canonical-sections" :kind :fn :tokens 4
+          :rationale "Verifies delivery report contains all 5 mandatory canonical section headers")
+    (:sym :name "test-synthesis-disclose-gaps" :kind :fn :tokens 3
+          :rationale "Verifies Section 3 integration with transparent gap disclosure module")
   ]
 )
 
