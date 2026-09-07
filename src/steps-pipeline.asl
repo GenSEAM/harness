@@ -1,6 +1,10 @@
 (module asl-harness/steps-pipeline
   :d "Steps & GAP Cognitive Pipeline Engine for autonomous AI agents. Manages multi-stage phased execution: Scout -> Plan -> GAP Plan Review -> Phased Implementation -> Post-Implementation GAP Verification -> Gate Settle."
   :x [StepPhase GapAuditResult StepsPipeline EddieConfig
+      PipelineStage ReflectionConfig ReflectionVerdict
+      default-reflection-config evaluate-fidelity-gate
+      evaluate-prompt-fidelity select-pipeline-profile
+      compute-task-entropy make-epistemic-7-phases make-7-stage-pipeline
       create-steps-pipeline add-pipeline-phase
       audit-plan-gaps audit-impl-gaps
       advance-pipeline-stage pipeline-status-summary
@@ -32,6 +36,68 @@
   (:f gap-audits (List GapAuditResult) "History of plan and implementation gap reviews")
   (:f is-completed Bool "True if all phases passed and final gate succeeded")
   (:f final-status Str "Outcome: pending | approved | rejected | verified | failed"))
+
+(dfe PipelineStage
+  (:c s1-ingest      [] "Ingestion and boundary normalization of task instruction and invariants")
+  (:c s2-reformulate [] "Operational self-reformulation: explicit restatement of goal and constraints")
+  (:c s3-intent-gate [] "Intent-Fidelity Gate: validates reformulation against prompt before planning")
+  (:c s4-plan        [] "Action DAG decomposition with falsifiable verification gates")
+  (:c s5-plan-gate   [] "Pre-mortem plan gate: detects ungrounded assumptions and omissions")
+  (:c s6-implement   [] "Phased implementation under staged buffer isolation")
+  (:c s7-verify      [] "Post-execution verification against genuine execution receipts"))
+
+(dfs ReflectionConfig
+  (:f max-hops I64 "Speculative reasoning hop ceiling (max 2)")
+  (:f quarantined-channel Bool "Whether thinking tokens are quarantined from context")
+  (:f fidelity-threshold F64 "Minimum confidence threshold for stage gate passage (e.g. 0.95)")
+  (:f echo-suppression Bool "True if duplicate / echo reasoning loops are suppressed"))
+
+(dfs ReflectionVerdict
+  (:f stage PipelineStage "Epistemic pipeline stage under evaluation")
+  (:f fidelity-score F64 "Measured fidelity score in range [0.0, 1.0]")
+  (:f omissions (List Str) "Identified domain invariant omissions")
+  (:f unsupported-claims (List Str) "Unanchored or hallucinated claims")
+  (:f passed Bool "True if stage fidelity gate satisfied"))
+
+(df default-reflection-config [] -> ReflectionConfig
+  :d "Constructs standard canonical ReflectionConfig."
+  (ReflectionConfig
+    :max-hops 2
+    :quarantined-channel true
+    :fidelity-threshold 0.95
+    :echo-suppression true))
+
+(df evaluate-fidelity-gate [(verdict ReflectionVerdict) (cfg ReflectionConfig)] -> Bool
+  :d "Evaluates whether reflection verdict passes the configured fidelity threshold."
+  (and (.-passed verdict)
+       (>= (.-fidelity-score verdict) (.-fidelity-threshold cfg))))
+
+(df evaluate-prompt-fidelity [(original-prompt Str) (agent-reformulation Str) (threshold F64)] -> ReflectionVerdict
+  :d "Audits agent reformulation against original prompt to prevent scope hallucination and omitted constraints."
+  (let [(norm-prompt (string-lower original-prompt))
+        (norm-ref (string-lower agent-reformulation))
+        (has-content (and (not (string-empty? norm-prompt)) (not (string-empty? norm-ref))))]
+    (if (not has-content)
+      (ReflectionVerdict
+        :stage (s3-intent-gate)
+        :fidelity-score 0.0
+        :omissions (list "Empty prompt or reformulation provided")
+        :unsupported-claims (list)
+        :passed false)
+      (let [(words (string-split norm-prompt " "))
+            (matched-count (list-length (filter (fn [(w Str)] -> Bool (and (> (string-length w) 3) (string-contains? norm-ref w))) words)))
+            (candidate-count (list-length (filter (fn [(w Str)] -> Bool (> (string-length w) 3)) words)))
+            (score (if (> candidate-count 0)
+                     (/ (float-from-int64 matched-count) (float-from-int64 candidate-count))
+                     1.0))
+            (is-passed (>= score threshold))
+            (omissions (if is-passed (list) (list "Reformulation omitted critical constraint terms from original prompt")))]
+        (ReflectionVerdict
+          :stage (s3-intent-gate)
+          :fidelity-score score
+          :omissions omissions
+          :unsupported-claims (list)
+          :passed is-passed)))))
 
 (dfs EddieConfig
   (:f model Str "Inference model identifier")
@@ -70,6 +136,88 @@
        "fast")
       (:else
        "standard"))))
+
+(df compute-task-entropy [(n-files I64) (domain-score F64) (ambiguity F64) (security-crit F64)] -> F64
+  :d "Computes continuous task entropy score H_task based on file count, domain depth, ambiguity, and security criticality."
+  (let [(w1 0.5)
+        (w2 1.5)
+        (w3 1.0)
+        (w4 1.5)
+        (f-val (float-from-int64 n-files))]
+    (+ (+ (* w1 f-val) (* w2 domain-score))
+       (+ (* w3 ambiguity) (* w4 security-crit)))))
+
+(df select-pipeline-profile [(entropy F64)] -> Str
+  :d "Selects execution profile based on task entropy: fast (< 1.5), standard (1.5 - 4.0), full (>= 4.0)."
+  (cond
+    ((< entropy 1.5) "fast")
+    ((< entropy 4.0) "standard")
+    (:else "full")))
+
+(df make-epistemic-7-phases [(task-id Str)] -> (List StepPhase)
+  :d "Generates full 7-stage epistemic reflection pipeline execution phases."
+  (list
+    (StepPhase
+      :id "stage-1-ingest"
+      :name "Ingest Task & Parse Invariants"
+      :stage "s1-ingest"
+      :gate-command "test -n \"$TASK_INSTRUCTION\""
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-2-reformulate"
+      :name "Operational Self-Reformulation"
+      :stage "s2-reformulate"
+      :gate-command "test -f REFORMULATION.md"
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-3-intent-gate"
+      :name "Intent-Fidelity Gate Verification"
+      :stage "s3-intent-gate"
+      :gate-command "asl test --strict-falsify harness/tests/epistemic_pipeline_test.asl"
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-4-plan"
+      :name "Action DAG Decomposition & Gate Formulation"
+      :stage "s4-plan"
+      :gate-command "test -f PLAN.md"
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-5-plan-gate"
+      :name "Pre-Mortem Plan Verification"
+      :stage "s5-plan-gate"
+      :gate-command "test -f REVIEW.md"
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-6-implement"
+      :name "Phased Implementation"
+      :stage "s6-implement"
+      :gate-command "asl rpc '(:batch (:diff))'"
+      :status "pending"
+      :findings (list))
+    (StepPhase
+      :id "stage-7-verify"
+      :name "Post-Execution Receipt Verification"
+      :stage "s7-verify"
+      :gate-command "asl gate"
+      :status "pending"
+      :findings (list))))
+
+(df make-7-stage-pipeline [(task-id Str) (instruction Str)] -> StepsPipeline
+  :d "Instantiates full 7-stage epistemic reflection pipeline."
+  (StepsPipeline
+    :task-id task-id
+    :task-instruction instruction
+    :active-stage "s1-ingest"
+    :phases (make-epistemic-7-phases task-id)
+    :current-phase-idx 0
+    :gap-audits (list)
+    :is-completed false
+    :final-status "pending"))
 
 (df make-standard-phases [(task-id Str)] -> (List StepPhase)
   :d "Generates standard 5-phase canonical Steps+GAP execution phases for an autonomous task."

@@ -1024,6 +1024,26 @@
     (:sym :name "create-checkpoint" :kind :fn :tokens 2)
     (:sym :name "is-checkpoint-valid?" :kind :fn :tokens 3
           :rationale "Validates checkpoint record state integrity")
+
+    ;; Phase 257 Epistemic Feedback Receipts & Status Symbols
+    (:sym :name "FeedbackStatus" :kind :type :tokens 2)
+    (:sym :name "ExecutionReceipt" :kind :type :tokens 2)
+    (:sym :name "make-execution-receipt" :kind :fn :tokens 3
+          :rationale "Constructs an execution receipt recording command outcome")
+    (:sym :name "feedback-with-status" :kind :fn :tokens 3
+          :rationale "Updates verification status of task feedback record")
+    (:sym :name "feedback-add-receipt" :kind :fn :tokens 3
+          :rationale "Appends verified execution receipt to task feedback record")
+    (:sym :name "test-feedback-status-and-receipts" :kind :fn :tokens 4
+          :rationale "Unit test verifying feedback status transitions and execution receipts")
+    (:sym :name "evaluate-prompt-fidelity" :kind :fn :tokens 3
+          :rationale "Audits agent reformulation against original prompt to prevent scope hallucination")
+    (:sym :name "test-fidelity-gate-prompt-overlap" :kind :fn :tokens 5
+          :rationale "Unit test verifying prompt overlap fidelity scoring and threshold gate")
+    (:sym :name "select-pipeline-profile" :kind :fn :tokens 3
+          :rationale "Selects execution profile based on continuous task entropy")
+    (:sym :name "test-adaptive-entropy-thresholds" :kind :fn :tokens 4
+          :rationale "Unit test verifying adaptive entropy profile selection thresholds")
   ]
 )
 
