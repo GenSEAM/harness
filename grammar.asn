@@ -957,6 +957,34 @@
           :rationale "Sanitizes raw error trace to root cause frame bounded to tokens")
     (:sym :name "evaluate-daemon-command" :kind :fn :tokens 3
           :rationale "Evaluates and dispatches structured daemon commands")
+
+    ;; Phase 167 Harbor Benchmark Runner & Modal Benchmark Symbols
+    (:sym :name "HarborConfig" :kind :type :tokens 2)
+    (:sym :name "make-baseline-env" :kind :fn :tokens 3
+          :rationale "Constructs non-interactive baseline shell environment export string")
+    (:sym :name "wrap-supervisor-command" :kind :fn :tokens 3
+          :rationale "Wraps shell command with session state persistence trap and sequential epilogue")
+    (:sym :name "extract-diagnostic-markers" :kind :fn :tokens 3
+          :rationale "Extracts error, fail, exception, fatal, and panic diagnostic markers from output")
+    (:sym :name "format-head-tail-banner" :kind :fn :tokens 4
+          :rationale "Formats head-tail truncation banner with diagnostic summary")
+    (:sym :name "make-environment-contract" :kind :fn :tokens 3
+          :rationale "Returns factual environment contract for non-interactive benchmark execution")
+    (:sym :name "TaskResult" :kind :type :tokens 2)
+    (:sym :name "compute-bench-metrics" :kind :fn :tokens 3
+          :rationale "Computes benchmark evaluation metrics with honest zero padding for empty runs")
+    (:sym :name "test-make-baseline-env" :kind :fn :tokens 4
+          :rationale "Verifies baseline environment variable exports")
+    (:sym :name "test-wrap-supervisor-command" :kind :fn :tokens 4
+          :rationale "Verifies supervisor command shell wrapper and session state trap")
+    (:sym :name "test-extract-diagnostic-markers" :kind :fn :tokens 4
+          :rationale "Verifies extraction of diagnostic markers from truncated output")
+    (:sym :name "test-format-head-tail-banner" :kind :fn :tokens 5
+          :rationale "Verifies head-tail truncation banner formatting")
+    (:sym :name "test-make-environment-contract" :kind :fn :tokens 4
+          :rationale "Verifies factual environment contract generation")
+    (:sym :name "test-compute-bench-metrics" :kind :fn :tokens 4
+          :rationale "Verifies computation of benchmark metrics and honest zero padding")
   ]
 )
 
