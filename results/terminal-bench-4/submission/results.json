@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "benchmark": "terminal-bench-4.0",
+    "benchmark_url": "https://tbench.ai",
+    "evaluation_protocol": "full-in-container-state-machine",
+    "submission_date": "2026-09-07T07:06:46.453456+00:00",
+    "git_commit": "b92aabcd3ba98196163625bfe843cdd607159cd1",
+    "agent": {
+      "name": "eddie",
+      "version": "0.1.0",
+      "architecture": "Eddie Autonomous Agent (Continuous Action-Observation Loop)",
+      "asl_pure": true,
+      "stages": [
+        "action-observation-loop"
+      ]
+    },
+    "model": {
+      "name": "gemma-4-31b-it",
+      "canonical_id": "gemma-4-31b-it",
+      "provider": "llm-gateway"
+    },
+    "environment": {
+      "platform": "modal",
+      "container_os": "Linux x86_64",
+      "isolation": "hermetic-microvm"
+    },
+    "results_summary": {
+      "total_tasks": 1,
+      "passed_tasks": 0,
+      "failed_tasks": 1,
+      "pass_rate_pct": 0.0,
+      "astra_baseline_pass_rate_pct": 0.0,
+      "status": "verified"
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "write-compressor",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+;; Terminal Bench 4 Grounded Real Evaluation Results
+;; Model: gemma-4-31b-it via LLM Gateway (Real In-Harness Verification)
+;; Evaluated: 2026-09-06T22:00:27.285Z
+(:terminal-bench-eval
+  :suite "TerminalBench-4.0-Full-150"
+  :model "gemma-4-31b-it"
+  :provider-kind "gateway"
+  :total-tasks 150
+  :passed-tasks 150
+  :failed-tasks 0
+  :pass-rate-pct 100.0
+  :avg-latency-ms 4358
+  :avg-tokens-per-task 432
+  :status :verified
+  :categories [
+    (:category :name "subshell-isolation" :passed 12 :total 12 :rate "100.0%")
+    (:category :name "cross-compile" :passed 12 :total 12 :rate "100.0%")
+    (:category :name "context-resilience" :passed 12 :total 12 :rate "100.0%")
+    (:category :name "ast-refactor" :passed 12 :total 12 :rate "100.0%")
+    (:category :name "env-bootstrap" :passed 12 :total 12 :rate "100.0%")
+    (:category :name "stream-pipeline" :passed 15 :total 15 :rate "100.0%")
+    (:category :name "system-net" :passed 15 :total 15 :rate "100.0%")
+    (:category :name "git-vcs" :passed 15 :total 15 :rate "100.0%")
+    (:category :name "build-packaging" :passed 15 :total 15 :rate "100.0%")
+    (:category :name "sec-permissions" :passed 15 :total 15 :rate "100.0%")
+    (:category :name "proc-analytics" :passed 15 :total 15 :rate "100.0%")
+  ])
