@@ -20,5 +20,6 @@
          (not (s/is-sufficient? rep)))))
 
 (df run-tests [] -> Bool
-  (and (test-sufficiency-complete)
-       (test-sufficiency-partial)))
+  (do
+    (assert (test-sufficiency-complete))
+    (assert (test-sufficiency-partial))))

@@ -18,5 +18,6 @@
     (b/is-budget-exceeded? bt1)))
 
 (df run-tests [] -> Bool
-  (and (test-budget-tracking)
-       (test-budget-limits)))
+  (do
+    (assert (test-budget-tracking))
+    (assert (test-budget-limits))))
