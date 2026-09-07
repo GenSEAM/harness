@@ -1101,6 +1101,14 @@
           :rationale "Serializes Stage 2 operational model into formatted S-expression string")
     (:sym :name "execute-epistemic-pipeline" :kind :fn :tokens 3
           :rationale "Executes 7-stage epistemic reflection pipeline across cognitive stages")
+
+    ;; Phase 275 Adaptive Harness Meta-Controller Symbols
+    (:sym :name "compute-task-entropy" :kind :fn :tokens 3
+          :rationale "Calculates continuous task entropy H_task from file count, domain depth, ambiguity, and security criticality")
+    (:sym :name "select-execution-tier" :kind :fn :tokens 3
+          :rationale "Routes task entropy into execution tiers: fast-path, balanced, or deep-reflex")
+    (:sym :name "select-execution-profile" :kind :fn :tokens 3
+          :rationale "Selects execution profile matching Pillar VI specification from continuous entropy")
   ]
 )
 
