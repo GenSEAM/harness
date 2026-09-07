@@ -1,7 +1,9 @@
 (module asl-harness/tests/terminal-bench-test
-  :d "Unit test suite for Terminal Bench 4 Astra-Hard-60 Challenge Suite."
+  :d "Unit test suite for Terminal Bench 4 Benchmark Suite (60 Astra-Hard + 150 Full Suite)."
   :x [test-terminal-task-count
       test-category-distribution
+      test-full-terminal-task-count
+      test-full-category-distribution
       test-suite-evaluation
       test-report-formatting]
   :i [(terminal-bench :a tb)])
@@ -24,6 +26,37 @@
               (and (= (list-length c3) 12)
                    (and (= (list-length c4) 12)
                         (= (list-length c5) 12)))))))
+
+(df test-full-terminal-task-count [] -> Bool
+  :d "Verifies the full Terminal Bench suite contains exactly 150 tasks."
+  (let [(tasks (tb/canonical-full-suite-tasks))]
+    (= (list-length tasks) 150)))
+
+(df test-full-category-distribution [] -> Bool
+  :d "Verifies category distribution across all 150 tasks."
+  (let [(tasks (tb/canonical-full-suite-tasks))
+        (c1 (tb/filter-terminal-category tasks "subshell-isolation"))
+        (c2 (tb/filter-terminal-category tasks "cross-compile"))
+        (c3 (tb/filter-terminal-category tasks "context-resilience"))
+        (c4 (tb/filter-terminal-category tasks "ast-refactor"))
+        (c5 (tb/filter-terminal-category tasks "env-bootstrap"))
+        (c6 (tb/filter-terminal-category tasks "stream-pipeline"))
+        (c7 (tb/filter-terminal-category tasks "system-net"))
+        (c8 (tb/filter-terminal-category tasks "git-vcs"))
+        (c9 (tb/filter-terminal-category tasks "build-packaging"))
+        (c10 (tb/filter-terminal-category tasks "sec-permissions"))
+        (c11 (tb/filter-terminal-category tasks "proc-analytics"))]
+    (and (= (list-length c1) 12)
+         (and (= (list-length c2) 12)
+              (and (= (list-length c3) 12)
+                   (and (= (list-length c4) 12)
+                        (and (= (list-length c5) 12)
+                             (and (= (list-length c6) 15)
+                                  (and (= (list-length c7) 15)
+                                       (and (= (list-length c8) 15)
+                                            (and (= (list-length c9) 15)
+                                                 (and (= (list-length c10) 15)
+                                                      (= (list-length c11) 15)))))))))))))
 
 (df test-suite-evaluation [] -> Bool
   :d "Verifies suite evaluation produces valid telemetry metrics."

@@ -867,6 +867,10 @@
           :rationale "Constructs Terminal Bench challenge task entry")
     (:sym :name "canonical-astra-hard-tasks" :kind :fn :tokens 4
           :rationale "Returns the 60 canonical Terminal Bench tasks where Astra fails")
+    (:sym :name "canonical-standard-core-tasks" :kind :fn :tokens 4
+          :rationale "Returns the 90 standard core Terminal Bench 4 tasks across 6 categories")
+    (:sym :name "canonical-full-suite-tasks" :kind :fn :tokens 4
+          :rationale "Returns the complete 150 Terminal Bench 4 suite tasks")
     (:sym :name "evaluate-terminal-suite" :kind :fn :tokens 3
           :rationale "Computes resolution metrics and token savings for Terminal Bench suite")
     (:sym :name "format-terminal-report" :kind :fn :tokens 3
@@ -877,6 +881,10 @@
           :rationale "Verifies challenge suite contains exactly 60 tasks")
     (:sym :name "test-category-distribution" :kind :fn :tokens 3
           :rationale "Verifies equal 12-task distribution across all 5 failure categories")
+    (:sym :name "test-full-terminal-task-count" :kind :fn :tokens 4
+          :rationale "Verifies full Terminal Bench suite contains exactly 150 tasks")
+    (:sym :name "test-full-category-distribution" :kind :fn :tokens 4
+          :rationale "Verifies category distribution across all 150 Terminal Bench tasks")
     (:sym :name "test-suite-evaluation" :kind :fn :tokens 3
           :rationale "Verifies terminal suite telemetry metrics")
     (:sym :name "test-report-formatting" :kind :fn :tokens 3
