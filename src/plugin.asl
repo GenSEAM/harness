@@ -8,7 +8,8 @@
       registry-add
       registry-find
       registry-get-tools
-      build-standard-harness-plugins]
+      build-standard-harness-plugins
+      evaluate-plugin-guards]
   :i [(config :a cfg)
       (core/strings :a s)])
 
@@ -17,7 +18,8 @@
   (:f system-prompts (List Str) "List of prompt behavioral guidelines injected by the plugin")
   (:f hooks (List cfg/PluginHook) "Lifecycle execution hooks")
   (:f dependencies (List Str) "Required prerequisite plugin IDs")
-  (:f conflicts (List Str) "Declared mutually incompatible plugin IDs"))
+  (:f conflicts (List Str) "Declared mutually incompatible plugin IDs")
+  (:f predicates (List cfg/HookPredicate) "Conditional execution hook predicates"))
 
 (dfs AgentPlugin
   (:f id Str "Unique plugin identifier e.g. builtin-code-intel")
@@ -97,7 +99,8 @@
                      :system-prompts (list "Always use intel-preload before modifying unknown files.")
                      :hooks (list (cfg/hook-pre-call))
                      :dependencies (list)
-                     :conflicts (list))))
+                     :conflicts (list)
+                     :predicates (list))))
         (p-guard (create-plugin
                    "builtin-ast-guard"
                    "AST Mutation Gate & Trace Sanitizer"
@@ -108,7 +111,8 @@
                      :system-prompts (list "Never delete protected assertions; verify AST deltas.")
                      :hooks (list (cfg/hook-post-call))
                      :dependencies (list)
-                     :conflicts (list))))
+                     :conflicts (list)
+                     :predicates (list))))
         (p-css (create-plugin
                  "builtin-css-cascade"
                  "CSS Cascade & Variable Extractor"
@@ -119,7 +123,8 @@
                    :system-prompts (list "Compute CSS cascade specificity inline without bloated external tools.")
                    :hooks (list)
                    :dependencies (list)
-                   :conflicts (list))))
+                   :conflicts (list)
+                   :predicates (list))))
         (p-comp (create-plugin
                   "builtin-component-mapper"
                   "Component Usage Mapper & Design Policy Guard"
@@ -130,7 +135,8 @@
                     :system-prompts (list "Enforce design system component usage; ban raw input tags.")
                     :hooks (list (cfg/hook-pre-call))
                     :dependencies (list)
-                    :conflicts (list))))
+                    :conflicts (list)
+                    :predicates (list))))
         (p-poly (create-plugin
                   "builtin-polyglot-sandbox"
                   "Polyglot AST & In-Memory Script Sandbox"
@@ -141,7 +147,8 @@
                     :system-prompts (list "Run untrusted polyglot code in isolated in-memory sandboxes.")
                     :hooks (list (cfg/hook-error))
                     :dependencies (list)
-                    :conflicts (list))))
+                    :conflicts (list)
+                    :predicates (list))))
         (reg0 (registry-create))
         (reg1 (registry-add reg0 p-intel))
         (reg2 (registry-add reg1 p-guard))
@@ -149,3 +156,39 @@
         (reg4 (registry-add reg3 p-comp))
         (reg5 (registry-add reg4 p-poly))]
     reg5))
+
+(df hook-tag [(h cfg/PluginHook)] -> Str
+  :d "Internal tag string for PluginHook enum variant."
+  (mt h
+    ((cfg/hook-pre-call) "pre")
+    ((cfg/hook-post-call) "post")
+    ((cfg/hook-model-response) "resp")
+    ((cfg/hook-error) "err")))
+
+(df hook-eq? [(h1 cfg/PluginHook) (h2 cfg/PluginHook)] -> Bool
+  :d "Compares two PluginHook enum variants."
+  (= (hook-tag h1) (hook-tag h2)))
+
+(df evaluate-plugin-guards [(plugin AgentPlugin) (hook cfg/PluginHook) (tool-name Str)] -> Bool
+  :d "Evaluates plugin lifecycle hooks and hook predicates against target tool invocation."
+  (if (not (.-enabled plugin))
+      true
+      (let [(cap (.-capability plugin))
+            (preds (.-predicates cap))
+            (hooks (.-hooks cap))
+            (has-hook (fold (fn [(found Bool) (h cfg/PluginHook)] -> Bool
+                              (or found (hook-eq? h hook)))
+                            false
+                            hooks))]
+        (if (not has-hook)
+            true
+            (let [(denied (fold (fn [(is-denied Bool) (p cfg/HookPredicate)] -> Bool
+                                  (if is-denied
+                                      true
+                                      (if (and (hook-eq? (.-hook-type p) hook)
+                                               (cfg/evaluate-hook-predicate p tool-name "guard"))
+                                          (= (.-action-override p) "deny")
+                                          false)))
+                                false
+                                preds))]
+              (not denied))))))

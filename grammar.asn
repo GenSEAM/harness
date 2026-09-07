@@ -1065,7 +1065,27 @@
           :rationale "Verifies delivery report contains all 5 mandatory canonical section headers")
     (:sym :name "test-synthesis-disclose-gaps" :kind :fn :tokens 3
           :rationale "Verifies Section 3 integration with transparent gap disclosure module")
+
+    ;; Phase 266 Config-Driven Extensibility & Direct Struct Reuse Symbols
+    (:sym :name "HookPredicate" :kind :type :tokens 2)
+    (:sym :name "AsnField" :kind :type :tokens 2)
+    (:sym :name "AsnValue" :kind :type :tokens 2)
+    (:sym :name "model-profile-from-asn-node" :kind :fn :tokens 5
+          :rationale "Directly instantiates ModelProfile struct from ASN AST node without DTO mapping")
+    (:sym :name "model-profile-to-asn-node" :kind :fn :tokens 5
+          :rationale "Serializes ModelProfile struct into canonical ASN constructor AST node")
+    (:sym :name "storage-config-from-asn-node" :kind :fn :tokens 5
+          :rationale "Directly instantiates StorageConfig struct from ASN AST node without DTO mapping")
+    (:sym :name "storage-config-to-asn-node" :kind :fn :tokens 5
+          :rationale "Serializes StorageConfig struct into canonical ASN constructor AST node")
+    (:sym :name "harness-config-from-asn-tree" :kind :fn :tokens 5
+          :rationale "Instantiates typed HarnessConfig directly from ASN configuration tree")
+    (:sym :name "evaluate-hook-predicate" :kind :fn :tokens 3
+          :rationale "Evaluates whether hook predicate matches target tool name and context tag")
+    (:sym :name "evaluate-plugin-guards" :kind :fn :tokens 3
+          :rationale "Evaluates plugin lifecycle hooks and hook predicates against tool invocation")
   ]
 )
+
 
 

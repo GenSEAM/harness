@@ -1,12 +1,18 @@
 (module asl-harness/config
   :d "Configurable constructor, model profiles, hierarchical config cascading, and pluggable extension registry for ASL Harness."
-  :x [ModelProfile PluginHook HarnessPlugin HarnessConfig
+  :x [ModelProfile PluginHook HarnessPlugin HarnessConfig HookPredicate
+      AsnValue AsnField
+      asn-nil asn-bool asn-unit asn-int asn-float asn-str asn-kw asn-sym
+      asn-vec asn-map asn-rec asn-ctor asn-rows asn-table asn-case asn-pair
       WorkspaceScope RepoKind WorktreeInfo StorageConfig WorkspaceContext
       profile-gemma-31b profile-qwen-05b profile-default default-harness-config
       toggle-feature feature-enabled? register-plugin
       enable-experimental experimental-enabled? make-plugin
       detect-repo-kind parse-gitdir-file extract-worktree-id detect-worktree
-      default-storage-config route-storage-target resolve-cascaded-config]
+      default-storage-config route-storage-target resolve-cascaded-config
+      model-profile-from-asn-node model-profile-to-asn-node
+      storage-config-from-asn-node storage-config-to-asn-node
+      harness-config-from-asn-tree evaluate-hook-predicate]
   :i [])
 
 (dfs ModelProfile
@@ -22,6 +28,34 @@
   (:c hook-post-call [] "Hook executed after tool call completion")
   (:c hook-model-response [] "Hook executed on raw model output stream")
   (:c hook-error [] "Hook executed on execution boundary failure"))
+
+(dfs HookPredicate
+  (:f hook-type PluginHook "Target execution lifecycle hook")
+  (:f name Str "Identifier for the predicate condition")
+  (:f target-pattern Str "Regex/substring match pattern for tool/file")
+  (:f action-override Str "Action to apply when matched e.g. allow, deny, audit"))
+
+(dfs AsnField
+  (:f key Str "Field key, including its leading colon")
+  (:f val AsnValue "Field value"))
+
+(dfe AsnValue
+  (:c asn-nil   []                "The nil sentinel `_`")
+  (:c asn-bool  [(b Bool)]        "true or false")
+  (:c asn-unit  []                "The unit literal `()`")
+  (:c asn-int   [(lex Str)]       "Integer literal, held as its source lexeme")
+  (:c asn-float [(lex Str)]       "Float literal, held as its source lexeme")
+  (:c asn-str   [(lex Str)]       "String literal, held as its source lexeme with quotes")
+  (:c asn-kw    [(k Str)]         "Keyword scalar, including its leading colon")
+  (:c asn-sym   [(name Str)]      "A bare name. Legal as a head, never as a value")
+  (:c asn-vec   [(items (List AsnValue))] "A bracketed vector")
+  (:c asn-map   [(entries (List AsnField))] "A brace map")
+  (:c asn-rec   [(fields (List AsnField))] "An anonymous record `(:k v ...)`")
+  (:c asn-ctor  [(name Str) (fields (List AsnField))] "Named construction `(Name :k v ...)`")
+  (:c asn-rows  [(name Str) (rows (List AsnValue))] "Schema-grouped rows `(Name [..] ..)`")
+  (:c asn-table [(cols (List AsnValue)) (rows (List AsnValue))] "Ad-hoc table `([:c ..] [[..]])`")
+  (:c asn-case  [(name Str) (args (List AsnValue))] "Union case value `(name v ..)`")
+  (:c asn-pair  [(key AsnValue) (val AsnValue)] "A parenthesised map entry, legal only in a map"))
 
 (dfs HarnessPlugin
   (:f id Str "Unique plugin identifier e.g. plugin-sec-audit")
@@ -116,8 +150,8 @@
   (let [(prof (profile-gemma-31b))
         (init-flags (map-set (map-set (map-set (map-empty)
                                                "firewall" true)
-                                       "fsm-normalizer" true)
-                             "repl-in-memory" true))]
+                                        "fsm-normalizer" true)
+                              "repl-in-memory" true))]
     (HarnessConfig
       :profile prof
       :flags init-flags
@@ -240,15 +274,183 @@
       (:else
        (str (.-master-scratch-root storage) "/" clean-file)))))
 
+(df find-field-val [(fields (List AsnField)) (target-key Str)] -> (Option AsnValue)
+  :d "Finds value of field matching target keyword in field list."
+  (fold (fn [(acc (Option AsnValue)) (f AsnField)] -> (Option AsnValue)
+          (mt acc
+            ((some _) acc)
+            ((none) (if (= (.-key f) target-key) (some (.-val f)) (none)))))
+        (none)
+        fields))
+
+(df strip-quotes [(s Str)] -> Str
+  :d "Strips quotes from string literal if present."
+  (let [(len (string-length s))]
+    (if (and (>= len 2) (and (string-starts-with? s "\"") (string-ends-with? s "\"")))
+        (option-or (string-slice s 1 (- len 1)) "")
+        s)))
+
+(df asn-extract-str [(v AsnValue) (default-val Str)] -> Str
+  :d "Extracts string content from ASN value."
+  (mt v
+    ((asn-str s) (strip-quotes s))
+    ((asn-sym s) s)
+    ((asn-kw k) (if (string-starts-with? k ":") (option-or (string-slice k 1 (string-length k)) "") k))
+    (_ default-val)))
+
+(df asn-extract-bool [(v AsnValue) (default-val Bool)] -> Bool
+  :d "Extracts boolean from ASN value."
+  (mt v
+    ((asn-bool b) b)
+    (_ default-val)))
+
+(df asn-extract-int [(v AsnValue) (default-val I64)] -> I64
+  :d "Extracts integer from ASN value."
+  (mt v
+    ((asn-int s) (option-or (string-to-int64 s) default-val))
+    (_ default-val)))
+
+(df model-profile-to-asn-node [(prof ModelProfile)] -> AsnValue
+  :d "Serializes ModelProfile struct into canonical ASN constructor AST node."
+  (asn-ctor "ModelProfile"
+    (list (AsnField :key ":name" :val (asn-str (str "\"" (.-name prof) "\"")))
+          (AsnField :key ":family" :val (asn-str (str "\"" (.-family prof) "\"")))
+          (AsnField :key ":strict-firewall" :val (asn-bool (.-strict-firewall prof)))
+          (AsnField :key ":strict-normalizer" :val (asn-bool (.-strict-normalizer prof)))
+          (AsnField :key ":in-memory-repl" :val (asn-bool (.-in-memory-repl prof)))
+          (AsnField :key ":max-tokens" :val (asn-int (string-from-int64 (.-max-tokens prof)))))))
+
+(df model-profile-from-asn-node [(node AsnValue)] -> (Option ModelProfile)
+  :d "Directly instantiates typed ModelProfile struct from ASN AST node without DTO mapping."
+  (let [(fields-opt (mt node
+                      ((asn-ctor _ fs) (some fs))
+                      ((asn-rec fs) (some fs))
+                      (_ (none))))]
+    (mt fields-opt
+      ((none) (none))
+      ((some fields)
+       (let [(opt-name (find-field-val fields ":name"))
+             (opt-family (find-field-val fields ":family"))
+             (opt-firewall (find-field-val fields ":strict-firewall"))
+             (opt-normalizer (find-field-val fields ":strict-normalizer"))
+             (opt-repl (find-field-val fields ":in-memory-repl"))
+             (opt-tokens (find-field-val fields ":max-tokens"))]
+         (if (or (option-is-none? opt-name) (option-is-none? opt-family))
+             (none)
+             (some (ModelProfile
+                     :name (asn-extract-str (option-unwrap opt-name) "generic-llm")
+                     :family (asn-extract-str (option-unwrap opt-family) "generic")
+                     :strict-firewall (if (option-is-some? opt-firewall) (asn-extract-bool (option-unwrap opt-firewall) true) true)
+                     :strict-normalizer (if (option-is-some? opt-normalizer) (asn-extract-bool (option-unwrap opt-normalizer) false) false)
+                     :in-memory-repl (if (option-is-some? opt-repl) (asn-extract-bool (option-unwrap opt-repl) false) false)
+                     :max-tokens (if (option-is-some? opt-tokens) (asn-extract-int (option-unwrap opt-tokens) 4096) 4096)))))))))
+
+(df storage-config-to-asn-node [(cfg StorageConfig)] -> AsnValue
+  :d "Serializes StorageConfig struct into canonical ASN constructor AST node."
+  (asn-ctor "StorageConfig"
+    (list (AsnField :key ":master-research-root" :val (asn-str (str "\"" (.-master-research-root cfg) "\"")))
+          (AsnField :key ":master-scratch-root" :val (asn-str (str "\"" (.-master-scratch-root cfg) "\"")))
+          (AsnField :key ":worktree-scratch-root" :val (asn-str (str "\"" (.-worktree-scratch-root cfg) "\"")))
+          (AsnField :key ":local-repo-root" :val (asn-str (str "\"" (.-local-repo-root cfg) "\""))))))
+
+(df storage-config-from-asn-node [(node AsnValue)] -> (Option StorageConfig)
+  :d "Directly instantiates typed StorageConfig struct from ASN AST node without DTO mapping."
+  (let [(fields-opt (mt node
+                      ((asn-ctor _ fs) (some fs))
+                      ((asn-rec fs) (some fs))
+                      (_ (none))))]
+    (mt fields-opt
+      ((none) (none))
+      ((some fields)
+       (let [(opt-res (find-field-val fields ":master-research-root"))
+             (opt-scratch (find-field-val fields ":master-scratch-root"))
+             (opt-wt (find-field-val fields ":worktree-scratch-root"))
+             (opt-local (find-field-val fields ":local-repo-root"))]
+         (if (and (option-is-some? opt-res) (option-is-some? opt-scratch))
+             (some (StorageConfig
+                     :master-research-root (asn-extract-str (option-unwrap opt-res) "")
+                     :master-scratch-root (asn-extract-str (option-unwrap opt-scratch) "")
+                     :worktree-scratch-root (if (option-is-some? opt-wt) (asn-extract-str (option-unwrap opt-wt) "") "")
+                     :local-repo-root (if (option-is-some? opt-local) (asn-extract-str (option-unwrap opt-local) "") "")))
+             (none)))))))
+
+(df harness-config-from-asn-tree [(root AsnValue)] -> (Option HarnessConfig)
+  :d "Instantiates typed HarnessConfig directly from ASN configuration tree."
+  (let [(fields-opt (mt root
+                      ((asn-ctor _ fs) (some fs))
+                      ((asn-rec fs) (some fs))
+                      (_ (none))))]
+    (mt fields-opt
+      ((none) (none))
+      ((some fields)
+       (let [(base (default-harness-config))
+             (prof-node (find-field-val fields ":profile"))
+             (prof (mt prof-node
+                     ((some pn) (option-or (model-profile-from-asn-node pn) (.-profile base)))
+                     ((none) (.-profile base))))
+             (fw-node (find-field-val fields ":firewall"))
+             (norm-node (find-field-val fields ":fsm-normalizer"))
+             (repl-node (find-field-val fields ":repl-in-memory"))
+             (c1 (mt fw-node
+                   ((some fn) (toggle-feature base "firewall" (asn-extract-bool fn true)))
+                   ((none) base)))
+             (c2 (mt norm-node
+                   ((some nn) (toggle-feature c1 "fsm-normalizer" (asn-extract-bool nn true)))
+                   ((none) c1)))
+             (c3 (mt repl-node
+                   ((some rn) (toggle-feature c2 "repl-in-memory" (asn-extract-bool rn true)))
+                   ((none) c2)))]
+         (some (HarnessConfig
+                 :profile prof
+                 :flags (.-flags c3)
+                 :plugins (.-plugins base)
+                 :experimental (.-experimental base)
+                 :custom-settings (.-custom-settings base))))))))
+
+(df evaluate-hook-predicate [(pred HookPredicate) (target-name Str) (context-tag Str)] -> Bool
+  :d "Evaluates whether a hook predicate matches the target tool/file and execution context."
+  (let [(pat (.-target-pattern pred))
+        (target-match (or (string-empty? pat)
+                          (or (= pat "*")
+                              (or (= pat target-name)
+                                  (string-contains? target-name pat)))))
+        (ctx-match (or (string-empty? context-tag)
+                       (or (= context-tag "*")
+                           (or (string-contains? (.-name pred) context-tag)
+                               (string-contains? (.-action-override pred) context-tag)))))]
+    (and target-match ctx-match)))
+
+(df apply-config-tier [(cfg HarnessConfig) (raw-input Str)] -> HarnessConfig
+  :d "Applies single tier configuration overrides safely handling empty strings and AST nodes."
+  (let [(clean (string-trim raw-input))]
+    (if (string-empty? clean)
+        cfg
+        (let [(c1 (if (or (string-contains? clean "fsm-normalizer: false")
+                          (string-contains? clean ":fsm-normalizer false"))
+                      (toggle-feature cfg "fsm-normalizer" false)
+                      (if (or (string-contains? clean "fsm-normalizer: true")
+                              (string-contains? clean ":fsm-normalizer true"))
+                          (toggle-feature cfg "fsm-normalizer" true)
+                          cfg)))
+              (c2 (if (or (string-contains? clean "firewall: false")
+                          (string-contains? clean ":firewall false"))
+                      (toggle-feature c1 "firewall" false)
+                      (if (or (string-contains? clean "firewall: true")
+                              (string-contains? clean ":firewall true"))
+                          (toggle-feature c1 "firewall" true)
+                          c1)))
+              (c3 (if (or (string-contains? clean "repl-in-memory: false")
+                          (string-contains? clean ":repl-in-memory false"))
+                      (toggle-feature c2 "repl-in-memory" false)
+                      (if (or (string-contains? clean "repl-in-memory: true")
+                              (string-contains? clean ":repl-in-memory true"))
+                          (toggle-feature c2 "repl-in-memory" true)
+                          c2)))]
+          c3))))
+
 (df resolve-cascaded-config [(global-cfg HarnessConfig) (workspace-raw Str) (subrepo-raw Str) (worktree-raw Str)] -> HarnessConfig
   :d "Cascades configuration across 4 tiers with monotonic feature flag inheritance."
-  (let [(c1 (if (string-contains? workspace-raw "fsm-normalizer: false")
-                (toggle-feature global-cfg "fsm-normalizer" false)
-                global-cfg))
-        (c2 (if (string-contains? subrepo-raw "firewall: false")
-                (toggle-feature c1 "firewall" false)
-                c1))
-        (c3 (if (string-contains? worktree-raw "repl-in-memory: false")
-                (toggle-feature c2 "repl-in-memory" false)
-                c2))]
+  (let [(c1 (apply-config-tier global-cfg workspace-raw))
+        (c2 (apply-config-tier c1 subrepo-raw))
+        (c3 (apply-config-tier c2 worktree-raw))]
     c3))
