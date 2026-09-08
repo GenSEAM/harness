@@ -1310,6 +1310,16 @@
           :rationale "Appends dynamic turns to frozen prompt prefix for KV-cache alignment")
     (:sym :name "verify-prefix-stability" :kind :fn :tokens 3
           :rationale "Verifies bit-for-bit identity of prompt prefixes across dynamic turns")
+
+    ;; Phase 337 SLM Compact Tooling Profile Symbols (asl-harness/slm-profile)
+    (:sym :name "SlmTool" :kind :type :tokens 1)
+    (:sym :name "SlmRequest" :kind :type :tokens 1)
+    (:sym :name "make-slm-essential-tools" :kind :fn :tokens 4
+          :rationale "Packages the minimal 4-tool essential schema for small language models")
+    (:sym :name "filter-tool-schema" :kind :fn :tokens 3
+          :rationale "Filters tools keeping only those present in allowed names list")
+    (:sym :name "format-slm-request" :kind :fn :tokens 3
+          :rationale "Formats an SLM request into a compact ASN representation for gateway dispatch")
   ]
 )
 
