@@ -1,6 +1,6 @@
 (module asl-harness/steps-pipeline
   :d "Steps & GAP Cognitive Pipeline Engine for autonomous AI agents. Manages multi-stage phased execution: Scout -> Plan -> GAP Plan Review -> Phased Implementation -> Post-Implementation GAP Verification -> Gate Settle."
-  :x [StepPhase GapAuditResult StepsPipeline EddieConfig
+  :x [StepPhase GapAuditResult StepsPipeline AddieConfig
       PipelineStage ReflectionConfig ReflectionVerdict
       default-reflection-config evaluate-fidelity-gate
       evaluate-prompt-fidelity select-pipeline-profile
@@ -9,7 +9,7 @@
       audit-plan-gaps audit-impl-gaps
       advance-pipeline-stage pipeline-status-summary
       make-standard-phases classify-task-entropy
-      make-pipeline-by-mode default-eddie-config
+      make-pipeline-by-mode default-addie-config
       make-reflection-config execute-epistemic-pipeline
       evaluate-stage-teleology]
   :i [(operational-model :a op)
@@ -190,15 +190,15 @@
       :omitted-constraints all-omissions
       :confidence-score confidence-score)))
 
-(dfs EddieConfig
+(dfs AddieConfig
   (:f model Str "Inference model identifier")
   (:f pipeline Str "Default pipeline: full | adaptive | standard | fast")
   (:f asl-first Bool "Use dense ASN tool calls and telemetry")
   (:f scout-polyglot Bool "Inspect polyglot runtimes in scout phase"))
 
-(df default-eddie-config [] -> EddieConfig
-  :d "Returns canonical default Eddie configuration."
-  (EddieConfig
+(df default-addie-config [] -> AddieConfig
+  :d "Returns canonical default Addie configuration."
+  (AddieConfig
     :model "openai/gemma-4-31b-it"
     :pipeline "full"
     :asl-first true

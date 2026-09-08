@@ -921,19 +921,19 @@
           :rationale "Verifies implementation gap audit on failing test")
     (:sym :name "test-advance-stage" :kind :fn :tokens 3
           :rationale "Verifies pipeline stage transitions")
-    (:sym :name "EddieConfig" :kind :type :tokens 2)
+    (:sym :name "AddieConfig" :kind :type :tokens 2)
     (:sym :name "classify-task-entropy" :kind :fn :tokens 3
           :rationale "Classifies task complexity to select optimal pipeline mode: fast | standard | full")
     (:sym :name "make-pipeline-by-mode" :kind :fn :tokens 4
           :rationale "Instantiates StepsPipeline configured for fast, standard, full, or adaptive mode")
-    (:sym :name "default-eddie-config" :kind :fn :tokens 3
-          :rationale "Returns canonical default Eddie configuration")
+    (:sym :name "default-addie-config" :kind :fn :tokens 3
+          :rationale "Returns canonical default Addie configuration")
     (:sym :name "test-entropy-classification" :kind :fn :tokens 3
           :rationale "Verifies entropy classifier routes tasks to appropriate pipelines")
     (:sym :name "test-pipeline-modes" :kind :fn :tokens 3
           :rationale "Verifies creation of fast, standard, and full pipelines")
-    (:sym :name "test-eddie-config" :kind :fn :tokens 3
-          :rationale "Verifies default Eddie configuration values")
+    (:sym :name "test-addie-config" :kind :fn :tokens 3
+          :rationale "Verifies default Addie configuration values")
     (:sym :name "run-steps-pipeline-tests" :kind :fn :tokens 4
           :rationale "Executes complete steps pipeline test suite")
 

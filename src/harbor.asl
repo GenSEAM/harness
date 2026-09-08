@@ -1,5 +1,5 @@
 (module asl-harness/harbor
-  :d "Pure ASL Harbor Benchmark Environment & Eddie Harbor Adapter Specification: baseline environment configuration, supervisor session persistence traps, and head-tail diagnostic formatting."
+  :d "Pure ASL Harbor Benchmark Environment & Addie Harbor Adapter Specification: baseline environment configuration, supervisor session persistence traps, and head-tail diagnostic formatting."
   :x [HarborConfig
       make-baseline-env
       wrap-supervisor-command

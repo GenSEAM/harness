@@ -1,5 +1,5 @@
 (module asl-harness/terminal-bench
-  :d "Terminal Bench 4 Complete Benchmark Suite: 150 tasks (60 Astra-Hard challenge subset + 90 standard core tasks) evaluated against Eddie ASL deterministic harness."
+  :d "Terminal Bench 4 Complete Benchmark Suite: 150 tasks (60 Astra-Hard challenge subset + 90 standard core tasks) evaluated against Addie ASL deterministic harness."
   :x [TerminalTask TerminalReport
       make-terminal-task canonical-astra-hard-tasks
       canonical-standard-core-tasks canonical-full-suite-tasks
@@ -13,7 +13,7 @@
   (:f name Str "Task descriptive name")
   (:f verification-cmd Str "Hermetic verification shell command")
   (:f astra-failure-mode Str "Exact architectural mechanism causing Astra failure (~40% suite error)")
-  (:f eddie-solution Str "ASL / Eddie deterministic in-harness resolution mechanism"))
+  (:f addie-solution Str "ASL / Addie deterministic in-harness resolution mechanism"))
 
 (dfs TerminalReport
   (:f total-tasks I64 "Number of evaluated challenge tasks (60)")
@@ -22,7 +22,7 @@
   (:f pass-rate F64 "Percentage of resolved tasks (0.0 to 100.0)")
   (:f token-savings-pct F64 "Context token compaction vs traditional JSON/CLI tools"))
 
-(df make-terminal-task [(id Str) (category Str) (name Str) (cmd Str) (astra-err Str) (eddie-fix Str)] -> TerminalTask
+(df make-terminal-task [(id Str) (category Str) (name Str) (cmd Str) (astra-err Str) (addie-fix Str)] -> TerminalTask
   :d "Constructs a Terminal Bench challenge task entry."
   (TerminalTask
     :id id
@@ -30,7 +30,7 @@
     :name name
     :verification-cmd cmd
     :astra-failure-mode astra-err
-    :eddie-solution eddie-fix))
+    :addie-solution addie-fix))
 
 (df filter-terminal-category [(tasks (List TerminalTask)) (cat Str)] -> (List TerminalTask)
   :d "Filters tasks matching a specific failure category."
@@ -42,7 +42,7 @@
     ;; Category 1: Subshell Isolation & State Traps (12 tasks)
     (make-terminal-task "TB4-001" "subshell-isolation" "Background subshell PID tracking under pipefail"
       "asl test" "Astra loses job control state when bash background job terminates with non-zero code"
-      "Eddie TaskDag tracks execution state deterministically in-process")
+      "Addie TaskDag tracks execution state deterministically in-process")
     (make-terminal-task "TB4-002" "subshell-isolation" "Trap EXIT handler clobbering caller status"
       "asl check" "Astra subshell trap clobbers return code of inner pipeline"
       "Harness sanitizes and restores shell signals via hermetic sandbox wrapper")
@@ -528,7 +528,7 @@
 (df execute-task-verification [(t TerminalTask)] -> Bool
   :d "Executes task verification command under sandbox validation rules."
   (and (verify-command-validity (.-verification-cmd t))
-       (and (not (string-empty? (.-eddie-solution t)))
+       (and (not (string-empty? (.-addie-solution t)))
             (not (string-empty? (.-astra-failure-mode t))))))
 
 (df evaluate-terminal-suite [(tasks (List TerminalTask))] -> TerminalReport

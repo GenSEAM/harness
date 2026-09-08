@@ -9,8 +9,9 @@
       test-advance-stage
       test-entropy-classification
       test-pipeline-modes
-      test-eddie-config
-      run-steps-pipeline-tests]
+      test-addie-config
+      run-steps-pipeline-tests
+      run-tests]
   :i [(steps-pipeline :a sp)])
 
 (df test-create-pipeline [] -> Bool
@@ -89,22 +90,28 @@
                              (and (= (.-active-stage p-full) "scout")
                                   (= (len (.-phases p-adapt)) 5)))))))))
 
-(df test-eddie-config [] -> Bool
-  :d "Verifies default Eddie configuration"
-  (let [(cfg (sp/default-eddie-config))]
+(df test-addie-config [] -> Bool
+  :d "Verifies default Addie configuration"
+  (let [(cfg (sp/default-addie-config))]
     (and (= (.-pipeline cfg) "full")
          (and (.-asl-first cfg)
               (.-scout-polyglot cfg)))))
 
 (df run-steps-pipeline-tests [] -> Bool
   :d "Runs all steps pipeline test cases"
-  (and (test-create-pipeline)
-       (and (test-gap-audit-clean)
-            (and (test-gap-audit-omission)
-                 (and (test-gap-audit-bloat)
-                      (and (test-impl-audit-clean)
-                           (and (test-impl-audit-failed)
-                                (and (test-advance-stage)
-                                     (and (test-entropy-classification)
-                                          (and (test-pipeline-modes)
-                                               (test-eddie-config)))))))))))
+  (do
+    (assert (test-create-pipeline))
+    (assert (test-gap-audit-clean))
+    (assert (test-gap-audit-omission))
+    (assert (test-gap-audit-bloat))
+    (assert (test-impl-audit-clean))
+    (assert (test-impl-audit-failed))
+    (assert (test-advance-stage))
+    (assert (test-entropy-classification))
+    (assert (test-pipeline-modes))
+    (assert (test-addie-config))
+    true))
+
+(df run-tests [] -> Bool
+  :d "Executes full steps pipeline test suite."
+  (run-steps-pipeline-tests))
