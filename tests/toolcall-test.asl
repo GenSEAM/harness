@@ -65,10 +65,10 @@
 (df test-toolcall [] -> Bool
   :d "Aggregate toolcall test runner for benchmark/grammar registry."
   (do
-    (test-tool-schema-typing)
-    (test-parse-openai-tool-call)
-    (test-asn-call-to-openai-json)
-    (test-tools-to-openai-json)
+    (assert (test-tool-schema-typing) "tool schema typing verified")
+    (assert (test-parse-openai-tool-call) "parse openai tool call verified")
+    (assert (test-asn-call-to-openai-json) "asn call to openai json verified")
+    (assert (test-tools-to-openai-json) "tools to openai json verified")
     true))
 
 (df run-tests [] -> Bool
