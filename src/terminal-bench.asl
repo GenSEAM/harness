@@ -39,7 +39,6 @@
 (df canonical-astra-hard-tasks [] -> (List TerminalTask)
   :d "Returns the 60 canonical Terminal Bench 4 tasks representing the ~40% failure domain of Astra."
   (list
-    ;; Category 1: Subshell Isolation & State Traps (12 tasks)
     (make-terminal-task "TB4-001" "subshell-isolation" "Background subshell PID tracking under pipefail"
       "asl test" "Astra loses job control state when bash background job terminates with non-zero code"
       "Addie TaskDag tracks execution state deterministically in-process")
@@ -77,7 +76,6 @@
       "asl gate" "Astra while read loop consumes stdin prematurely for child commands"
       "Zero-copy stream iterator preserves input boundaries")
 
-    ;; Category 2: Cross-Compilation & Target Triples (12 tasks)
     (make-terminal-task "TB4-013" "cross-compile" "Darwin arm64 to Linux x86_64 target triple resolution"
       "asl test" "Astra fails to supply correct LLVM target triple and sysroot flags"
       "pack/src/platform.asl formats standard LLVM triples deterministically")
@@ -115,7 +113,6 @@
       "asl gate" "Lipo fails when combining conflicting architecture object files"
       "ASL pack validates unique architecture slices before packaging")
 
-    ;; Category 3: Context Trace Resilience & Log Compaction (12 tasks)
     (make-terminal-task "TB4-025" "context-resilience" "10MB build log blowing agent context window"
       "asl audit" "Astra ingests raw gcc error dump, exhausting context and degrading attention"
       "harness/src/sanitizer.asl bounds error traces to <300 tokens")
@@ -153,7 +150,6 @@
       "asl gate" "Async stacktrace loses causal context across event loop ticks"
       "Deterministic agent bus links cause-and-effect across wire frames")
 
-    ;; Category 4: AST-Guided Multi-File Refactoring (12 tasks)
     (make-terminal-task "TB4-037" "ast-refactor" "Cross-package symbol rename across 15 packages"
       "asl gate" "Astra sed replacement corrupts substring occurrences in unrelated files"
       "asl intel impact and callers identify exact symbol boundary AST nodes")
@@ -191,7 +187,6 @@
       "asl gate" "Partial write corruption during sudden agent interrupt"
       "asl mem staging buffers changes in RAM until atomic disk flush")
 
-    ;; Category 5: Hermetic Environment Bootstrapping (12 tasks)
     (make-terminal-task "TB4-049" "env-bootstrap" "Airgap offline execution with zero internet connectivity"
       "asl gate" "Astra attempts npm install or curl during airgap evaluation"
       "ASL airgap invariant ASL_AIRGAP=1 resolves dependencies locally in RAM")
@@ -232,7 +227,6 @@
 (df canonical-standard-core-tasks [] -> (List TerminalTask)
   :d "Returns the 90 standard core Terminal Bench 4 tasks across 6 operational categories."
   (list
-    ;; Category 6: Stream Pipeline & Text Transformation (15 tasks)
     (make-terminal-task "TB4-061" "stream-pipeline" "Multi-file regex extraction with group capture under sed"
       "asl test" "Sed extended regex dialect differences break capture groups on macOS vs Linux"
       "ASL text engine normalizes PCRE regex syntax across platforms")
@@ -279,7 +273,6 @@
       "asl test" "Unthrottled stream causes buffer overflow in consuming process"
       "Token-bucket stream regulator caps pipe throughput deterministically")
 
-    ;; Category 7: System Administration & Networking (15 tasks)
     (make-terminal-task "TB4-076" "system-net" "TCP socket listening verification without external netcat"
       "asl test" "Astra attempts nc or netstat which are absent in minimal microvm containers"
       "Bash /dev/tcp pseudo-device tests socket connectivity with zero dependencies")
@@ -326,7 +319,6 @@
       "asl test" "Leaked file descriptors in long-running processes exhaust system handles"
       "In-harness /proc/self/fd inspection detects unclosed descriptors post-run")
 
-    ;; Category 8: Git Version Control & Repository Operations (15 tasks)
     (make-terminal-task "TB4-091" "git-vcs" "Detached HEAD state detection and safe branch reattachment"
       "asl test" "Astra makes commits in detached HEAD state, causing commit loss on checkout"
       "Git branch verification ensures active branch ref exists prior to commit")
@@ -373,7 +365,6 @@
       "asl gate" "Failing pre-commit hook is bypassed or masked by shell wrapper in Astra"
       "Git hook runner aborts commit transaction immediately on non-zero exit")
 
-    ;; Category 9: Build Systems, Compilation & Packaging (15 tasks)
     (make-terminal-task "TB4-106" "build-packaging" "Makefile tab indentation corruption detection and repair"
       "asl test" "Astra replaces tabs with spaces in Makefile, causing missing separator error"
       "ASL syntax checker enforces literal tabs for recipe lines in Makefiles")
@@ -420,7 +411,6 @@
       "asl gate" "Embedded timestamps cause non-reproducible binary hashes across builds"
       "Build environment exports SOURCE_DATE_EPOCH for bit-for-bit reproducibility")
 
-    ;; Category 10: Security, Permissions & Access Control (15 tasks)
     (make-terminal-task "TB4-121" "sec-permissions" "POSIX access control list (getfacl/setfacl) permission masking"
       "asl check" "Astra assumes chmod 700 overrides existing file ACL mask entries"
       "ACL validator inspects explicit masks via getfacl before asserting security")
@@ -467,7 +457,6 @@
       "asl check" "Astra compares plaintext password directly to salted SHA-512 shadow entry"
       "Cryptographic helper evaluates crypt(3) salt hash matching accurately")
 
-    ;; Category 11: Process Management, Signals & Analytics (15 tasks)
     (make-terminal-task "TB4-136" "proc-analytics" "Process tree visualization and descendant PID resolution"
       "asl test" "Astra kills parent process leaving orphaned child background workers running"
       "Pstree / pgrep -P resolves full descendant PID tree before termination")

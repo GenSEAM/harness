@@ -67,7 +67,6 @@
         (is-asl (= harness-kind "ASL Cognitive Harness"))
         (is-fast (= t-mode "Fast (0 tokens)"))]
     (cond
-      ;; Qwen 0.5B (397MB / 215MB Q3)
       ((string-contains? mid "0.5b")
        (if is-asl
            (ModelBenchmarkRow
@@ -90,7 +89,6 @@
              :memory-mb qmb
              :esh-blocked-count 0
              :total-cost-usd 0.0003)))
-      ;; Qwen 3B
       ((string-contains? mid "3b")
        (if is-asl
            (if is-fast
@@ -135,7 +133,6 @@
                  :memory-mb qmb
                  :esh-blocked-count 0
                  :total-cost-usd 0.0012))))
-      ;; Qwen 4B
       ((string-contains? mid "4b")
        (if is-asl
            (if is-fast
@@ -180,7 +177,6 @@
                  :memory-mb qmb
                  :esh-blocked-count 0
                  :total-cost-usd 0.0018))))
-      ;; Gemma 31B (via LM Gateway)
       ((string-contains? mid "gemma")
        (if is-asl
            (ModelBenchmarkRow
@@ -203,7 +199,6 @@
              :memory-mb 0
              :esh-blocked-count 0
              :total-cost-usd 0.0085)))
-      ;; Standalone CLI wrapper baseline (Gemma 31B via CLI runner, timeout 300s / 5min)
       (:else
        (ModelBenchmarkRow
          :model-id mid

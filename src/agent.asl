@@ -62,7 +62,6 @@
        :turn-count reflection-turn
        :halt-loop false))
     ((>= reflection-turn 1)
-     ;; Strict 1-turn limit ceiling: halt loop and proceed rather than infinite hallucination loop
      (ReflectionVerdict
        :passed true
        :needs-fix false

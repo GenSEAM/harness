@@ -23,7 +23,6 @@
   (let [(trimmed (string-trim line))]
     (cond
       ((string-empty? trimmed) false)
-      ;; Python noisy framework frames
       ((string-contains? trimmed "site-packages") true)
       ((string-contains? trimmed "dist-packages") true)
       ((string-contains? trimmed "/usr/lib/python") true)
@@ -31,7 +30,6 @@
       ((string-contains? trimmed "_pytest") true)
       ((string-contains? trimmed "pluggy") true)
       ((string-contains? trimmed "pytest/runner.py") true)
-      ;; Rust runtime noise
       ((string-contains? trimmed "rust_begin_unwind") true)
       ((string-contains? trimmed "core::panicking") true)
       ((string-contains? trimmed "library/std/") true)
@@ -39,7 +37,6 @@
       ((string-contains? trimmed "library/alloc/") true)
       ((string-contains? trimmed "/rustc/") true)
       ((string-contains? trimmed "stack backtrace:") true)
-      ;; Node/JS noise
       ((string-contains? trimmed "node_modules") true)
       ((string-contains? trimmed "node:internal") true)
       ((string-contains? trimmed "internal/modules") true)
@@ -70,7 +67,6 @@
 (df extract-frame-info [(line Str)] -> (Pair Str I64)
   :d "Extracts failing target file and line number from a stack frame line."
   (cond
-    ;; Python traceback format: File "path/file.ext", line 123
     ((string-contains? line "File \"")
      (let [(after-file (option-or (string-slice line (+ (option-or (string-index-of line "File \"") 0) 6) (string-length line)) ""))
            (q-idx (option-or (string-index-of after-file "\"") 0))
@@ -84,7 +80,6 @@
             (pair file-path ln)))
          ((none) (pair file-path 0)))))
 
-    ;; Polyglot colon format: path/file.ext:123
     (:else
      (let [(words (string-split (string-trim line) " "))]
        (fold (fn [(acc (Pair Str I64)) (w Str)] -> (Pair Str I64)
@@ -144,7 +139,6 @@
                               lines))]
     (if (> (string-length explicit-error) 0)
         explicit-error
-        ;; Fallback to last non-empty line
         (fold (fn [(acc Str) (ln Str)] -> Str
                 (let [(t (string-trim ln))]
                   (if (> (string-length t) 0) t acc)))
@@ -154,24 +148,20 @@
 (df sanitize-trace [(raw-traceback Str) (max-tokens I64)] -> SanitizedTrace
   :d "Strips internal framework frames, extracts root failure site, and bounds output tokens."
   (let [(lines (string-split raw-traceback "\n"))
-        ;; Step 1: Filter out noisy internal framework frames
         (clean-lines (fold (fn [(acc (List Str)) (ln Str)] -> (List Str)
                              (if (is-framework-noise? ln)
                                  acc
                                  (list-append acc (list ln))))
                            (list)
                            lines))
-        ;; Step 2: Extract failure site and root error message
         (site (extract-target-site clean-lines))
         (tgt-file (fst site))
         (line-no (snd site))
         (err-msg (extract-error-message clean-lines))
-        ;; Step 3: Format initial clean output
         (raw-output (string-trim (string-join clean-lines "\n")))
         (base-output (if (string-empty? raw-output)
                          (str tgt-file ":" (string-from-int64 line-no) ": " err-msg)
                          raw-output))
-        ;; Step 4: Token ceiling calculation (strictly bounded to max-tokens and < 300)
         (effective-budget (if (<= max-tokens 0) 250 (min max-tokens 299)))
         (max-chars (* effective-budget 4))
         (bounded-output (if (> (string-length base-output) max-chars)
@@ -181,7 +171,6 @@
                                   (s-tail (option-or (string-slice base-output (- (string-length base-output) tail-chars) (string-length base-output)) ""))]
                               (str s-head "\n... [truncated] ...\n" s-tail))
                             base-output))
-        ;; Ensure hard clamp on character length
         (final-output (if (> (string-length bounded-output) max-chars)
                           (option-or (string-slice bounded-output 0 max-chars) bounded-output)
                           bounded-output))

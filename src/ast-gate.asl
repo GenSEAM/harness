@@ -115,11 +115,8 @@
                                               (symbol-present-in-active? pre-source sym)))]
                               (if in-pre
                                   (cond
-                                    ;; Preserved in active code -> no violation
                                     ((symbol-present-in-active? post-source sym) acc)
-                                    ;; Absent or commented out -> record violation
                                     (:else (list-append acc (list sym))))
-                                  ;; Not in pre-source -> not protected
                                   acc)))
                           (list)
                           protected-symbols))

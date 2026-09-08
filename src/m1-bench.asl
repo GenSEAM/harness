@@ -68,12 +68,10 @@
 (df evaluate-model-arm [(arm ModelArm) (task-id Str)] -> BenchmarkArmResult
   :d "Simulates or executes model arm inference on Apple Silicon hardware."
   (if (.-websearch-enabled arm)
-      ;; Anti-cheating violation: fail immediately
       (let [(bad-telem (record-m1-telemetry 0 0 1 0 false))]
         (BenchmarkArmResult :arm arm :telemetry bad-telem :passed false :test-pass-rate 0.0))
       (let [(name (.-model-name arm))
             (t-budget (.-thinking-tokens arm))
-            ;; Simulated realistic M1 throughput based on model parameter scale
             (tps (cond
                    ((string-contains? name "0.5B") 84.5)
                    ((string-contains? name "1.5B") 62.0)

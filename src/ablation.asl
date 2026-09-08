@@ -32,7 +32,6 @@
   (:f total-token-savings-percent F64 "Overall context token reduction percentage")
   (:f total-regressions-prevented I64 "Number of fatal failures/hallucinations intercepted"))
 
-;; 1. Preload Horizon H(m,k,B)
 (df measure-preload-ablation [] -> AblationMetric
   :d "Measures token reduction of Graph-Horizon Paging vs loading full codebase."
   (let [(tokens-without 28400)
@@ -45,7 +44,6 @@
       :improvement-factor 20.0
       :verified-pass true)))
 
-;; 2. Structural Health Invariants
 (df measure-health-ablation [] -> AblationMetric
   :d "Measures circular dependency and blast-radius hotspot detection."
   (AblationMetric
@@ -56,7 +54,6 @@
     :improvement-factor 10.0
     :verified-pass true))
 
-;; 3. Lockfile Ghost API Guard
 (df measure-deps-ablation [] -> AblationMetric
   :d "Measures prevention of deprecated method hallucinations (Pydantic v2 .dict vs model_dump)."
   (let [(spec-pydantic (d/deps-resolve "pydantic" "dict"))
@@ -70,7 +67,6 @@
         :improvement-factor 8.5
         :verified-pass caught))))
 
-;; 4. FSM Grammar Normalizer
 (df measure-fsm-ablation [] -> AblationMetric
   :d "Measures 1-pass recovery of truncated delimiters and keyword hallucinations."
   (let [(hallucinated "(defun calculate [x] (let [(y (+ x 1))] (* y 2")
@@ -85,7 +81,6 @@
       :improvement-factor 12.0
       :verified-pass valid)))
 
-;; 5. AST Mutation Gate
 (df measure-ast-gate-ablation [] -> AblationMetric
   :d "Measures interception of models passing tests by deleting assertions."
   (let [(pre "(df test-safe [] -> Bool (check-invariants))\n(df run [] 42)\n")
@@ -100,7 +95,6 @@
         :improvement-factor 15.0
         :verified-pass blocked))))
 
-;; 6. Error Trace Sanitizer
 (df measure-sanitizer-ablation [] -> AblationMetric
   :d "Measures traceback noise reduction from >2000 tokens to <300 tokens."
   (let [(raw-trace "Traceback (most recent call last):\n  File \"/usr/lib/python3.11/site-packages/pytest/runner.py\", line 42\n  File \"/usr/lib/python3.11/site-packages/pluggy/callers.py\", line 18\n  File \"calc.py\", line 12, in test_add\n    assert add(1, 2) == 4\nAssertionError: assert 3 == 4")
@@ -116,7 +110,6 @@
         :improvement-factor 15.4
         :verified-pass pass))))
 
-;; 7. Perceptual Pointers
 (df measure-pointer-ablation [] -> AblationMetric
   :d "Measures context token savings of blob offloading vs dumping raw DOM/PDF."
   (let [(raw-dom-chars 24000)
@@ -130,7 +123,6 @@
       :improvement-factor 142.8
       :verified-pass true)))
 
-;; 8. L7 Cognitive Gateway Proxy
 (df measure-gateway-ablation [] -> AblationMetric
   :d "Measures blocking of verbal ESH hallucinations and CoT reasoning leakage."
   (AblationMetric
@@ -141,7 +133,6 @@
     :improvement-factor 25.0
     :verified-pass true))
 
-;; 9. Blackboard Task-Premise DAG
 (df measure-dag-ablation [] -> AblationMetric
   :d "Measures immediate invalidation of refuted premises vs infinite retry loop."
   (AblationMetric

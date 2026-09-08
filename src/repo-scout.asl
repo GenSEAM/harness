@@ -37,7 +37,6 @@
   :d "Scouts repository lockfile and extracts version-pinned framework profile."
   (let [(kind (d/detect-lockfile-kind lockfile-name))]
     (cond
-      ;; React ecosystem check
       ((or (string-contains? lockfile-content "\"react\"")
            (or (string-contains? lockfile-content "name: react")
                (string-contains? lockfile-content "/react@")))
@@ -61,7 +60,6 @@
                :recommended-apis (list "useEffect")
                :rules (list "functional-components")))))
 
-      ;; Pydantic ecosystem check
       ((or (string-contains? lockfile-content "pydantic")
            (string-contains? lockfile-content "pydantic-core"))
        (let [(pyd-ver (option-or (d/parse-pinned-version kind lockfile-content "pydantic") "2.5.0"))]
@@ -84,7 +82,6 @@
                :recommended-apis (list ".dict()")
                :rules (list "v1-legacy")))))
 
-      ;; Cargo / Rust ecosystem check
       ((or (string-contains? lockfile-content "name = \"tokio\"")
            (string-contains? lockfile-content "name = \"axum\""))
        (RepoProfile

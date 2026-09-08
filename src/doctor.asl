@@ -139,7 +139,6 @@
         (n-col (list-length collisions))
         (n-mis (list-length missing))
         (n-con (list-length contradictions))
-        ;; Calculate health score
         (score (- 100 (+ (* n-col 25) (+ (* n-mis 25) (* n-con 20)))))
         (final-score (if (< score 0) 0 score))
         (is-healthy (and (= n-col 0) (and (= n-mis 0) (= n-con 0))))
@@ -173,9 +172,7 @@
 (df inspect-with-llm [(diagnosis DoctorDiagnosis) (model-family Str)] -> DoctorDiagnosis
   :d "Adaptive inspector: skips LLM call if healthy (0 token cost); invokes model review when issues exist."
   (if (.-healthy diagnosis)
-      ;; Fast path: clean agent setup requires zero LLM token expenditure
       diagnosis
-      ;; Issues exist: invoke LLM chain analysis to synthesize semantic disambiguation
       (let [(llm-advice (str "[LLM Diagnostic Advisor (" model-family ")]: Detected "
                              (show (list-length (.-collisions diagnosis))) " tool collisions and "
                              (show (list-length (.-contradictions diagnosis))) " prompt contradictions. "

@@ -188,7 +188,6 @@
             :occurrences-replaced delimited-count
             :modified-content modified))
         (if (string-contains? source-code target-str)
-            ;; Fallback for non-standard delimiters
             (let [(occurrences (- (list-length (string-split source-code target-str)) 1))
                   (modified (string-replace source-code target-str replace-str))]
               (BatchTransformResult

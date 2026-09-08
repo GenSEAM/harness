@@ -177,7 +177,6 @@
            (let [(sel (.-selector act))]
              (if (string-empty? sel)
                  verdict
-                 ;; Check grounding in active DOM snapshot
                  (if (string-contains? dom-snapshot sel)
                      verdict
                      (SlmCoherenceVerdict

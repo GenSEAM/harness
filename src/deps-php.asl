@@ -30,7 +30,6 @@
                 (let [(idx (tuple2-first pair))
                       (line (tuple2-second pair))]
                   (if (string-contains? line needle)
-                      ;; Check subsequent lines within 10 lines for "version": "..."
                       (find-version-in-slice lines (+ idx 1) (+ idx 10))
                       (none))))))
            (none)
