@@ -5,6 +5,7 @@
       test-rejection-markdown-code-fences
       test-rejection-conversational-fillers
       test-rejection-malformed-and-empty-inputs
+      test-affirmative-envelope-and-parsing
       run-tests]
   :i [(llm_protocol :a proto)])
 
@@ -35,8 +36,9 @@
       (assert (<= (+ (/ (string-length env-default) 3) 1) 120) "Default envelope token count must be <= 120 tokens")
       (assert (<= (+ (/ (string-length env-preamble) 3) 1) 120) "Preamble envelope token count must be <= 120 tokens")
       (assert (<= (+ (/ (string-length env-system) 3) 1) 120) "System envelope token count must be <= 120 tokens")
-      (assert (string-contains? env-default "(:schema (:intent :refs :markers :delta :state :d))") "Envelope must contain canonical schema declaration")
-      (assert (string-contains? env-default "(:rules [:no-fences :pure-asn :dense-deltas])") "Envelope must specify strict rejection rules")
+      (assert (string-contains? env-default "(:affirmative-schema (:intent :delta :gate-check :d))") "Envelope must contain affirmative schema declaration")
+      (assert (not (string-contains? env-default ":no-fences")) "Envelope must not contain negative no-fences rule")
+      (assert (string-contains? env-default "(:rules [:pure-asn :dense-deltas])") "Envelope must specify affirmative rules")
       (assert (and (string-starts-with? env-default "(") (string-ends-with? env-default ")")) "Envelope must have balanced outer delimiters")
       true)))
 
@@ -110,10 +112,28 @@
       (assert (<= (+ (/ (string-length env) 3) 1) 150) "All protocol envelope formats must remain strictly <= 150 tokens")
       true)))
 
+(df test-affirmative-envelope-and-parsing [] -> Bool
+  :d "Verifies format-affirmative-envelope and parse-affirmative-response"
+  (let [(env (proto/format-affirmative-envelope "apply-delta"))
+        (raw "(:envelope :intent \"apply-delta\" :delta \"(:patch \\\"file.asl\\\" \\\"old\\\" \\\"new\\\")\" :gate-check \"asl check file.asl\" :d \"clean patch\")")
+        (parsed (proto/parse-affirmative-response raw))]
+    (do
+      (assert (string-contains? env ":affirmative-envelope :intent \"apply-delta\"") "Envelope must contain intent")
+      (assert (string-contains? env ":affirmative-schema (:intent :delta :gate-check :d)") "Envelope must declare affirmative schema")
+      (assert (not (string-contains? env ":no-fences")) "Affirmative envelope must not contain negative rules")
+      (assert (<= (+ (/ (string-length env) 3) 1) 60) "Affirmative envelope must be <= 60 tokens for KV-cache reuse")
+      (assert (.-valid parsed) "Parsed affirmative envelope must be valid")
+      (assert (= (.-intent parsed) "apply-delta") "Intent must match")
+      (assert (string-contains? (.-delta parsed) ":patch") "Delta must be preserved")
+      (assert (= (.-gate-check parsed) "asl check file.asl") "Gate check command must match")
+      (assert (= (.-d parsed) "clean patch") "Docstring must match")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Aggregates and executes all LLM protocol unit test functions"
   (and (test-protocol-envelope-formatting-and-token-bounds)
        (and (test-protocol-response-delta-and-field-extraction)
             (and (test-rejection-markdown-code-fences)
                  (and (test-rejection-conversational-fillers)
-                      (test-rejection-malformed-and-empty-inputs))))))
+                      (and (test-rejection-malformed-and-empty-inputs)
+                           (test-affirmative-envelope-and-parsing)))))))

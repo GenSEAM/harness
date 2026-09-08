@@ -1,0 +1,169 @@
+(:canary-task-registry
+  :schema-version "1.0.0"
+  :total-tasks 17
+  :updated-at 1788880300000
+  :tiers [
+    (:tier
+      :name "micro-slm"
+      :description "Micro-SLM (0.5B-3B) syntax & delimiter invariants"
+      :task-count 5
+      :target-models ["qwen2.5:0.5b" "qwen2.5:3b-instruct" "ling-3.0-flash"])
+    (:tier
+      :name "medium"
+      :description "Medium SLM & Flash models (7B-14B, Gemini Flash, Haiku) multi-patch & search"
+      :task-count 5
+      :target-models ["qwen2.5:14b-instruct" "gemini-2.5-flash" "claude-3-5-haiku"])
+    (:tier
+      :name "frontier"
+      :description "Frontier reasoning (Gemma 31B, Claude Sonnet, Gemini Pro) memory heap crashes & blast radius"
+      :task-count 5
+      :target-models ["gemma-4-31b-it" "claude-3-7-sonnet" "gemini-2.5-pro"])
+    (:tier
+      :name "horizon"
+      :description "Super-hard impossible challenge horizon (currently 0% ceiling for all models)"
+      :task-count 2
+      :target-models ["frontier-evaluation-all"])
+  ]
+  :tasks [
+    (:task
+      :task-id "SLM-DELIM-01"
+      :name "S-expression Delimiter Balance on Ambiguous Escape Sequences"
+      :tier "micro-slm"
+      :baseline-pass-rate 20.0
+      :target-files ["asl/asl-parser/src/lexer.asl"]
+      :falsifiable-assertions [
+        "asl check asl/asl-parser/tests/escape_test.asl"
+        "asl test asl/asl-parser/tests/escape_test.asl --strict-falsify"])
+    (:task
+      :task-id "SLM-KEYWORD-02"
+      :name "Keyword Argument Canonicalization (:f :s :sw)"
+      :tier "micro-slm"
+      :baseline-pass-rate 40.0
+      :target-files ["asl/packages/asl-codec/src/codec.asl"]
+      :falsifiable-assertions [
+        "asl test asl/packages/asl-codec/tests/canonical_test.asl"])
+    (:task
+      :task-id "SLM-SCHEMA-03"
+      :name "Affirmative Tool Call Schema Extraction"
+      :tier "micro-slm"
+      :baseline-pass-rate 30.0
+      :target-files ["harness/src/slm_profile.asl"]
+      :falsifiable-assertions [
+        "asl test harness/tests/slm_profile_test.asl"])
+    (:task
+      :task-id "SLM-TYPESTATE-04"
+      :name "Monomorphic Typestate Extraction"
+      :tier "micro-slm"
+      :baseline-pass-rate 25.0
+      :target-files ["agent-bus/src/bus.asl"]
+      :falsifiable-assertions [
+        "asl test agent-bus/tests/bus-test.asl"])
+    (:task
+      :task-id "SLM-EVICTION-05"
+      :name "Distractor Noise Pruning under 512 Token Window"
+      :tier "micro-slm"
+      :baseline-pass-rate 15.0
+      :target-files ["harness/src/context_assembler.asl"]
+      :falsifiable-assertions [
+        "asl test harness/tests/context_assembler_test.asl"])
+
+    (:task
+      :task-id "MED-PARSE-01"
+      :name "Multi-File AST Form Patching with In-Memory Rollback"
+      :tier "medium"
+      :baseline-pass-rate 45.0
+      :target-files ["asl/asl-compiler/src/patcher.asl" "asl/asl-compiler/src/ast.asl"]
+      :falsifiable-assertions [
+        "asl test asl/asl-compiler/tests/patcher_test.asl"])
+    (:task
+      :task-id "MED-DIFF-02"
+      :name "Atomic Multi-Hunk Staged Edit Reconciliation"
+      :tier "medium"
+      :baseline-pass-rate 50.0
+      :target-files ["intel/src/repl.asl"]
+      :falsifiable-assertions [
+        "asl test intel/tests/repl_test.asl"])
+    (:task
+      :task-id "MED-SEARCH-03"
+      :name "BM25 Spool In-Memory Grep Search and Symbol Isolation"
+      :tier "medium"
+      :baseline-pass-rate 55.0
+      :target-files ["intel/src/search.asl" "intel/src/spool.asl"]
+      :falsifiable-assertions [
+        "asl test intel/tests/spool_test.asl"])
+    (:task
+      :task-id "MED-ROUTING-04"
+      :name "Adaptive Subagent Dynamic Worktree Routing"
+      :tier "medium"
+      :baseline-pass-rate 40.0
+      :target-files ["gsa/src/worktree.asl" "gsa/src/router.asl"]
+      :falsifiable-assertions [
+        "asl test gsa/tests/worktree_test.asl"])
+    (:task
+      :task-id "MED-AMNESIA-05"
+      :name "Rolling 1-Line Receipt Context Spooling without Amnesia"
+      :tier "medium"
+      :baseline-pass-rate 50.0
+      :target-files ["harness/src/amnesia_gate.asl" "harness/src/context_assembler.asl"]
+      :falsifiable-assertions [
+        "asl test harness/tests/amnesia_gate_test.asl"])
+
+    (:task
+      :task-id "FRONT-HEAP-01"
+      :name "Custom Memory Heap Crash in MicroVM Linear Arena"
+      :tier "frontier"
+      :baseline-pass-rate 20.0
+      :target-files ["mem/src/linear_arena.asl" "mem/src/heap.asl"]
+      :falsifiable-assertions [
+        "asl test mem/tests/arena_test.asl --strict-falsify"])
+    (:task
+      :task-id "FRONT-BLAST-02"
+      :name "Blast-Radius Impact Graph Cycle Resolution"
+      :tier "frontier"
+      :baseline-pass-rate 25.0
+      :target-files ["intel/src/impact.asl" "intel/src/callers.asl"]
+      :falsifiable-assertions [
+        "asl test intel/tests/impact_test.asl"])
+    (:task
+      :task-id "FRONT-ESH-03"
+      :name "Verbal Execution Simulation Interception and Proof Generation"
+      :tier "frontier"
+      :baseline-pass-rate 30.0
+      :target-files ["agent-bus/src/gateway.asl"]
+      :falsifiable-assertions [
+        "asl test agent-bus/tests/gateway-test.asl"])
+    (:task
+      :task-id "FRONT-COT-04"
+      :name "Quarantined CoT Scratchpad Demuxing under Pressure"
+      :tier "frontier"
+      :baseline-pass-rate 35.0
+      :target-files ["agent-bus/src/gateway.asl"]
+      :falsifiable-assertions [
+        "asl test agent-bus/tests/gateway-test.asl"])
+    (:task
+      :task-id "FRONT-LCS-05"
+      :name "Longest Common Subsequence Grounding Verification"
+      :tier "frontier"
+      :baseline-pass-rate 20.0
+      :target-files ["harness/src/grounding.asl"]
+      :falsifiable-assertions [
+        "asl test harness/tests/grounding-test.asl"])
+
+    (:task
+      :task-id "IMPOSSIBLE-DISTRIB-CONSENSUS-01"
+      :name "Distributed Paxos Split-Brain Resolution under Asymmetric Clock Drift"
+      :tier "horizon"
+      :baseline-pass-rate 0.0
+      :target-files ["agent-bus/src/paxos.asl" "agent-bus/src/clock.asl"]
+      :falsifiable-assertions [
+        "asl test agent-bus/tests/paxos_split_brain_test.asl --strict-falsify"])
+    (:task
+      :task-id "IMPOSSIBLE-ZERO-ALLOC-GC-02"
+      :name "Zero-Allocation Concurrent Compact Garbage Collector for Wasm Linear Memory"
+      :tier "horizon"
+      :baseline-pass-rate 0.0
+      :target-files ["mem/src/wasm_gc.asl" "mem/src/compact.asl"]
+      :falsifiable-assertions [
+        "asl test mem/tests/wasm_gc_compact_test.asl --strict-falsify"])
+  ]
+)

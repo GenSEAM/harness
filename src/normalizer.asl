@@ -2,7 +2,7 @@
   :d "Hallucination Normalizer: auto-repairs LLM syntax defects, identifier drift, and AST conventions."
   :x [NormalizerReport normalize-identifier canonicalize-keyword canonicalize-type
       balance-delimiters normalize-asl-fragment repair-hallucinations]
-  :i [])
+  :i [(asl-parser/balance :a bal)])
 
 (dfs NormalizerReport
   (:f original-code Str "Raw input from LLM")
@@ -38,14 +38,12 @@
     (:else ty)))
 
 (df balance-delimiters [(src Str)] -> Str
-  :d "Closes unclosed opening parentheses in truncated or hallucinated S-expression fragments."
-  (let [(open-count (fold (fn [(count I64) (c Str)] -> I64 (if (= c "(") (+ count 1) count)) 0 (string-split src "")))
-        (close-count (fold (fn [(count I64) (c Str)] -> I64 (if (= c ")") (+ count 1) count)) 0 (string-split src "")))]
-    (if (> open-count close-count)
-        (let [(diff (- open-count close-count))
-              (closers (fold (fn [(acc Str) (_ I64)] -> Str (str acc ")")) "" (range 0 diff)))]
-          (str src closers))
-        src)))
+  :d "Closes unclosed opening parentheses in truncated or hallucinated S-expression fragments with quote and escape awareness via canonical asl-parser/balance."
+  (let [(diff (bal/count-unclosed-parens src))]
+    (if (> diff 0)
+      (let [(closers (fold (fn [(acc Str) (_ I64)] -> Str (str acc ")")) "" (range 0 diff)))]
+        (str src closers))
+      src)))
 
 (df normalize-asl-fragment [(src Str)] -> Str
   :d "Applies full normalization pipeline over an AgentScript code snippet."

@@ -7,7 +7,8 @@
       test-trace-recording-and-serialization
       test-model-profiler-and-slow-provider
       test-eval-corpus-curation-and-export
-      test-dynamic-temperature-scheduling]
+      test-dynamic-temperature-scheduling
+      test-json-escape-and-request-escaping]
   :i [(llm_client :a lc)
       (trace_recorder :a tr)
       (eval_corpus :a ec)])
@@ -142,6 +143,26 @@
       (assert (= t-neg 0.0) "Negative base temperature must clamp cleanly to 0.0")
       true)))
 
+(df test-json-escape-and-request-escaping [] -> Bool
+  :d "Verifies RFC 8259 string escaping and payload formatting with quotes, newlines, and ASN blocks"
+  (let [(escaped (lc/json-escape-str "Line 1\nLine 2\t\"quoted\" \\backslash\r"))
+        (opts (lc/ModelOptions
+                :model "test-model"
+                :temperature 0.0
+                :max-tokens 1000
+                :system "System with \"quotes\" and \nnewlines"
+                :grammar-constraint (some "root ::= \"(\" [a-z]+ \")\"")))
+        (req (lc/format-model-request opts "(:batch (:patch \"file.asl\" \"find\" \"replace\"))"))]
+    (do
+      (assert (string-contains? escaped "\\n") "Newline must be escaped")
+      (assert (string-contains? escaped "\\t") "Tab must be escaped")
+      (assert (string-contains? escaped "\\\"quoted\\\"") "Quotes must be escaped")
+      (assert (string-contains? escaped "\\\\backslash") "Backslash must be escaped")
+      (assert (string-contains? req "\\\"quotes\\\"") "System prompt quotes must be escaped in request")
+      (assert (string-contains? req "\\\"file.asl\\\"") "Prompt code block quotes must be escaped in request")
+      (assert (string-contains? req "\\\"(\\\"") "Grammar constraint quotes must be escaped in request")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Aggregates and executes all unit test suites for Phase 325 and Phase 338"
   (and (test-model-options-and-request)
@@ -150,4 +171,5 @@
                  (and (test-trace-recording-and-serialization)
                       (and (test-model-profiler-and-slow-provider)
                            (and (test-eval-corpus-curation-and-export)
-                                (test-dynamic-temperature-scheduling))))))))
+                                (and (test-dynamic-temperature-scheduling)
+                                     (test-json-escape-and-request-escaping)))))))))

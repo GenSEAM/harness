@@ -4,6 +4,8 @@
       test-planner-mandate
       test-implementer-mandate
       test-auditor-mandate
+      test-arbiter-mandate
+      test-mandate-tuple
       test-global-anti-tamper
       test-custom-mandate
       test-prompt-formatting
@@ -83,17 +85,36 @@
       (assert (not (tel/validate-action-against-mandate m "write code to fix bug directly")))
       true)))
 
+(df test-arbiter-mandate [] -> Bool
+  :d "Verifies Arbiter archetype mandate properties and behavioral boundaries."
+  (let [(m (tel/make-arbiter-mandate))
+        (vals (.-values m))]
+    (do
+      (assert (= (.-archetype-id m) "arbiter"))
+      (assert (string-contains? (.-purpose m) "supervisor"))
+      (assert (>= (len (.-zone-of-responsibility m)) 4))
+      (assert (>= (len (.-out-of-scope m)) 4))
+      (assert (>= (len vals) 3))
+      (assert (= (.-priority (get vals 0)) 1))
+      (assert (= (.-value-name (get vals 0)) "Disjoint Authority & Zero Contention"))
+      (assert (tel/validate-action-against-mandate m "assign task sub-goal to specialized worker"))
+      (assert (not (tel/validate-action-against-mandate m "monolithic execution without delegation")))
+      (assert (not (tel/validate-action-against-mandate m "execute code directly in shell")))
+      true)))
+
 (df test-global-anti-tamper [] -> Bool
   :d "Verifies universal rejection of gate weakening across all archetypes."
   (let [(scout (tel/make-scout-mandate))
         (planner (tel/make-planner-mandate))
         (impl (tel/make-implementer-mandate))
-        (auditor (tel/make-auditor-mandate))]
+        (auditor (tel/make-auditor-mandate))
+        (arbiter (tel/make-arbiter-mandate))]
     (do
       (assert (not (tel/validate-action-against-mandate scout "loosen gate threshold")))
       (assert (not (tel/validate-action-against-mandate planner "bypass gate check")))
       (assert (not (tel/validate-action-against-mandate impl "silent pass on failure")))
       (assert (not (tel/validate-action-against-mandate auditor "unverified assertion approved")))
+      (assert (not (tel/validate-action-against-mandate arbiter "weaken gate threshold")))
       (assert (not (tel/validate-action-against-mandate impl "skip gate execution")))
       true)))
 
@@ -131,6 +152,25 @@
       (assert (< (string-length impl-p) 500))
       true)))
 
+(df test-mandate-tuple [] -> Bool
+  :d "Verifies mandate->tuple produces compact S-expression representation."
+  (let [(impl-t (tel/mandate->tuple (tel/make-implementer-mandate)))
+        (audit-t (tel/mandate->tuple (tel/make-auditor-mandate)))
+        (scout-t (tel/mandate->tuple (tel/make-scout-mandate)))
+        (plan-t (tel/mandate->tuple (tel/make-planner-mandate)))
+        (arb-t (tel/mandate->tuple (tel/make-arbiter-mandate)))]
+    (do
+      (assert (string-contains? impl-t "(:mandate :id \"implementer\""))
+      (assert (string-contains? impl-t ":primary-invariant \"Gate Preservation & Zero Weakening > Speed\""))
+      (assert (string-contains? audit-t "(:mandate :id \"auditor\""))
+      (assert (string-contains? audit-t ":primary-invariant \"Empirical Truth & Falsification > False Consensus\""))
+      (assert (string-contains? scout-t "(:mandate :id \"scout\""))
+      (assert (string-contains? plan-t "(:mandate :id \"planner\""))
+      (assert (string-contains? arb-t "(:mandate :id \"arbiter\""))
+      (assert (< (string-length impl-t) 300))
+      (assert (< (string-length audit-t) 300))
+      true)))
+
 (df run-tests [] -> Bool
   :d "Executes all teleology engine test assertions under strict falsification."
   (do
@@ -138,6 +178,8 @@
     (assert (test-planner-mandate))
     (assert (test-implementer-mandate))
     (assert (test-auditor-mandate))
+    (assert (test-arbiter-mandate))
+    (assert (test-mandate-tuple))
     (assert (test-global-anti-tamper))
     (assert (test-custom-mandate))
     (assert (test-prompt-formatting))

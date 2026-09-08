@@ -13,10 +13,11 @@
                :dependencies (list)
                :conflicts (list)))
         (p (plug/create-plugin "plug-alpha" "Alpha Plugin" "1.0.0" 1 cap))]
-    (and (= (.-id p) "plug-alpha")
-         (and (= (.-name p) "Alpha Plugin")
-              (and (.-enabled p)
-                   (= (.-priority p) 1))))))
+    (assert (= (.-id p) "plug-alpha") "plugin id matches")
+    (assert (= (.-name p) "Alpha Plugin") "plugin name matches")
+    (assert (.-enabled p) "plugin is enabled")
+    (assert (= (.-priority p) 1) "plugin priority is 1")
+    true))
 
 (df test-registry-lifecycle [] -> Bool
   :d "Verifies registry creation, addition, lookup, and tool collection."
@@ -31,24 +32,28 @@
         (reg1 (plug/registry-add reg0 p))
         (found (plug/registry-find reg1 "p1"))
         (tools (plug/registry-get-tools reg1))]
-    (and (= (.-active-count reg1) 1)
-         (and (mt found
-                ((none) false)
-                ((some fp) (= (.-name fp) "Plugin One")))
-              (and (= (list-length tools) 2)
-                   (plug/contains-string? tools "test-cmd-a"))))))
+    (assert (= (.-active-count reg1) 1) "active count is 1")
+    (assert (match found
+              ((none) false)
+              ((some fp) (= (.-name fp) "Plugin One"))) "found plugin name matches")
+    (assert (= (list-length tools) 2) "tool count is 2")
+    (assert (plug/contains-string? tools "test-cmd-a") "contains test-cmd-a")
+    true))
 
 (df test-standard-harness-plugins [] -> Bool
   :d "Verifies standard built-in harness plugins registry initialization."
   (let [(std (plug/build-standard-harness-plugins))
         (tools (plug/registry-get-tools std))]
-    (and (>= (.-active-count std) 5)
-         (and (plug/contains-string? tools "intel-preload")
-              (and (plug/contains-string? tools "audit-ast-mutation")
-                   (plug/contains-string? tools "scan-component-usages"))))))
+    (assert (>= (.-active-count std) 5) "standard count >= 5")
+    (assert (plug/contains-string? tools "intel-preload") "has intel-preload")
+    (assert (plug/contains-string? tools "audit-ast-mutation") "has audit-ast-mutation")
+    (assert (plug/contains-string? tools "scan-component-usages") "has scan-component-usages")
+    true))
 
 (df run-tests [] -> Bool
   :d "Runs all plugin system tests."
-  (and (test-create-plugin)
-       (and (test-registry-lifecycle)
-            (test-standard-harness-plugins))))
+  (do
+    (test-create-plugin)
+    (test-registry-lifecycle)
+    (test-standard-harness-plugins)
+    true))

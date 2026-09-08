@@ -1,4 +1,4 @@
-(module asl-harness/benchmark/mcp-bridge
+(module asl-harness/mcp-bridge
   :d "MCP Bridge: exports GenSEAM Code Intelligence, Memory, and Toolchain to Claude Code isolated benchmark harness."
   :x [McpServerConfig generate-claude-mcp-config standard-genseam-servers verify-bridge-connectivity]
   :i [])

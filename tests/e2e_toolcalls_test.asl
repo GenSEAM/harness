@@ -20,7 +20,7 @@
       (assert (.-success res) "fs-read execution must succeed")
       (assert (= (.-call-id res) "tc-fs-1") "fs-read call-id must match")
       (assert (= (.-tool-name res) "fs-read") "fs-read tool-name must match")
-      (assert (= (.-output res) "File content read successfully") "fs-read output must match expected")
+      (assert (string-contains? (.-output res) "receipts.asn") "fs-read output must contain target path")
       (assert (= (.-error-msg res) "") "fs-read error-msg must be empty")
       true)))
 
@@ -32,7 +32,7 @@
       (assert (.-success res) "exec-cmd execution must succeed")
       (assert (= (.-call-id res) "tc-exec-1") "exec-cmd call-id must match")
       (assert (= (.-tool-name res) "exec-cmd") "exec-cmd tool-name must match")
-      (assert (= (.-output res) "Process exited with code 0") "exec-cmd output must match expected")
+      (assert (string-contains? (.-output res) "asl check") "exec-cmd output must contain command")
       (assert (= (.-error-msg res) "") "exec-cmd error-msg must be empty")
       true)))
 
@@ -44,7 +44,7 @@
       (assert (.-success res) "ast-search execution must succeed")
       (assert (= (.-call-id res) "tc-ast-1") "ast-search call-id must match")
       (assert (= (.-tool-name res) "ast-search") "ast-search tool-name must match")
-      (assert (= (.-output res) "Found 1 AST node match") "ast-search output must match expected")
+      (assert (string-contains? (.-output res) "execute-builtin-tool") "ast-search output must contain query")
       (assert (= (.-error-msg res) "") "ast-search error-msg must be empty")
       true)))
 

@@ -11,21 +11,24 @@
 (df test-create-runner-config [] -> Bool
   (let [(prof (br/BenchmarkProfile
                 :model-name "gemma-4-31b-it"
-                :endpoint "https://api.llmgateway.io/v1"
+                :endpoint "http://127.0.0.1:8765/v1"
                 :isolated true
                 :mode "genseam-asl"))
         (cfg (br/create-runner-config prof "/tmp/isolated-test" (list "fs" "exec" "ast")))]
-    (and (== (.-config-dir cfg) "/tmp/isolated-test")
-         (== (list-length (.-direct-tools cfg)) 3)
-         (not (.-has-secret-leaks cfg)))))
+    (assert (= (.-config-dir cfg) "/tmp/isolated-test") "config-dir matches")
+    (assert (= (list-length (.-direct-tools cfg)) 3) "three direct tools")
+    (assert (not (.-has-secret-leaks cfg)) "no secret leaks in runner config")
+    true))
 
 (df test-validate-runner-security-clean [] -> Bool
   (let [(clean-str "export LLM_GATEWAY_API_KEY=\"$ENV_VAR_SECRET\"")]
-    (br/validate-runner-security clean-str)))
+    (assert (br/validate-runner-security clean-str) "clean string passes security validation")
+    true))
 
 (df test-validate-runner-security-leak [] -> Bool
   (let [(leaked-str "export LLM_GATEWAY_API_KEY=\"llmgtwy_vLHJNl0D6XpsifrNXg2zKVtXDEX26m93H5E4g8RX\"")]
-    (not (br/validate-runner-security leaked-str))))
+    (assert (not (br/validate-runner-security leaked-str)) "leaked secret caught by security validation")
+    true))
 
 (df test-format-runner-banner [] -> Bool
   (let [(prof (br/BenchmarkProfile
@@ -35,12 +38,15 @@
                 :mode "factor-matrix"))
         (cfg (br/create-runner-config prof "/tmp/test" (list "intel")))
         (banner (br/format-runner-banner cfg))]
-    (and (string-contains? banner "Launching ASL Benchmark Runner: qwen-2.5-1.5b")
-         (string-contains? banner "Mode: factor-matrix")
-         (string-contains? banner "STRICT SANDBOX"))))
+    (assert (string-contains? banner "Launching ASL Benchmark Runner: qwen-2.5-1.5b") "banner has model name")
+    (assert (string-contains? banner "Mode: factor-matrix") "banner has mode")
+    (assert (string-contains? banner "STRICT SANDBOX") "banner notes sandbox")
+    true))
 
 (df run-tests [] -> Bool
-  (and (test-create-runner-config)
-       (test-validate-runner-security-clean)
-       (test-validate-runner-security-leak)
-       (test-format-runner-banner)))
+  (do
+    (test-create-runner-config)
+    (test-validate-runner-security-clean)
+    (test-validate-runner-security-leak)
+    (test-format-runner-banner)
+    true))

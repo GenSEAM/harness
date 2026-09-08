@@ -113,7 +113,7 @@
            (nm-key (str "\"node_modules/" pkg-name "\""))]
        (if (or (string-contains? trimmed pkg-key) (string-contains? trimmed nm-key))
            (if (string-contains? trimmed ":")
-               (let [(after-colon (option-or (list-head (list-tail (string-split trimmed ":"))) ""))]
+               (let [(after-colon (option-or (list-head (option-or (list-tail (string-split trimmed ":")) (list))) ""))]
                  (if (string-contains? after-colon "\"")
                      (let [(val-clean (clean-version after-colon))]
                        (if (not (string-empty? val-clean))
@@ -123,7 +123,7 @@
                (NpmScanState :in-target-block true :found (none)))
            (if (.-in-target-block acc)
                (if (string-contains? trimmed "\"version\":")
-                   (let [(after-ver (option-or (list-head (list-tail (string-split trimmed "\"version\":"))) ""))
+                   (let [(after-ver (option-or (list-head (option-or (list-tail (string-split trimmed "\"version\":")) (list))) ""))
                          (val-clean (clean-version after-ver))]
                      (if (not (string-empty? val-clean))
                          (NpmScanState :in-target-block false :found (some val-clean))
@@ -182,7 +182,7 @@
               (PnpmScanState :in-target-block true :found (none))
               (if (.-in-target-block acc)
                   (if (string-starts-with? trimmed "version:")
-                      (let [(after-col (option-or (list-head (list-tail (string-split trimmed ":"))) ""))
+                      (let [(after-col (option-or (list-head (option-or (list-tail (string-split trimmed ":")) (list))) ""))
                             (ver (clean-version after-col))]
                         (if (not (string-empty? ver))
                             (PnpmScanState :in-target-block false :found (some ver))
@@ -212,7 +212,7 @@
                (TomlScanState :in-target-pkg true :found (none))
                (if (.-in-target-pkg acc)
                    (if (string-starts-with? trimmed "version =")
-                       (let [(after-eq (option-or (list-head (list-tail (string-split trimmed "="))) ""))
+                       (let [(after-eq (option-or (list-head (option-or (list-tail (string-split trimmed "=")) (list))) ""))
                              (ver (clean-version after-eq))]
                          (if (not (string-empty? ver))
                              (TomlScanState :in-target-pkg false :found (some ver))

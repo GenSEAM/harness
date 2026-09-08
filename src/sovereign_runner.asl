@@ -6,11 +6,16 @@
       format-benchmark-receipt
       EpistemicStep
       EpistemicRunTrace
+      EpistemicGuardrail
+      make-guardrail
+      make-default-guardrail
       make-epistemic-step
       run-epistemic-task
+      run-guarded-epistemic-task
       compare-epistemic-modes
       format-epistemic-trace]
-  :i [])
+  :i [(budget :a b)
+      (circuit_breaker :a cb)])
 
 (dfs BenchmarkMatrix
   (:f id Str "Unique benchmark matrix identifier")
@@ -109,7 +114,9 @@
   (:f steps (List EpistemicStep) "Ordered sequence of executed epistemic steps")
   (:f total-tokens I64 "Aggregated token consumption across all steps")
   (:f passed Bool "Overall task resolution status")
-  (:f summary Str "Executive summary of run"))
+  (:f summary Str "Executive summary of run")
+  (:f circuit-tripped Bool "True if circuit breaker tripped on repeated failures")
+  (:f budget-exceeded Bool "True if token ceiling or turn limit exceeded"))
 
 (df make-epistemic-step [(step-id Str) (name Str) (status Str) (tokens I64) (receipt Str)] -> EpistemicStep
   :d "Constructs an individual epistemic execution step record."
@@ -142,7 +149,9 @@
       :steps steps
       :total-tokens total
       :passed passed
-      :summary summary)))
+      :summary summary
+      :circuit-tripped false
+      :budget-exceeded false)))
 
 (df run-mode-3 [(task-id Str) (is-hard Bool)] -> EpistemicRunTrace
   :d "Executes Mode 3 Deep Sovereign Epistemic Loop (5 steps)."
@@ -169,10 +178,36 @@
       :steps steps
       :total-tokens total
       :passed passed
-      :summary summary)))
+      :summary summary
+      :circuit-tripped false
+      :budget-exceeded false)))
 
-(df run-epistemic-task [(task-id Str) (mode-num I64) (timeout-ms I64)] -> EpistemicRunTrace
-  :d "Executes benchmark challenge task under specified epistemic pipeline mode."
+(dfs EpistemicGuardrail
+  (:f max-tokens I64 "Maximum allowable token ceiling")
+  (:f max-turns I64 "Maximum allowable execution turns")
+  (:f loop-threshold I64 "Consecutive failure limit before tripping"))
+
+(df make-guardrail [(max-tokens I64) (max-turns I64) (loop-thresh I64)] -> EpistemicGuardrail
+  :d "Constructs an EpistemicGuardrail with specified ceilings and trip threshold"
+  (EpistemicGuardrail
+    :max-tokens max-tokens
+    :max-turns max-turns
+    :loop-threshold loop-thresh))
+
+(df make-default-guardrail [] -> EpistemicGuardrail
+  :d "Constructs default fail-fast guardrail with 35k token ceiling, 8 turns, and loop threshold 2"
+  (make-guardrail 35000 8 2))
+
+(dfs GuardedStepAcc
+  (:f steps (List EpistemicStep) "Accumulated steps")
+  (:f total-tokens I64 "Accumulated token count")
+  (:f budget b/BudgetTracker "Active budget tracker")
+  (:f circuit-breaker cb/CircuitBreaker "Active circuit breaker")
+  (:f circuit-tripped Bool "Tripped state")
+  (:f budget-exceeded Bool "Budget exceeded state"))
+
+(df run-guarded-epistemic-task [(task-id Str) (mode-num I64) (timeout-ms I64) (guardrail EpistemicGuardrail)] -> EpistemicRunTrace
+  :d "Executes benchmark challenge task under specified epistemic pipeline mode with budget and circuit breaker guards."
   (if (<= timeout-ms 0)
     (EpistemicRunTrace
       :task-id task-id
@@ -180,21 +215,80 @@
       :steps (list)
       :total-tokens 0
       :passed false
-      :summary (str "Task " task-id " execution timed out before start"))
+      :summary (str "Task " task-id " execution timed out before start")
+      :circuit-tripped false
+      :budget-exceeded false)
     (let [(is-hard (or (string-contains? task-id "HARD")
                        (or (string-contains? task-id "FAIL")
                            (or (string-contains? task-id "fail")
-                               (string-contains? task-id "error")))))]
-      (cond
-        ((= mode-num 2) (run-mode-2 task-id is-hard))
-        ((= mode-num 3) (run-mode-3 task-id is-hard))
-        (true (EpistemicRunTrace
-                :task-id task-id
-                :mode mode-num
-                :steps (list)
-                :total-tokens 0
-                :passed false
-                :summary (str "Unsupported epistemic mode: " (string-from-int64 mode-num))))))))
+                               (string-contains? task-id "error")))))
+          (cand-trace (cond
+                        ((= mode-num 2) (run-mode-2 task-id is-hard))
+                        ((= mode-num 3) (run-mode-3 task-id is-hard))
+                        (true (EpistemicRunTrace
+                                :task-id task-id
+                                :mode mode-num
+                                :steps (list)
+                                :total-tokens 0
+                                :passed false
+                                :summary (str "Unsupported epistemic mode: " (string-from-int64 mode-num))
+                                :circuit-tripped false
+                                :budget-exceeded false))))
+          (init-acc (GuardedStepAcc
+                      :steps (list)
+                      :total-tokens 0
+                      :budget (b/make-budget (.-max-tokens guardrail) (.-max-turns guardrail) timeout-ms)
+                      :circuit-breaker (cb/make-circuit-breaker (.-loop-threshold guardrail))
+                      :circuit-tripped false
+                      :budget-exceeded false))
+          (final-acc (fold (fn [(acc GuardedStepAcc) (s EpistemicStep)] -> GuardedStepAcc
+                             (if (or (.-circuit-tripped acc) (.-budget-exceeded acc))
+                               acc
+                               (let [(step-tok (.-tokens s))
+                                     (next-b (b/record-turn (.-budget acc) step-tok 50))
+                                     (is-over (b/is-budget-exceeded? next-b))]
+                                 (if is-over
+                                   (GuardedStepAcc
+                                     :steps (list-append (.-steps acc) (list s))
+                                     :total-tokens (+ (.-total-tokens acc) step-tok)
+                                     :budget next-b
+                                     :circuit-breaker (.-circuit-breaker acc)
+                                     :circuit-tripped false
+                                     :budget-exceeded true)
+                                   (let [(is-failed (= (.-status s) ":failed"))
+                                         (next-cb (if is-failed
+                                                    (cb/record-failure (.-circuit-breaker acc) (.-name s))
+                                                    (cb/record-success (.-circuit-breaker acc))))
+                                         (is-trip (cb/is-tripped? next-cb))]
+                                     (GuardedStepAcc
+                                       :steps (list-append (.-steps acc) (list s))
+                                       :total-tokens (+ (.-total-tokens acc) step-tok)
+                                       :budget next-b
+                                       :circuit-breaker next-cb
+                                       :circuit-tripped is-trip
+                                       :budget-exceeded false))))))
+                           init-acc
+                           (.-steps cand-trace)))
+          (tripped (.-circuit-tripped final-acc))
+          (over-budget (.-budget-exceeded final-acc))
+          (summary-msg (if tripped
+                         (str "Task " task-id " halted early by circuit breaker: threshold reached")
+                         (if over-budget
+                           (str "Task " task-id " halted early: budget ceiling exceeded")
+                           (.-summary cand-trace))))]
+      (EpistemicRunTrace
+        :task-id task-id
+        :mode mode-num
+        :steps (.-steps final-acc)
+        :total-tokens (.-total-tokens final-acc)
+        :passed (and (not is-hard) (and (not tripped) (not over-budget)))
+        :summary summary-msg
+        :circuit-tripped tripped
+        :budget-exceeded over-budget))))
+
+(df run-epistemic-task [(task-id Str) (mode-num I64) (timeout-ms I64)] -> EpistemicRunTrace
+  :d "Executes benchmark challenge task under specified epistemic pipeline mode with default guardrails."
+  (run-guarded-epistemic-task task-id mode-num timeout-ms (make-default-guardrail)))
 
 (df format-epistemic-trace [(trace EpistemicRunTrace)] -> Str
   :d "Formats epistemic run trace into structured ASN representation."
@@ -217,6 +311,8 @@
          "  :mode " (string-from-int64 (.-mode trace)) "\n"
          "  :total-tokens " (string-from-int64 (.-total-tokens trace)) "\n"
          "  :passed " (if (.-passed trace) "true" "false") "\n"
+         "  :circuit-tripped " (if (.-circuit-tripped trace) "true" "false") "\n"
+         "  :budget-exceeded " (if (.-budget-exceeded trace) "true" "false") "\n"
          "  :summary \"" (.-summary trace) "\"\n"
          steps-body "\n"
          ")")))

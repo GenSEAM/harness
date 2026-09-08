@@ -55,7 +55,7 @@
                 :verification-command gate-cmd
                 :executed false
                 :passed false))
-        (updated-items (list-append (.-planned-items state) item))]
+        (updated-items (list-concat (.-planned-items state) (list item)))]
     (HarnessTurnState
       :planned-items updated-items
       :mutating-actions-count (.-mutating-actions-count state)
@@ -66,7 +66,7 @@
   :d "Enforces plan-before-act invariant on mutating actions."
   (if (not (is-mutating-action? action-kind))
       (VerificationResult :approved true :reason "Read-only action allowed without plan" :feedback "")
-      (if (list-empty? (.-planned-items state))
+      (if (= (list-length (.-planned-items state)) 0)
           (VerificationResult
             :approved false
             :reason "Plan-before-act invariant violation"
@@ -119,7 +119,7 @@
   (let [(items (.-planned-items state))]
     (if (not agent-claim-success)
         (VerificationResult :approved true :reason "Agent reported failure or incomplete turn" :feedback "")
-        (if (list-empty? items)
+        (if (= (list-length items) 0)
             (if (> (.-mutating-actions-count state) 0)
                 (VerificationResult
                   :approved false
@@ -129,12 +129,12 @@
             (let [(unexecuted (filter (fn [(it PlanGateItem)] -> Bool (not (.-executed it))) items))
                   (failed (filter (fn [(it PlanGateItem)] -> Bool (and (.-executed it) (not (.-passed it)))) items))]
               (cond
-                ((not (list-empty? unexecuted))
+                ((> (list-length unexecuted) 0)
                  (VerificationResult
                    :approved false
                    :reason "ESH violation: Claimed success but verification gate was never executed"
                    :feedback "You cannot claim task completion until all verification commands have executed."))
-                ((not (list-empty? failed))
+                ((> (list-length failed) 0)
                  (VerificationResult
                    :approved false
                    :reason "ESH violation: Claimed success but verification gate failed (exit code != 0)"

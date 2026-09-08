@@ -1,6 +1,10 @@
 (module asl-harness/worker
   :d "Autonomous multi-session worker loop with continuous phase polling, sequential gate verification, ProcessReceipt demuxing, and pre-commit blast-radius boundary guarding."
   :x [ProcessReceipt
+      DiagnosticReceipt
+      make-diagnostic-receipt
+      format-diagnostic-receipt
+      emit-string-not-found-receipt
       WorkerConfig
       WorkerState
       StepOutcome
@@ -64,6 +68,13 @@
   (:f spool-path Str "Filesystem path to ephemeral disk spool")
   (:f summary Str "Compact diagnostic string (<100 tokens, errors only)")
   (:f tokens I64 "Estimated BPE token count of rendered receipt"))
+
+(dfs DiagnosticReceipt
+  (:f code Str "Diagnostic error code e.g. ERR_STRING_NOT_FOUND or OK")
+  (:f failed-seek Str "The string that failed to be found or sought")
+  (:f hint Str "Closest matching string or candidate hint")
+  (:f action Str "Suggested corrective action e.g. asl rpc (:batch (:read ...))")
+  (:f details Str "Detailed diagnostic description"))
 
 (dfs BlastRadiusGuard
   (:f is-safe Bool "True if all modified symbols/paths remain within declared boundaries")
@@ -149,6 +160,32 @@
       :spool-path spool-path
       :summary summary
       :tokens toks)))
+
+(df make-diagnostic-receipt [(code Str) (seek Str) (hint Str) (action Str) (details Str)] -> DiagnosticReceipt
+  :d "Constructs a structured diagnostic receipt for in-situ error feedback."
+  (DiagnosticReceipt
+    :code code
+    :failed-seek seek
+    :hint hint
+    :action action
+    :details details))
+
+(df format-diagnostic-receipt [(diag DiagnosticReceipt)] -> Str
+  :d "Serializes DiagnosticReceipt into compact affirmative S-expression."
+  (str "(:diagnostic :code :" (.-code diag)
+       " :failed-seek \"" (.-failed-seek diag)
+       "\" :hint \"" (.-hint diag)
+       "\" :action \"" (.-action diag)
+       "\" :details \"" (.-details diag) "\")"))
+
+(df emit-string-not-found-receipt [(target-str Str) (candidate-hint Str) (target-file Str)] -> DiagnosticReceipt
+  :d "Constructs an ERR_STRING_NOT_FOUND diagnostic receipt."
+  (make-diagnostic-receipt
+    "ERR_STRING_NOT_FOUND"
+    target-str
+    candidate-hint
+    (str "asl rpc '(:batch (:read \"" target-file "\" 1 50))'")
+    (str "Target string not found in " target-file "; consult closest match in hint.")))
 
 (df make-worker-config [(agent-id Str) (continuous Bool) (max-cycles I64) (idle-interval-ms I64) (owns (List Str))] -> WorkerConfig
   :d "Constructs configuration for autonomous implementer worker daemon."

@@ -1,8 +1,8 @@
 (module asl-harness/teleology
   :d "Agent Teleology, Epistemic Mandates, and Value Hierarchy Engine"
   :x [AgentMandate ValuePriority make-agent-mandate validate-action-against-mandate
-      format-mandate-prompt make-scout-mandate make-planner-mandate
-      make-implementer-mandate make-auditor-mandate]
+      format-mandate-prompt mandate->tuple make-scout-mandate make-planner-mandate
+      make-implementer-mandate make-auditor-mandate make-arbiter-mandate]
   :i [])
 
 (dfs ValuePriority
@@ -80,6 +80,19 @@
               (ValuePriority :priority 3 :value-name "Clean Context Objectivity > Incremental Bias" :rationale "Evaluate code independently from author rationale using genuine receipts"))
     :operational-posture "Skeptical and falsification-driven. Requires executable evidence and citations for every claim."))
 
+(df make-arbiter-mandate [] -> AgentMandate
+  :d "Constructs the canonical teleological mandate for the Arbiter and Supervisor archetype."
+  (AgentMandate
+    :archetype-id "arbiter"
+    :purpose "Multi-agent task supervisor assigning disjoint work streams."
+    :zone-of-responsibility (list "work stream assignment" "disjoint authority" "supervisor handoff" "conflict arbitration")
+    :out-of-scope (list "code execution" "gate weakening" "speculative implementation" "monolithic execution")
+    :values (list
+              (ValuePriority :priority 1 :value-name "Disjoint Authority & Zero Contention" :rationale "Specialized workers must have non-overlapping boundaries")
+              (ValuePriority :priority 2 :value-name "Deterministic Orchestration > Ad-hoc Routing" :rationale "Task routing must be grounded in capability matching")
+              (ValuePriority :priority 3 :value-name "Supervised Verification > Blind Delegation" :rationale "Every delegated item must produce verified receipts"))
+    :operational-posture "Deterministic orchestration. Routes tasks to specialized lanes with disjoint boundaries."))
+
 (df validate-action-against-mandate [(mandate AgentMandate) (action Str)] -> Bool
   :d "Validates whether proposed agent action conforms to the epistemic boundaries and value hierarchy of its teleological mandate."
   (let [(act (string-lower action))
@@ -127,6 +140,11 @@
          ((string-contains? act "plan without gate") false)
          ((string-contains? act "execute code") false)
          (:else true)))
+      ((= arch "arbiter")
+       (cond
+         ((string-contains? act "monolithic execution") false)
+         ((string-contains? act "execute code directly") false)
+         (:else true)))
       (:else true))))
 
 (df format-mandate-prompt [(mandate AgentMandate)] -> Str
@@ -137,3 +155,13 @@
     (str "Mandate [" (.-archetype-id mandate) "]: " (.-purpose mandate)
          " | Primary Invariant: " top-val
          " | Posture: " (.-operational-posture mandate))))
+
+(df mandate->tuple [(mandate AgentMandate)] -> Str
+  :d "Serializes an AgentMandate into a compact affirmative S-expression tuple."
+  (let [(top-val (if (> (len (.-values mandate)) 0)
+                   (.-value-name (get (.-values mandate) 0))
+                   "Integrity"))]
+    (str "(:mandate :id \"" (.-archetype-id mandate)
+         "\" :purpose \"" (.-purpose mandate)
+         "\" :posture \"" (.-operational-posture mandate)
+         "\" :primary-invariant \"" top-val "\")")))

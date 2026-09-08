@@ -9,9 +9,10 @@
   (let [(case1 (norm/normalize-identifier "read_file_content"))
         (case2 (norm/normalize-identifier "execute command"))
         (case3 (norm/normalize-identifier "get-ast-node"))]
-    (and (= case1 "read-file-content")
-         (and (= case2 "execute-command")
-              (= case3 "get-ast-node")))))
+    (assert (= case1 "read-file-content") "snake_case must convert to kebab-case")
+    (assert (= case2 "execute-command") "spaces must convert to kebab-case")
+    (assert (= case3 "get-ast-node") "kebab-case must remain unchanged")
+    true))
 
 (df test-canonicalize-keywords [] -> Bool
   :d "Verifies keyword canonicalization from common LLM hallucinations."
@@ -23,14 +24,15 @@
         (kw-enum (norm/canonicalize-keyword "defenum"))
         (kw-match (norm/canonicalize-keyword "match"))
         (kw-cond (norm/canonicalize-keyword "cond*"))]
-    (and (= kw-def "df")
-         (and (= kw-defun "df")
-              (and (= kw-defn "df")
-                   (and (= kw-fn "fn")
-                        (and (= kw-struct "dfs")
-                             (and (= kw-enum "dfe")
-                                  (and (= kw-match "mt")
-                                       (= kw-cond "cond"))))))))))
+    (assert (= kw-def "df") "def -> df")
+    (assert (= kw-defun "df") "defun -> df")
+    (assert (= kw-defn "df") "defn -> df")
+    (assert (= kw-fn "fn") "fn* -> fn")
+    (assert (= kw-struct "dfs") "struct -> dfs")
+    (assert (= kw-enum "dfe") "defenum -> dfe")
+    (assert (= kw-match "mt") "match -> mt")
+    (assert (= kw-cond "cond") "cond* -> cond")
+    true))
 
 (df test-canonicalize-types [] -> Bool
   :d "Verifies type identifier mapping into canonical ASL types."
@@ -40,21 +42,26 @@
         (t-bool (norm/canonicalize-type "boolean"))
         (t-f64 (norm/canonicalize-type "float64"))
         (t-unit (norm/canonicalize-type "void"))]
-    (and (= t-str "Str")
-         (and (= t-i64 "I64")
-              (and (= t-i32 "I32")
-                   (and (= t-bool "Bool")
-                        (and (= t-f64 "F64")
-                             (= t-unit "Unit"))))))))
+    (assert (= t-str "Str") "string -> Str")
+    (assert (= t-i64 "I64") "int64 -> I64")
+    (assert (= t-i32 "I32") "int32 -> I32")
+    (assert (= t-bool "Bool") "boolean -> Bool")
+    (assert (= t-f64 "F64") "float64 -> F64")
+    (assert (= t-unit "Unit") "void -> Unit")
+    true))
 
 (df test-balance-delimiters [] -> Bool
   :d "Verifies auto-closing of unclosed delimiter balance."
   (let [(unclosed "(df calculate [(x I64)] (+ x 1")
         (balanced (norm/balance-delimiters unclosed))
         (nested "(let [(a 1) (b 2)] (+ a b")
-        (nested-balanced (norm/balance-delimiters nested))]
-    (and (string-contains? balanced "))")
-         (string-contains? nested-balanced "))"))))
+        (nested-balanced (norm/balance-delimiters nested))
+        (with-str "(print \"hello ) world\"")
+        (balanced-str (norm/balance-delimiters with-str))]
+    (assert (string-contains? balanced "))") "Unclosed must append closing parens")
+    (assert (string-contains? nested-balanced "))") "Nested must append closing parens")
+    (assert (= balanced-str "(print \"hello ) world\")") "Parens in string literal must not cause extra closer")
+    true))
 
 (df test-repair-hallucinations [] -> Bool
   :d "Verifies end-to-end hallucination repair and cleanliness reporting."
@@ -62,10 +69,11 @@
         (rep-dirty (norm/repair-hallucinations dirty))
         (clean "(df compute [(x Str)] -> I64 x)")
         (rep-clean (norm/repair-hallucinations clean))]
-    (and (not (.-is-clean rep-dirty))
-         (and (= (.-repairs-count rep-dirty) 1)
-              (and (.-is-clean rep-clean)
-                   (= (.-repairs-count rep-clean) 0))))))
+    (assert (not (.-is-clean rep-dirty)) "Dirty snippet must not be clean")
+    (assert (= (.-repairs-count rep-dirty) 1) "Repairs count must be 1")
+    (assert (.-is-clean rep-clean) "Clean snippet must be clean")
+    (assert (= (.-repairs-count rep-clean) 0) "Clean snippet repairs must be 0")
+    true))
 
 (df run-tests [] -> Bool
   :d "Executes full normalizer test suite."

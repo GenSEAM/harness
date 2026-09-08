@@ -1,11 +1,13 @@
 (module asl-harness/config
   :d "Configurable constructor, model profiles, hierarchical config cascading, and pluggable extension registry for ASL Harness."
-  :x [ModelProfile PluginHook HarnessPlugin HarnessConfig HookPredicate
+  :x [ModelProfile PluginHook HarnessPlugin HarnessConfig HookPredicate CoverageConfig
       AsnValue AsnField
       asn-nil asn-bool asn-unit asn-int asn-float asn-str asn-kw asn-sym
       asn-vec asn-map asn-rec asn-ctor asn-rows asn-table asn-case asn-pair
       WorkspaceScope RepoKind WorktreeInfo StorageConfig WorkspaceContext
       profile-gemma-31b profile-qwen-05b profile-default default-harness-config
+      benchmark-harness-config production-harness-config
+      default-coverage-config coverage-config-to-asn-node coverage-config-from-asn-node
       toggle-feature feature-enabled? register-plugin
       enable-experimental experimental-enabled? make-plugin
       detect-repo-kind parse-gitdir-file extract-worktree-id detect-worktree
@@ -64,12 +66,18 @@
   (:f enabled Bool "Activation flag")
   (:f description Str "Functional plugin description"))
 
+(dfs CoverageConfig
+  (:f desired-coverage Float "Target test qualification coverage percentage")
+  (:f min-assertions-per-test I64 "Minimum assertions per test case")
+  (:f discount-zero-asserts Bool "Strictly discount tests without assertions from coverage"))
+
 (dfs HarnessConfig
   (:f profile ModelProfile "Active model optimization profile")
   (:f flags (Map Str Bool) "Granular feature flag toggles")
   (:f plugins (List HarnessPlugin) "Registered extension plugins")
   (:f experimental (List Str) "Active experimental feature identifiers")
-  (:f custom-settings (Map Str Str) "Arbitrary string configuration key-values"))
+  (:f custom-settings (Map Str Str) "Arbitrary string configuration key-values")
+  (:f coverage CoverageConfig "Configured test coverage thresholds and metrics"))
 
 (dfe WorkspaceScope
   (:c scope-global [] "Global fallback defaults")
@@ -157,7 +165,44 @@
       :flags init-flags
       :plugins (list)
       :experimental (list)
-      :custom-settings (map-empty))))
+      :custom-settings (map-empty)
+      :coverage (default-coverage-config))))
+
+(df benchmark-harness-config [] -> HarnessConfig
+  :d "Constructs hermetic benchmark harness configuration: airgapped, strict falsifiable gates, CTRF tracking, and L7 gateway nexus."
+  (let [(prof (profile-gemma-31b))
+        (flags-1 (map-set (map-empty) "airgap" true))
+        (flags-2 (map-set flags-1 "strict-falsification" true))
+        (flags-3 (map-set flags-2 "ctrf-tracking" true))
+        (flags-4 (map-set flags-3 "fsm-normalizer" true))
+        (flags-5 (map-set flags-4 "firewall" true))
+        (sets-1 (map-set (map-empty) "gateway-url" "http://127.0.0.1:8765/v1"))
+        (sets-2 (map-set sets-1 "timeout-seconds" "300"))]
+    (HarnessConfig
+      :profile prof
+      :flags flags-5
+      :plugins (list)
+      :experimental (list "hermetic-sandbox" "scalar-loss")
+      :custom-settings sets-2
+      :coverage (default-coverage-config))))
+
+(df production-harness-config [] -> HarnessConfig
+  :d "Constructs production engineering harness configuration: full 5-stage epistemic loop, git worktrees, self-healing, and L7 gateway nexus."
+  (let [(prof (profile-gemma-31b))
+        (flags-1 (map-set (map-empty) "airgap" false))
+        (flags-2 (map-set flags-1 "epistemic-cycle" true))
+        (flags-3 (map-set flags-2 "git-worktrees" true))
+        (flags-4 (map-set flags-3 "compiler-feedback" true))
+        (flags-5 (map-set flags-4 "repl-in-memory" true))
+        (sets-1 (map-set (map-empty) "gateway-url" "http://127.0.0.1:8765/v1"))
+        (sets-2 (map-set sets-1 "epistemic-pipeline" "scout->plan->gap-audit->implement->reconcile"))]
+    (HarnessConfig
+      :profile prof
+      :flags flags-5
+      :plugins (list)
+      :experimental (list "ast-patch" "worktree-isolation")
+      :custom-settings sets-2
+      :coverage (default-coverage-config))))
 
 (df toggle-feature [(cfg HarnessConfig) (feature-name Str) (enable Bool)] -> HarnessConfig
   :d "Toggles a specific feature flag on or off in the harness configuration."
@@ -167,7 +212,8 @@
       :flags updated-flags
       :plugins (.-plugins cfg)
       :experimental (.-experimental cfg)
-      :custom-settings (.-custom-settings cfg))))
+      :custom-settings (.-custom-settings cfg)
+      :coverage (.-coverage cfg))))
 
 (df feature-enabled? [(cfg HarnessConfig) (feature-name Str)] -> Bool
   :d "Checks if a specific feature flag is actively enabled."
@@ -182,7 +228,8 @@
       :flags (.-flags cfg)
       :plugins updated-plugins
       :experimental (.-experimental cfg)
-      :custom-settings (.-custom-settings cfg))))
+      :custom-settings (.-custom-settings cfg)
+      :coverage (.-coverage cfg))))
 
 (df enable-experimental [(cfg HarnessConfig) (flag Str)] -> HarnessConfig
   :d "Enables an experimental opt-in feature flag."
@@ -193,7 +240,8 @@
       :flags (.-flags cfg)
       :plugins (.-plugins cfg)
       :experimental updated
-      :custom-settings (.-custom-settings cfg))))
+      :custom-settings (.-custom-settings cfg)
+      :coverage (.-coverage cfg))))
 
 (df experimental-enabled? [(cfg HarnessConfig) (flag Str)] -> Bool
   :d "Checks whether an experimental feature flag is active."
@@ -217,7 +265,7 @@
   :d "Extracts and canonicalizes gitdir path from .git file, resolving relative paths."
   (let [(trimmed (string-trim dot-git-content))]
     (if (string-starts-with? trimmed "gitdir:")
-        (let [(raw-path (string-trim (string-slice trimmed 7 (string-length trimmed))))]
+        (let [(raw-path (string-trim (option-or (string-slice trimmed 7 (string-length trimmed)) "")))]
           (if (string-starts-with? raw-path "/")
               (some raw-path)
               (some (str workspace-path "/" raw-path))))
@@ -225,7 +273,7 @@
 
 (df extract-worktree-id [(normalized-gitdir Str)] -> Str
   :d "Extracts unique worktree identifier from canonical gitdir path."
-  (let [(segments (string-split "/" normalized-gitdir))]
+  (let [(segments (string-split normalized-gitdir "/"))]
     (if (list-empty? segments)
         "default"
         (fold (fn [(acc Str) (seg Str)] -> Str
@@ -309,6 +357,53 @@
   (mt v
     ((asn-int s) (option-or (string-to-int64 s) default-val))
     (_ default-val)))
+
+(df asn-extract-float [(v AsnValue) (default-val Float)] -> Float
+  :d "Extracts float from ASN value."
+  (mt v
+    ((asn-float s) (option-or (string-to-float64 s) default-val))
+    ((asn-int s) (int64-to-float64 (option-or (string-to-int64 s) (option-unwrap (float64-to-int64 default-val)))))
+    (_ default-val)))
+
+(df default-coverage-config [] -> CoverageConfig
+  :d "Constructs default coverage configuration with 80% target and dual-case (pos+neg) threshold."
+  (CoverageConfig
+    :desired-coverage 80.0
+    :min-assertions-per-test 2
+    :discount-zero-asserts true))
+
+(df coverage-config-to-asn-node [(cfg CoverageConfig)] -> AsnValue
+  :d "Serializes CoverageConfig struct into canonical ASN constructor AST node."
+  (asn-ctor "CoverageConfig"
+    (list (AsnField :key ":desired" :val (asn-float (string-from-float64 (.-desired-coverage cfg))))
+          (AsnField :key ":min-assertions" :val (asn-int (string-from-int64 (.-min-assertions-per-test cfg))))
+          (AsnField :key ":discount-zero-asserts" :val (asn-bool (.-discount-zero-asserts cfg))))))
+
+(df coverage-config-from-asn-node [(node AsnValue)] -> (Option CoverageConfig)
+  :d "Directly instantiates typed CoverageConfig struct from ASN AST node."
+  (let [(fields-opt (mt node
+                      ((asn-ctor _ fs) (some fs))
+                      ((asn-rec fs) (some fs))
+                      (_ (none))))]
+    (mt fields-opt
+      ((none) (none))
+      ((some fields)
+       (let [(opt-des (find-field-val fields ":desired"))
+             (opt-min (find-field-val fields ":min-assertions"))
+             (opt-disc (find-field-val fields ":discount-zero-asserts"))
+             (des-val (mt opt-des
+                        ((some v) (asn-extract-float v 80.0))
+                        ((none) 80.0)))
+             (min-val (mt opt-min
+                        ((some v) (asn-extract-int v 2))
+                        ((none) 2)))
+             (disc-val (mt opt-disc
+                         ((some v) (asn-extract-bool v true))
+                         ((none) true)))]
+         (some (CoverageConfig
+                 :desired-coverage des-val
+                 :min-assertions-per-test min-val
+                 :discount-zero-asserts disc-val)))))))
 
 (df model-profile-to-asn-node [(prof ModelProfile)] -> AsnValue
   :d "Serializes ModelProfile struct into canonical ASN constructor AST node."
@@ -399,13 +494,18 @@
                    ((none) c1)))
              (c3 (mt repl-node
                    ((some rn) (toggle-feature c2 "repl-in-memory" (asn-extract-bool rn true)))
-                   ((none) c2)))]
+                   ((none) c2)))
+             (cov-node (find-field-val fields ":coverage"))
+             (cov-cfg (mt cov-node
+                        ((some cn) (option-or (coverage-config-from-asn-node cn) (.-coverage base)))
+                        ((none) (.-coverage base))))]
          (some (HarnessConfig
                  :profile prof
                  :flags (.-flags c3)
                  :plugins (.-plugins base)
                  :experimental (.-experimental base)
-                 :custom-settings (.-custom-settings base))))))))
+                 :custom-settings (.-custom-settings base)
+                 :coverage cov-cfg)))))))
 
 (df evaluate-hook-predicate [(pred HookPredicate) (target-name Str) (context-tag Str)] -> Bool
   :d "Evaluates whether a hook predicate matches the target tool/file and execution context."

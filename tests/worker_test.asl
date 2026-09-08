@@ -26,6 +26,7 @@
       test-worker-step-item-failure
       test-worker-step-idle
       test-run-worker-loop-bounded
+      test-diagnostic-receipt
       run-tests]
   :i [(worker :a w)])
 
@@ -315,6 +316,20 @@
       (assert (> (.-cycle-count final-st) 0))
       true)))
 
+(df test-diagnostic-receipt [] -> Bool
+  :d "Verifies ERR_STRING_NOT_FOUND structured diagnostic receipt formatting and fields"
+  (let [(diag (w/emit-string-not-found-receipt "(:old-fn)" "(:old-fn-def)" "src/main.asl"))
+        (rendered (w/format-diagnostic-receipt diag))]
+    (do
+      (assert (= (.-code diag) "ERR_STRING_NOT_FOUND") "Diagnostic code must be ERR_STRING_NOT_FOUND")
+      (assert (= (.-failed-seek diag) "(:old-fn)") "Failed seek must match")
+      (assert (= (.-hint diag) "(:old-fn-def)") "Hint must match")
+      (assert (string-contains? (.-action diag) ":read") "Action must recommend targeted read")
+      (assert (string-contains? rendered ":diagnostic :code :ERR_STRING_NOT_FOUND") "Rendered must have diagnostic code")
+      (assert (string-contains? rendered ":failed-seek \"(:old-fn)\"") "Rendered must have failed-seek")
+      (assert (string-contains? rendered ":hint \"(:old-fn-def)\"") "Rendered must have hint")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Executes all worker engine and blast-radius guard test assertions under strict falsification."
   (do
@@ -344,4 +359,5 @@
     (assert (test-worker-step-item-failure) "t24: worker step failure")
     (assert (test-worker-step-idle) "t25: worker step idle")
     (assert (test-run-worker-loop-bounded) "t26: worker loop")
+    (assert (test-diagnostic-receipt) "t27: diagnostic receipt")
     true))

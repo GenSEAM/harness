@@ -58,13 +58,12 @@
 
 (df find-svg-task [(tasks (List SvgTask)) (id Str)] -> (Option SvgTask)
   :d "Finds a benchmark task by ID."
-  (cond
-    ((list-empty? tasks) (none))
-    (true
-     (let [(head (option-or (list-head tasks) (SvgTask :id "" :title "" :prompt "" :complexity "" :expected-tags (list))))]
-       (if (= (.-id head) id)
-           (some head)
-           (find-svg-task (list-tail tasks) id))))))
+  (if (= (list-length tasks) 0)
+      (none)
+      (let [(head (option-or (list-head tasks) (SvgTask :id "" :title "" :prompt "" :complexity "" :expected-tags (list))))]
+        (if (= (.-id head) id)
+            (some head)
+            (find-svg-task (option-or (list-tail tasks) (list)) id)))))
 
 (df validate-svg-syntax [(svg-str Str)] -> Bool
   :d "Checks that the SVG string has valid root opening, closing tags, and balanced delimiters."
@@ -75,12 +74,11 @@
 
 (df count-matching-tags [(svg-str Str) (tags (List Str))] -> I64
   :d "Counts how many required tags are present in the rendered SVG string."
-  (cond
-    ((list-empty? tags) 0)
-    (true
-     (let [(t (option-or (list-head tags) ""))
-           (matched (if (string-contains? svg-str t) 1 0))]
-       (+ matched (count-matching-tags svg-str (list-tail tags)))))))
+  (if (= (list-length tags) 0)
+      0
+      (let [(t (option-or (list-head tags) ""))
+            (matched (if (string-contains? svg-str t) 1 0))]
+        (+ matched (count-matching-tags svg-str (option-or (list-tail tags) (list)))))))
 
 (df evaluate-svg-task [(task SvgTask) (rendered-svg Str)] -> SvgEvalResult
   :d "Evaluates an LLM-generated SVG string against task requirements, token savings, and syntax invariants."
@@ -98,9 +96,9 @@
                       (/ (float-from-int64 found-tags) (float-from-int64 total-expected))
                       0.0))
         (aesthetic (if (and is-valid has-vb)
-                       (+ (* coverage 0.7) 0.3)
-                       (* coverage 0.4)))
-        (passed (and is-valid (and has-vb (>= coverage 0.5))))]
+                       (if (>= coverage 1.0) 0.9 0.6)
+                       0.2))
+        (success (and is-valid (and has-vb (>= coverage 0.5))))]
     (SvgEvalResult
       :task-id (.-id task)
       :valid-xml is-valid
@@ -110,7 +108,7 @@
       :asn-tokens asn-tok
       :savings-percent savings
       :aesthetic-score aesthetic
-      :success passed)))
+      :success success)))
 
 (df format-svg-report [(results (List SvgEvalResult))] -> Str
   :d "Formats benchmark evaluation results into a clean markdown table."
@@ -120,21 +118,20 @@
 
 (df format-rows [(results (List SvgEvalResult))] -> Str
   :d "Helper recursing over result list to format table rows."
-  (cond
-    ((list-empty? results) "")
-    (true
-     (let [(r (option-or (list-head results)
-                         (SvgEvalResult :task-id "" :valid-xml false :has-viewbox false :element-count 0 :raw-tokens 0 :asn-tokens 0 :savings-percent 0.0 :aesthetic-score 0.0 :success false)))
-           (status-str (if (.-success r) "✓ PASS" "✗ FAIL"))
-           (valid-str (if (.-valid-xml r) "YES" "NO"))
-           (vb-str (if (.-has-viewbox r) "YES" "NO"))
-           (row (s/concat "| " (.-task-id r)
-                          " | " valid-str
-                          " | " vb-str
-                          " | " (int64-to-string (.-element-count r))
-                          " | " (int64-to-string (.-raw-tokens r))
-                          " | " (int64-to-string (.-asn-tokens r))
-                          " | -" (int64-to-string (int64-from-float (.-savings-percent r))) "%"
-                          " | " (int64-to-string (int64-from-float (* (.-aesthetic-score r) 100.0))) "%"
-                          " | " status-str " |\n"))]
-       (s/concat row (format-rows (list-tail results)))))))
+  (if (= (list-length results) 0)
+      ""
+      (let [(r (option-or (list-head results)
+                          (SvgEvalResult :task-id "" :valid-xml false :has-viewbox false :element-count 0 :raw-tokens 0 :asn-tokens 0 :savings-percent 0.0 :aesthetic-score 0.0 :success false)))
+            (status-str (if (.-success r) "✓ PASS" "✗ FAIL"))
+            (valid-str (if (.-valid-xml r) "YES" "NO"))
+            (vb-str (if (.-has-viewbox r) "YES" "NO"))
+            (row (s/concat "| " (.-task-id r)
+                           " | " valid-str
+                           " | " vb-str
+                           " | " (int64-to-string (.-element-count r))
+                           " | " (int64-to-string (.-raw-tokens r))
+                           " | " (int64-to-string (.-asn-tokens r))
+                           " | -" (int64-to-string (int64-from-float (.-savings-percent r))) "%"
+                           " | " (int64-to-string (int64-from-float (* (.-aesthetic-score r) 100.0))) "%"
+                           " | " status-str " |\n"))]
+        (s/concat row (format-rows (option-or (list-tail results) (list)))))))

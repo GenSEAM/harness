@@ -24,20 +24,22 @@
 
 (df pop-matching-delim [(stack (List Str)) (target Str)] -> (List Str)
   :d "Pops the topmost matching opening delimiter from the stack."
-  (mt stack
-    ((list) (list))
-    ((cons h t)
-     (if (= h target)
-         t
-         (list-cons h (pop-matching-delim t target))))))
+  (if (list-empty? stack)
+    (list)
+    (let [(h (option-or (list-head stack) ""))
+          (t (option-or (list-tail stack) (list)))]
+      (if (= h target)
+        t
+        (list-cons h (pop-matching-delim t target))))))
 
 (df delims-to-closers [(stack (List Str))] -> Str
   :d "Converts stack of unclosed delimiters into string of matching closing delimiters."
-  (mt stack
-    ((list) "")
-    ((cons h t)
-     (let [(closer (if (= h "(") ")" (if (= h "[") "]" "")))]
-       (str closer (delims-to-closers t))))))
+  (if (list-empty? stack)
+    ""
+    (let [(h (option-or (list-head stack) ""))
+          (t (option-or (list-tail stack) (list)))
+          (closer (if (= h "(") ")" (if (= h "[") "]" "")))]
+      (str closer (delims-to-closers t)))))
 
 (df fsm-step [(st FsmTracker) (c Str)] -> FsmTracker
   :d "Processes a single character transition for delimiter tracking."
@@ -141,7 +143,7 @@
                         :open-parens 0
                         :open-brackets 0
                         :in-comment false))
-        (final-tracker (fold fsm-step init-tracker chars))
+        (final-tracker (fold (fn [(acc FsmTracker) (ch Str)] (fsm-step acc ch)) init-tracker chars))
         (st (.-state final-tracker))
         (p-count (.-open-parens final-tracker))
         (b-count (.-open-brackets final-tracker))

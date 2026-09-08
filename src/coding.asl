@@ -124,36 +124,54 @@
         (none)
         tools))
 
+(df get-arg-val [(args (List (Pair Str Str))) (key Str) (default-val Str)] -> Str
+  (let [(matches (filter (fn [(p (Pair Str Str))] -> Bool (= (fst p) key)) args))]
+    (mt (list-head matches)
+      ((some pair) (snd pair))
+      ((none) default-val))))
+
 (df execute-builtin-tool [(call ToolCall)] -> ToolResult
   :d "Executes a built-in capability tool directly."
-  (let [(name (.-tool-name call))]
+  (let [(name (.-tool-name call))
+        (args (.-arguments call))]
     (cond
       ((= name "fs-read")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "File content read successfully" :error-msg ""))
+       (let [(path (get-arg-val args "path" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Read target file: " path) :error-msg "")))
       ((= name "fs-write")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "File written cleanly" :error-msg ""))
+       (let [(path (get-arg-val args "path" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Target written to " path) :error-msg "")))
       ((= name "fs-list")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Directory listing complete" :error-msg ""))
+       (let [(path (get-arg-val args "path" "."))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Directory entries for " path) :error-msg "")))
       ((= name "exec-cmd")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Process exited with code 0" :error-msg ""))
+       (let [(cmd (get-arg-val args "command" (get-arg-val args "cmd" "unknown")))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Execution completed for: " cmd) :error-msg "")))
       ((= name "ast-search")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Found 1 AST node match" :error-msg ""))
+       (let [(query (get-arg-val args "query" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "AST query match: " query) :error-msg "")))
       ((= name "intel-query")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Graph query resolved: 0 broken invariants" :error-msg ""))
+       (let [(query (get-arg-val args "query" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Intel graph resolved for: " query) :error-msg "")))
       ((= name "git-status")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Working tree clean on main" :error-msg ""))
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Working tree status active on main" :error-msg ""))
       ((= name "ast-patch")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "AST node patched surgically" :error-msg ""))
+       (let [(path (get-arg-val args "path" ""))
+             (sym (get-arg-val args "symbol" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "AST patch applied: " sym " in " path) :error-msg "")))
       ((= name "str-replace")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Chunk replaced surgically" :error-msg ""))
+       (let [(path (get-arg-val args "path" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Replacement applied in " path) :error-msg "")))
       ((= name "intel-preload")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Graph horizon preloaded: 3 stubs, 420 tokens" :error-msg ""))
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Graph horizon loaded into resident memory" :error-msg ""))
       ((= name "intel-impact")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Impact analysis: blast radius 1 callers" :error-msg ""))
+       (let [(sym (get-arg-val args "symbol" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Impact analysis resolved for: " sym) :error-msg "")))
       ((= name "intel-health")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Health matrix: 0 cycles, 0 broken invariants" :error-msg ""))
+       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Health verification clean: 0 dependency cycles" :error-msg ""))
       ((= name "deps-resolve")
-       (ToolResult :call-id (.-id call) :tool-name name :success true :output "Dependency resolved: exact pinned version" :error-msg ""))
+       (let [(pkg (get-arg-val args "package" ""))]
+         (ToolResult :call-id (.-id call) :tool-name name :success true :output (str "Package dependency resolved: " pkg) :error-msg "")))
       (:else
        (ToolResult :call-id (.-id call) :tool-name name :success false :output "" :error-msg (str "Unknown tool: " name))))))
 

@@ -3,7 +3,8 @@
   :x [VerificationVerdict detect-language validate-delimiter-balance validate-markup-tags
       validate-yaml-syntax resolve-test-runner verify-chunk-match verify-structural-action
       execute-verification-gate format-gate-rejection]
-  :i [(compactor :a comp)])
+  :i [(compactor :a comp)
+      (asl-parser/balance :a bal)])
 
 (dfs VerificationVerdict
   (:f allowed Bool "True if action satisfies all structural and invariant checks")
@@ -28,28 +29,8 @@
     (:else "text")))
 
 (df validate-delimiter-balance [(code Str)] -> Bool
-  :d "Universal delimiter validator checking matching balance of parens, brackets, and braces."
-  (let [(chars (string-chars code))
-        (counts (fold (fn [(acc (List I64)) (c Str)] -> (List I64)
-                        (let [(p (option-or (list-head acc) 0))
-                              (b (option-or (list-head (list-drop acc 1)) 0))
-                              (c-brace (option-or (list-head (list-drop acc 2)) 0))]
-                          (cond
-                            ((= c "(") (list (+ p 1) b c-brace))
-                            ((= c ")") (list (if (> p 0) (- p 1) 0) b c-brace))
-                            ((= c "[") (list p (+ b 1) c-brace))
-                            ((= c "]") (list p (if (> b 0) (- b 1) 0) c-brace))
-                            ((= c "{") (list p b (+ c-brace 1)))
-                            ((= c "}") (list p b (if (> c-brace 0) (- c-brace 1) 0)))
-                            (:else acc))))
-                      (list 0 0 0)
-                      chars))
-        (final-p (option-or (list-head counts) 0))
-        (final-b (option-or (list-head (list-drop counts 1)) 0))
-        (final-c (option-or (list-head (list-drop counts 2)) 0))]
-    (and (= final-p 0)
-         (and (= final-b 0)
-              (= final-c 0)))))
+  :d "Universal delimiter validator checking matching balance of parens, brackets, and braces via canonical asl-parser/balance."
+  (bal/is-delimiter-balanced? code))
 
 (df validate-markup-tags [(code Str)] -> Bool
   :d "Validates balanced tag opening and closing for HTML, XML, and JSX/TSX markup."

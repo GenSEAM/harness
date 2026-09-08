@@ -9,6 +9,8 @@
       test-mode-2-standard-pipeline
       test-mode-3-deep-pipeline
       test-mode-comparative-metrics
+      test-guardrail-circuit-breaker-trip
+      test-guardrail-budget-ceiling-trip
       run-tests]
   :i [(sovereign_runner :a sr)])
 
@@ -205,6 +207,32 @@
       (assert (string-contains? fmt3 ":total-tokens 1080") "Formatted trace 3 must record total tokens 1080")
       true)))
 
+(df test-guardrail-circuit-breaker-trip [] -> Bool
+  :d "Verifies that consecutive step failures trip the circuit breaker and halt execution early."
+  (let [(guard (sr/make-guardrail 35000 8 1))
+        (trace (sr/run-guarded-epistemic-task "TB4-HARD-01" 3 30000 guard))
+        (steps (.-steps trace))]
+    (do
+      (assert (not (.-passed trace)) "Hard task under guarded execution must fail")
+      (assert (.-circuit-tripped trace) "Trace must record circuit breaker tripped")
+      (assert (not (.-budget-exceeded trace)) "Budget should not be exceeded")
+      (assert (= (list-length steps) 3) "Execution must halt immediately after first failure (gap-audit)")
+      (assert (string-contains? (.-summary trace) "circuit breaker") "Summary must mention circuit breaker")
+      true)))
+
+(df test-guardrail-budget-ceiling-trip [] -> Bool
+  :d "Verifies that exceeding token budget ceiling halts execution early."
+  (let [(guard (sr/make-guardrail 300 8 5))
+        (trace (sr/run-guarded-epistemic-task "TB4-SOLV-01" 3 30000 guard))
+        (steps (.-steps trace))]
+    (do
+      (assert (not (.-passed trace)) "Over-budget task execution must record passed false")
+      (assert (.-budget-exceeded trace) "Trace must record budget exceeded")
+      (assert (not (.-circuit-tripped trace)) "Circuit breaker must not be tripped on budget halt")
+      (assert (< (list-length steps) 5) "Execution must halt before all 5 steps complete")
+      (assert (string-contains? (.-summary trace) "budget ceiling exceeded") "Summary must state budget ceiling exceeded")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Runs all sovereign benchmark runner unit and integration tests."
   (and (test-benchmark-matrix-construction)
@@ -215,5 +243,7 @@
                            (and (test-benchmark-receipt-formatting)
                                 (and (test-mode-2-standard-pipeline)
                                      (and (test-mode-3-deep-pipeline)
-                                          (test-mode-comparative-metrics))))))))))
+                                          (and (test-mode-comparative-metrics)
+                                               (and (test-guardrail-circuit-breaker-trip)
+                                                    (test-guardrail-budget-ceiling-trip))))))))))))
 

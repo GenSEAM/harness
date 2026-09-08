@@ -9,7 +9,8 @@
       test-extract-composer-version
       test-extract-php-attributes
       test-audit-php-compatibility
-      run-polyglot-tests]
+      run-polyglot-tests
+      run-tests]
   :i [(polyglot-ast :a pa)
       (deps-php :a dp)])
 
@@ -20,11 +21,12 @@
         (l-go (pa/detect-source-language "cmd/daemon/main.go"))
         (l-rs (pa/detect-source-language "crates/core/src/lib.rs"))
         (l-php (pa/detect-source-language "app/Http/Controllers/UserController.php"))]
-    (and (mt l-py ((lang-python) true) (_ false))
-         (mt l-ts ((lang-typescript) true) (_ false))
-         (mt l-go ((lang-go) true) (_ false))
-         (mt l-rs ((lang-rust) true) (_ false))
-         (mt l-php ((lang-php) true) (_ false)))))
+    (assert (match l-py ((lang-python) true) (_ false)) "py is lang-python")
+    (assert (match l-ts ((lang-typescript) true) (_ false)) "ts is lang-typescript")
+    (assert (match l-go ((lang-go) true) (_ false)) "go is lang-go")
+    (assert (match l-rs ((lang-rust) true) (_ false)) "rs is lang-rust")
+    (assert (match l-php ((lang-php) true) (_ false)) "php is lang-php")
+    true))
 
 (df test-extract-polyglot-python-ast [] -> Bool
   :d "Tests Python function and class outline extraction"
@@ -37,8 +39,9 @@
                    "def main():\n"
                    "    p = DataPipeline()\n"))
         (outline (pa/extract-ast-outline code "pipeline.py"))]
-    (and (= (.-total-symbols outline) 4)
-         (> (string-length (pa/format-ast-outline outline)) 0))))
+    (assert (= (.-total-symbols outline) 4) "python total symbols is 4")
+    (assert (> (string-length (pa/format-ast-outline outline)) 0) "formatted outline non-empty")
+    true))
 
 (df test-extract-polyglot-typescript-ast [] -> Bool
   :d "Tests TypeScript function, class, and interface extraction"
@@ -52,7 +55,8 @@
                    "  return <div>{profile.email}</div>;\n"
                    "}\n"))
         (outline (pa/extract-ast-outline code "src/UserProfile.tsx"))]
-    (= (.-total-symbols outline) 3)))
+    (assert (= (.-total-symbols outline) 3) "ts total symbols is 3")
+    true))
 
 (df test-extract-polyglot-go-ast [] -> Bool
   :d "Tests Go function, struct, and interface extraction"
@@ -67,7 +71,8 @@
                    "    return nil\n"
                    "}\n"))
         (outline (pa/extract-ast-outline code "main.go"))]
-    (= (.-total-symbols outline) 3)))
+    (assert (= (.-total-symbols outline) 3) "go total symbols is 3")
+    true))
 
 (df test-extract-polyglot-rust-ast [] -> Bool
   :d "Tests Rust fn, struct, enum, and generic fn extraction"
@@ -87,8 +92,9 @@
         (outline (pa/extract-ast-outline code "src/lib.rs"))
         (last-sym (option-or (list-get (.-symbols outline) 3)
                              (pa/PolyglotSymbol :name "" :kind "" :line 0 :signature "" :docstring "")))]
-    (and (= (.-total-symbols outline) 4)
-         (= (.-name last-sym) "solve"))))
+    (assert (= (.-total-symbols outline) 4) "rust total symbols is 4")
+    (assert (= (.-name last-sym) "solve") "last sym is solve")
+    true))
 
 (df test-extract-polyglot-php-ast [] -> Bool
   :d "Tests PHP function, class, and interface extraction"
@@ -103,7 +109,8 @@
                    "    }\n"
                    "}\n"))
         (outline (pa/extract-ast-outline code "app/Services/StripeGateway.php"))]
-    (= (.-total-symbols outline) 3)))
+    (assert (= (.-total-symbols outline) 3) "php total symbols is 3")
+    true))
 
 (df test-extract-composer-version [] -> Bool
   :d "Tests extracting pinned package version from composer.lock"
@@ -120,9 +127,10 @@
                            "    ]\n"
                            "}\n"))
         (v (dp/extract-composer-version composer-lock "guzzlehttp/guzzle"))]
-    (mt v
-      ((none) false)
-      ((some ver) (= ver "7.8.1")))))
+    (assert (match v
+              ((none) false)
+              ((some ver) (= ver "7.8.1"))) "composer version is 7.8.1")
+    true))
 
 (df test-extract-php-attributes [] -> Bool
   :d "Tests PHP 8.x attribute extraction"
@@ -134,9 +142,10 @@
                    "    }\n"
                    "}\n"))
         (attrs (dp/extract-php-attributes code))]
-    (and (= (length attrs) 1)
-         (let [(first-attr (option-or (list-get attrs 0) (dp/PhpAttribute :target-symbol "" :attribute-name "" :arguments "" :line 0)))]
-           (= (.-attribute-name first-attr) "Route")))))
+    (assert (= (length attrs) 1) "1 php attribute found")
+    (let [(first-attr (option-or (list-get attrs 0) (dp/PhpAttribute :target-symbol "" :attribute-name "" :arguments "" :line 0)))]
+      (assert (= (.-attribute-name first-attr) "Route") "attribute is Route"))
+    true))
 
 (df test-audit-php-compatibility [] -> Bool
   :d "Tests detection of deprecated functions in PHP 8+"
@@ -145,18 +154,25 @@
                    "echo $fn(5);\n"))
         (report8 (dp/audit-php-compatibility code "8.2"))
         (report7 (dp/audit-php-compatibility code "7.4"))]
-    (and (not (.-compatible report8))
-         (= (length (.-violations report8)) 1)
-         (.-compatible report7))))
+    (assert (not (.-compatible report8)) "report8 not compatible")
+    (assert (= (length (.-violations report8)) 1) "1 violation in report8")
+    (assert (.-compatible report7) "report7 compatible")
+    true))
 
 (df run-polyglot-tests [] -> Bool
   :d "Runs complete test suite for Polyglot AST and PHP engine"
-  (and (test-detect-source-language)
-       (test-extract-polyglot-python-ast)
-       (test-extract-polyglot-typescript-ast)
-       (test-extract-polyglot-go-ast)
-       (test-extract-polyglot-rust-ast)
-       (test-extract-polyglot-php-ast)
-       (test-extract-composer-version)
-       (test-extract-php-attributes)
-       (test-audit-php-compatibility)))
+  (do
+    (test-detect-source-language)
+    (test-extract-polyglot-python-ast)
+    (test-extract-polyglot-typescript-ast)
+    (test-extract-polyglot-go-ast)
+    (test-extract-polyglot-rust-ast)
+    (test-extract-polyglot-php-ast)
+    (test-extract-composer-version)
+    (test-extract-php-attributes)
+    (test-audit-php-compatibility)
+    true))
+
+(df run-tests [] -> Bool
+  :d "Alias for run-polyglot-tests"
+  (run-polyglot-tests))

@@ -1,0 +1,122 @@
+;; Git-Native Model Calibration Knowledge Base
+;; Verified empirical configurations preventing blind parameter tuning
+(:model-calibration-knowledge-base
+  :registry-version "1.1.0"
+  :ts 1788880300000
+
+  :models [
+    (:model-profile
+      :model-id "qwen-2.5-0.5b"
+      :tier "micro-slm"
+      :optimal-strategy "jit-memory"
+      :optimal-temperature 0.1
+      :token-ceiling 1024
+      :keep-recent 0
+      :clamp-knowledge 200
+      :pathologies [
+        "Attention saturation on verbose conversational prose"
+        "Pass rate degrades from 94% down to 31% if multi-turn history uncompressed"
+      ]
+      :recommendation "Use pure affirmative S-expression schema and zero conversational history"
+    )
+
+    (:model-profile
+      :model-id "qwen-2.5-3b"
+      :tier "small-slm"
+      :optimal-strategy "agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 2048
+      :keep-recent 1
+      :clamp-knowledge 300
+      :pathologies [
+        "Occasional unclosed markdown backticks on multi-file refactors"
+      ]
+      :recommendation "Use agent self-directed context eviction (:ctx-op) to clear prior tool logs"
+    )
+
+    (:model-profile
+      :model-id "qwen-2.5-14b"
+      :tier "medium"
+      :optimal-strategy "agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 8192
+      :keep-recent 1
+      :clamp-knowledge 350
+      :pathologies [
+        "Mild attention drift on deep AST refactorings without explicit worktree isolation"
+      ]
+      :recommendation "Use agent-directed context eviction with staged diff review before commit"
+    )
+
+    (:model-profile
+      :model-id "gemini-2.5-flash"
+      :tier "medium"
+      :optimal-strategy "agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 8192
+      :keep-recent 1
+      :clamp-knowledge 350
+      :pathologies [
+        "Premature completion declarations without verified execution receipts (intercepted by ESH filter)"
+      ]
+      :recommendation "Route through L7 Gateway with strict ESH interception and affirmative ASN schemas"
+    )
+
+    (:model-profile
+      :model-id "gemma-4-31b-it"
+      :tier "midweight"
+      :optimal-strategy "agent-directed"
+      :optimal-temperature 0.15
+      :token-ceiling 4096
+      :keep-recent 1
+      :clamp-knowledge 350
+      :pathologies [
+        "Unclosed markdown code fences if prompted with raw prose"
+        "Overdumps bash stdout unless constrained by S-expression tools"
+      ]
+      :recommendation "Use Eddie ASL cognitive harness with agent self-eviction and 350-token knowledge clamping"
+    )
+
+    (:model-profile
+      :model-id "claude-3-7-sonnet"
+      :tier "frontier"
+      :optimal-strategy "agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 35000
+      :keep-recent 2
+      :clamp-knowledge 600
+      :pathologies [
+        "High token expenditure on recursive directory traversals unless constrained by AST outlines"
+      ]
+      :recommendation "Use AST outline (:out) and symbol (:sym) lookups via ASL batch RPC"
+    )
+
+    (:model-profile
+      :model-id "gpt-5.6-luna"
+      :tier "frontier"
+      :optimal-strategy "receipts"
+      :optimal-temperature 0.2
+      :token-ceiling 8192
+      :keep-recent 2
+      :clamp-knowledge 600
+      :pathologies [
+        "High per-token billing cost and latency on raw terminal dumps"
+      ]
+      :recommendation "Use rolling 1-line receipts (S2) to cut prompt cost by ~50% with zero quality degradation"
+    )
+
+    (:model-profile
+      :model-id "ling-3.0-flash"
+      :tier "fast-classifier"
+      :optimal-strategy "jit-memory"
+      :optimal-temperature 0.0
+      :token-ceiling 1024
+      :keep-recent 0
+      :clamp-knowledge 200
+      :pathologies [
+        "Not suited for long-horizon planning; designed for single-shot triage and classification"
+      ]
+      :recommendation "Use for live parameter normalization, gate validation, and sub-220ms dispatch"
+    )
+  ]
+)

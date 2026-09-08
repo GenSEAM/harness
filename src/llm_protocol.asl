@@ -2,9 +2,12 @@
   :d "Canonical ASL LLM Protocol engine with compact handshake envelope formatting and response parsing"
   :x [LLMProtocolConfig
       LLMResponseEnvelope
+      ProtocolEnvelope
       format-protocol-envelope
-      parse-protocol-response]
-  :i [])
+      format-affirmative-envelope
+      parse-protocol-response
+      parse-affirmative-response]
+  :i [(asl-parser/balance :a bal)])
 
 (dfs LLMProtocolConfig
   (:f model Str "Target model identifier e.g. gemma-4-31b-it or claude-3-7-sonnet")
@@ -23,20 +26,36 @@
   (:f valid Bool "Flag indicating whether response adhered to protocol without fences or filler")
   (:f error-code Str "Error description if rejected e.g. ERR_MARKDOWN_FENCE or ERR_CONVERSATIONAL_FILLER"))
 
+(dfs ProtocolEnvelope
+  (:f intent Str "Extracted action intent identifier")
+  (:f delta Str "Structured atomic state or file delta payload")
+  (:f gate-check Str "Verification gate command")
+  (:f d Str "Docstring or rationale description")
+  (:f valid Bool "Flag indicating whether response adhered to protocol without fences or filler")
+  (:f error-code Str "Error description if rejected e.g. ERR_MARKDOWN_FENCE or ERR_CONVERSATIONAL_FILLER"))
+
 (df format-protocol-envelope [(cfg LLMProtocolConfig)] -> Str
-  :d "Generates compact standard protocol priming envelope for model handshake"
+  :d "Generates compact standard protocol priming envelope for model handshake without negative rules"
   (str-concat
-    "(:protocol-envelope :version \"1.0\" :position \""
+    "(:protocol-envelope :version \"1.2\" :position \""
     (.-position cfg)
     "\" :model \""
     (.-model cfg)
     "\" :mode \""
     (.-schema-mode cfg)
-    "\" (:schema (:intent :refs :markers :delta :state :d)) (:rules [:no-fences :pure-asn :dense-deltas]))"))
+    "\" (:affirmative-schema (:intent :delta :gate-check :d)) (:rules [:pure-asn :dense-deltas]))"))
+
+(df format-affirmative-envelope [(intent Str)] -> Str
+  :d "Generates compact affirmative protocol priming envelope pinned for KV-cache reuse"
+  (str "(:affirmative-envelope :intent \"" intent "\" (:affirmative-schema (:intent :delta :gate-check :d)))"))
 
 (df extract-str-field [(raw Str) (kw Str)] -> Str
   :d "Extracts quoted string value for keyword in S-expression"
-  (let [(idx-opt (string-index-of raw kw))]
+  (let [(needle (str kw " "))
+        (idx-opt (let [(i (string-index-of raw needle))]
+                   (if (option-is-some? i)
+                       i
+                       (string-index-of raw (str kw "\"")))))]
     (mt idx-opt
       ((some idx)
        (let [(tail-opt (string-slice raw (+ idx (string-length kw)) (string-length raw)))
@@ -120,35 +139,8 @@
       ((none) (list)))))
 
 (df check-delimiters-balanced [(chars (List Str)) (p I64) (b I64) (q Bool)] -> Bool
-  :d "Validates balanced parentheses, brackets, and quotes in raw protocol response"
-  (if (list-empty? chars)
-      (and (= p 0) (and (= b 0) (not q)))
-      (let [(c (option-or (list-head chars) ""))
-            (rst (option-or (list-tail chars) (list)))]
-        (if q
-            (if (= c "\\")
-                (if (list-empty? rst)
-                    false
-                    (let [(rst2 (option-or (list-tail rst) (list)))]
-                      (check-delimiters-balanced rst2 p b true)))
-                (if (= c "\"")
-                    (check-delimiters-balanced rst p b false)
-                    (check-delimiters-balanced rst p b true)))
-            (if (= c "\"")
-                (check-delimiters-balanced rst p b true)
-                (if (= c "(")
-                    (check-delimiters-balanced rst (+ p 1) b false)
-                    (if (= c ")")
-                        (if (<= p 0)
-                            false
-                            (check-delimiters-balanced rst (- p 1) b false))
-                        (if (= c "[")
-                            (check-delimiters-balanced rst p (+ b 1) false)
-                            (if (= c "]")
-                                (if (<= b 0)
-                                    false
-                                    (check-delimiters-balanced rst p (- b 1) false))
-                                (check-delimiters-balanced rst p b false))))))))))
+  :d "Validates balanced parentheses, brackets, and quotes in raw protocol response via canonical asl-parser/balance"
+  (bal/is-delimiter-balanced? (string-join chars "")))
 
 (df is-filler-phrase? [(s Str)] -> Bool
   :d "Identifies common conversational filler prefixes in model completion"
@@ -196,7 +188,7 @@
                   :d ""
                   :valid false
                   :error-code "ERR_CONVERSATIONAL_FILLER")
-                (if (not (check-delimiters-balanced (string-chars raw) 0 0 false))
+                (if (not (bal/is-delimiter-balanced? raw))
                     (LLMResponseEnvelope
                       :intent ""
                       :refs (list)
@@ -212,6 +204,49 @@
                       :markers (extract-list-field raw ":markers")
                       :delta (extract-delta-field raw)
                       :state (extract-str-field raw ":state")
+                      :d (extract-str-field raw ":d")
+                      :valid true
+                      :error-code "")))))))
+
+(df parse-affirmative-response [(raw Str)] -> ProtocolEnvelope
+  :d "Parses and validates raw LLM affirmative protocol response into ProtocolEnvelope"
+  (let [(trimmed (string-trim raw))]
+    (if (string-empty? trimmed)
+        (ProtocolEnvelope
+          :intent ""
+          :delta ""
+          :gate-check ""
+          :d ""
+          :valid false
+          :error-code "ERR_EMPTY_PAYLOAD")
+        (if (has-code-fence? raw)
+            (ProtocolEnvelope
+              :intent ""
+              :delta ""
+              :gate-check ""
+              :d ""
+              :valid false
+              :error-code "ERR_MARKDOWN_FENCE")
+            (if (or (is-filler-phrase? raw) (not (string-starts-with? trimmed "(")))
+                (ProtocolEnvelope
+                  :intent ""
+                  :delta ""
+                  :gate-check ""
+                  :d ""
+                  :valid false
+                  :error-code "ERR_CONVERSATIONAL_FILLER")
+                (if (not (bal/is-delimiter-balanced? raw))
+                    (ProtocolEnvelope
+                      :intent ""
+                      :delta ""
+                      :gate-check ""
+                      :d ""
+                      :valid false
+                      :error-code "ERR_UNBALANCED_DELIMITERS")
+                    (ProtocolEnvelope
+                      :intent (extract-str-field raw ":intent")
+                      :delta (extract-delta-field raw)
+                      :gate-check (extract-str-field raw ":gate-check")
                       :d (extract-str-field raw ":d")
                       :valid true
                       :error-code "")))))))

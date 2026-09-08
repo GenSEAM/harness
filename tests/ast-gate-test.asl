@@ -12,10 +12,11 @@
         (protected (list "test-calculate" "test-security-boundary"))
         (verdict (gate/audit-ast-mutation pre-code post-code protected))
         (formatted (gate/format-mutation-verdict verdict))]
-    (and (.-allowed verdict)
-         (and (list-empty? (.-violations verdict))
-              (and (string-contains? (.-reason verdict) "preserved")
-                   (string-contains? formatted ":allowed true"))))))
+    (assert (.-allowed verdict) "clean edit allowed")
+    (assert (list-empty? (.-violations verdict)) "no violations on clean edit")
+    (assert (string-contains? (.-reason verdict) "preserved") "reason notes preserved")
+    (assert (string-contains? formatted ":allowed true") "formatted notes allowed")
+    true))
 
 (df test-ast-mutation-deleted-assertion-blocked [] -> Bool
   :d "Verifies that deleting or commenting out a protected assertion is rejected."
@@ -26,11 +27,12 @@
         (v-del (gate/audit-ast-mutation pre-code post-deleted protected))
         (v-com (gate/audit-ast-mutation pre-code post-commented protected))
         (fmt-del (gate/format-mutation-verdict v-del))]
-    (and (not (.-allowed v-del))
-         (and (list-contains? (.-violations v-del) "test-security-invariants")
-              (and (not (.-allowed v-com))
-                   (and (list-contains? (.-violations v-com) "test-security-invariants")
-                        (string-contains? fmt-del ":allowed false")))))))
+    (assert (not (.-allowed v-del)) "deleted assertion disallowed")
+    (assert (list-contains? (.-violations v-del) "test-security-invariants") "deleted assertion in violations")
+    (assert (not (.-allowed v-com)) "commented assertion disallowed")
+    (assert (list-contains? (.-violations v-com) "test-security-invariants") "commented assertion in violations")
+    (assert (string-contains? fmt-del ":allowed false") "formatted marks disallowed")
+    true))
 
 (df test-ast-mutation-multiple-violations [] -> Bool
   :d "Verifies that multiple missing or commented out protected symbols are all recorded in violations list."
@@ -39,11 +41,12 @@
         (protected (list "test-auth-token" "test-leak-prevention" "test-unrelated-symbol"))
         (verdict (gate/audit-ast-mutation pre-code post-code protected))
         (violations (.-violations verdict))]
-    (and (not (.-allowed verdict))
-         (and (= (list-length violations) 2)
-              (and (list-contains? violations "test-auth-token")
-                   (and (list-contains? violations "test-leak-prevention")
-                        (not (list-contains? violations "test-unrelated-symbol"))))))))
+    (assert (not (.-allowed verdict)) "multiple violations disallowed")
+    (assert (= (list-length violations) 2) "two violations recorded")
+    (assert (list-contains? violations "test-auth-token") "auth token in violations")
+    (assert (list-contains? violations "test-leak-prevention") "leak prevention in violations")
+    (assert (not (list-contains? violations "test-unrelated-symbol")) "unrelated symbol not in violations")
+    true))
 
 (df test-sanitize-noisy-traceback [] -> Bool
   :d "Verifies that noisy internal framework frames are stripped and root failure site is extracted."
@@ -57,13 +60,14 @@
                         "AssertionError: Expected valid token, got null\n"))
         (trace (s/sanitize-trace raw-trace 200))
         (formatted (s/format-sanitized-trace trace))]
-    (and (= (.-target-file trace) "src/server/auth.py")
-         (and (= (.-line-number trace) 42)
-              (and (string-contains? (.-error-message trace) "AssertionError")
-                   (and (not (string-contains? (.-sanitized-output trace) "site-packages"))
-                        (and (not (string-contains? (.-sanitized-output trace) "pluggy"))
-                             (and (string-contains? (.-sanitized-output trace) "src/server/auth.py")
-                                  (string-contains? formatted ":sanitized-trace")))))))))
+    (assert (= (.-target-file trace) "src/server/auth.py") "target file extracted")
+    (assert (= (.-line-number trace) 42) "line number extracted")
+    (assert (string-contains? (.-error-message trace) "AssertionError") "error message extracted")
+    (assert (not (string-contains? (.-sanitized-output trace) "site-packages")) "stripped site-packages")
+    (assert (not (string-contains? (.-sanitized-output trace) "pluggy")) "stripped pluggy")
+    (assert (string-contains? (.-sanitized-output trace) "src/server/auth.py") "contains root file")
+    (assert (string-contains? formatted ":sanitized-trace") "formatted contains sanitized-trace")
+    true))
 
 (df test-sanitize-token-budget [] -> Bool
   :d "Verifies that sanitized output is strictly bounded to max-tokens < 300 even with huge tracebacks."
@@ -78,15 +82,18 @@
                        huge-line huge-line huge-line huge-line huge-line))
         (trace-small (s/sanitize-trace huge-log 50))
         (trace-capped (s/sanitize-trace huge-log 500))]
-    (and (<= (.-token-count trace-small) 50)
-         (and (< (.-token-count trace-capped) 300)
-              (and (string-contains? (.-error-message trace-small) "AssertionError")
-                   (= (.-target-file trace-small) "src/core/engine.py"))))))
+    (assert (<= (.-token-count trace-small) 50) "small trace within 50 tokens")
+    (assert (< (.-token-count trace-capped) 300) "capped trace under 300 tokens")
+    (assert (string-contains? (.-error-message trace-small) "AssertionError") "assertion error captured")
+    (assert (= (.-target-file trace-small) "src/core/engine.py") "target file captured")
+    true))
 
 (df run-tests [] -> Bool
   :d "Executes full AST gate and error trace sanitizer test suite."
-  (and (test-ast-mutation-clean-edit)
-       (and (test-ast-mutation-deleted-assertion-blocked)
-            (and (test-ast-mutation-multiple-violations)
-                 (and (test-sanitize-noisy-traceback)
-                      (test-sanitize-token-budget))))))
+  (do
+    (test-ast-mutation-clean-edit)
+    (test-ast-mutation-deleted-assertion-blocked)
+    (test-ast-mutation-multiple-violations)
+    (test-sanitize-noisy-traceback)
+    (test-sanitize-token-budget)
+    true))

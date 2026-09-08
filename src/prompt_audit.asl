@@ -3,10 +3,12 @@
   :x [PromptDef
       TokenMetric
       PromptAuditResult
+      BudgetAuditReport
       audit-prompt-tokens
       estimate-tokens-simple
       validate-prompt-budget
-      audit-registry-string]
+      audit-registry-string
+      audit-prompt-budgets]
   :i [])
 
 (dfs PromptDef
@@ -33,7 +35,7 @@
     (if (<= len 0)
       0
       (let [(q (/ len 4))]
-        (if (<= q 0) 1 q)))))
+        (if (< q 1) 1 q)))))
 
 (df audit-prompt-tokens [(prompt PromptDef)] -> (Result TokenMetric Str)
   :d "Computes token metrics against budget ceiling returning TokenMetric."
@@ -49,6 +51,42 @@
                   :headroom headroom
                   :over-budget over-budget))]
     (ok metric)))
+
+(dfs BudgetAuditReport
+  (:f prompt-id Str "Audited prompt identifier")
+  (:f static-tokens I64 "Tokens consumed by static system prefix")
+  (:f static-budget I64 "Configured static prefix budget ceiling")
+  (:f static-headroom I64 "Remaining headroom for static prefix")
+  (:f payload-tokens I64 "Tokens consumed by dynamic payload")
+  (:f payload-budget I64 "Configured payload budget ceiling")
+  (:f payload-headroom I64 "Remaining headroom for dynamic payload")
+  (:f valid Bool "True if both static and dynamic budgets are respected")
+  (:f error-code Str "Diagnostic error code e.g. STATIC_PREFIX_OVERFLOW or PAYLOAD_BUDGET_OVERFLOW"))
+
+(df audit-prompt-budgets [(prompt-id Str) (system-str Str) (payload-str Str) (static-budget I64) (payload-budget I64)] -> BudgetAuditReport
+  :d "Audits static system prefix and dynamic turn payload against decoupled budgets."
+  (let [(s-tok (estimate-tokens-simple system-str))
+        (p-tok (estimate-tokens-simple payload-str))
+        (s-headroom (- static-budget s-tok))
+        (p-headroom (- payload-budget p-tok))
+        (s-overflow (< s-headroom 0))
+        (p-overflow (< p-headroom 0))
+        (err (if s-overflow
+               "STATIC_PREFIX_OVERFLOW"
+               (if p-overflow
+                 "PAYLOAD_BUDGET_OVERFLOW"
+                 "")))
+        (is-valid (and (not s-overflow) (not p-overflow)))]
+    (BudgetAuditReport
+      :prompt-id prompt-id
+      :static-tokens s-tok
+      :static-budget static-budget
+      :static-headroom s-headroom
+      :payload-tokens p-tok
+      :payload-budget payload-budget
+      :payload-headroom p-headroom
+      :valid is-valid
+      :error-code err)))
 
 (df validate-prompt-budget [(prompt PromptDef)] -> Bool
   :d "Validates whether prompt is within its configured token budget."

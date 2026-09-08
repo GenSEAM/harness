@@ -1,6 +1,6 @@
 (module asl-harness/firewall-test
   :d "Unit tests for Action Firewall: boundary validation, command safety, and lease enforcement."
-  :x [test-path-traversal-blocked test-dangerous-cmd-blocked test-allowed-sandbox-path]
+  :x [test-path-traversal-blocked test-dangerous-cmd-blocked test-allowed-sandbox-path run-tests]
   :i [(firewall :a fw)])
 
 (df test-path-traversal-blocked [] -> Bool
@@ -13,13 +13,14 @@
         (v-dev (fw/evaluate-path-boundary policy "/dev/null"))
         (v-audit-read (fw/audit-action policy "read" "../../secret"))
         (v-audit-write (fw/audit-action policy "write" "/etc/hosts"))]
-    (and (not (.-allowed v-traversal))
-         (and (not (.-allowed v-parent))
-              (and (not (.-allowed v-etc))
-                   (and (not (.-allowed v-ssh))
-                        (and (not (.-allowed v-dev))
-                             (and (not (.-allowed v-audit-read))
-                                  (not (.-allowed v-audit-write))))))))))
+    (assert (not (.-allowed v-traversal)) "traversal blocked")
+    (assert (not (.-allowed v-parent)) "parent blocked")
+    (assert (not (.-allowed v-etc)) "etc shadow blocked")
+    (assert (not (.-allowed v-ssh)) "ssh key blocked")
+    (assert (not (.-allowed v-dev)) "dev null blocked")
+    (assert (not (.-allowed v-audit-read)) "audit read blocked")
+    (assert (not (.-allowed v-audit-write)) "audit write blocked")
+    true))
 
 (df test-dangerous-cmd-blocked [] -> Bool
   :d "Verifies that dangerous shell commands, pipes to shell, and destructive operations are blocked."
@@ -30,12 +31,13 @@
         (v-dd (fw/evaluate-command-safety policy "dd if=/dev/zero of=/dev/sda"))
         (v-mkfs (fw/evaluate-command-safety policy "mkfs.ext4 /dev/sda1"))
         (v-audit-exec (fw/audit-action policy "exec" "rm -rf /"))]
-    (and (not (.-allowed v-rm))
-         (and (not (.-allowed v-curl))
-              (and (not (.-allowed v-eval))
-                   (and (not (.-allowed v-dd))
-                        (and (not (.-allowed v-mkfs))
-                             (not (.-allowed v-audit-exec)))))))))
+    (assert (not (.-allowed v-rm)) "rm -rf blocked")
+    (assert (not (.-allowed v-curl)) "curl pipe sh blocked")
+    (assert (not (.-allowed v-eval)) "eval dangerous code blocked")
+    (assert (not (.-allowed v-dd)) "dd blocked")
+    (assert (not (.-allowed v-mkfs)) "mkfs blocked")
+    (assert (not (.-allowed v-audit-exec)) "audit exec rm -rf blocked")
+    true))
 
 (df test-allowed-sandbox-path [] -> Bool
   :d "Verifies that safe operations and valid paths inside sandbox workspace are permitted."
@@ -44,8 +46,17 @@
         (v-rel (fw/evaluate-path-boundary policy "./harness/tests/firewall-test.asl"))
         (v-read (fw/audit-action policy "read" "src/firewall.asl"))
         (v-write (fw/audit-action policy "write" "src/firewall.asl"))]
-    (and (.-allowed v-file)
-         (and (= (.-sanitized-target v-file) "src/firewall.asl")
-              (and (.-allowed v-rel)
-                   (and (.-allowed v-read)
-                        (.-allowed v-write)))))))
+    (assert (.-allowed v-file) "file allowed")
+    (assert (= (.-sanitized-target v-file) "src/firewall.asl") "sanitized target matches")
+    (assert (.-allowed v-rel) "rel allowed")
+    (assert (.-allowed v-read) "read allowed")
+    (assert (.-allowed v-write) "write allowed")
+    true))
+
+(df run-tests [] -> Bool
+  :d "Runs all firewall test cases."
+  (do
+    (test-path-traversal-blocked)
+    (test-dangerous-cmd-blocked)
+    (test-allowed-sandbox-path)
+    true))

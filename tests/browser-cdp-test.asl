@@ -6,33 +6,39 @@
 (df test-make-cdp-connection [] -> Bool
   :d "Verifies creation of CDP connection instance."
   (let [(conn (cdp/make-cdp-connection "ws://127.0.0.1:9222/devtools/page/1" "sess-42"))]
-    (and (= (.-target-url conn) "ws://127.0.0.1:9222/devtools/page/1")
-         (and (= (.-session-id conn) "sess-42")
-              (.-is-connected conn)))))
+    (assert (= (.-target-url conn) "ws://127.0.0.1:9222/devtools/page/1") "target url matches")
+    (assert (= (.-session-id conn) "sess-42") "session id matches")
+    (assert (.-is-connected conn) "is connected is true")
+    true))
 
 (df test-navigate [] -> Bool
   :d "Verifies JSON-RPC command formatting for Page.navigate."
   (let [(conn (cdp/make-cdp-connection "ws://127.0.0.1:9222" "s1"))
         (cmd (cdp/navigate conn "https://example.com"))]
-    (and (string-contains? cmd "Page.navigate")
-         (string-contains? cmd "https://example.com"))))
+    (assert (string-contains? cmd "Page.navigate") "cmd contains Page.navigate")
+    (assert (string-contains? cmd "https://example.com") "cmd contains target URL")
+    true))
 
 (df test-extract-axtree [] -> Bool
   :d "Verifies Accessibility.getFullAXTree command serialization."
   (let [(conn (cdp/make-cdp-connection "ws://127.0.0.1:9222" "s1"))
         (cmd (cdp/extract-axtree conn))]
-    (string-contains? cmd "Accessibility.getFullAXTree")))
+    (assert (string-contains? cmd "Accessibility.getFullAXTree") "cmd contains getFullAXTree")
+    true))
 
 (df test-dispatch-click [] -> Bool
   :d "Verifies mouse click command serialization."
   (let [(conn (cdp/make-cdp-connection "ws://127.0.0.1:9222" "s1"))
         (cmd (cdp/dispatch-click conn 101))]
-    (and (string-contains? cmd "Input.dispatchMouseEvent")
-         (string-contains? cmd "mousePressed"))))
+    (assert (string-contains? cmd "Input.dispatchMouseEvent") "cmd contains Input.dispatchMouseEvent")
+    (assert (string-contains? cmd "mousePressed") "cmd contains mousePressed")
+    true))
 
 (df run-tests [] -> Bool
   :d "Runs all browser CDP client tests."
-  (and (test-make-cdp-connection)
-       (and (test-navigate)
-            (and (test-extract-axtree)
-                 (test-dispatch-click)))))
+  (do
+    (test-make-cdp-connection)
+    (test-navigate)
+    (test-extract-axtree)
+    (test-dispatch-click)
+    true))

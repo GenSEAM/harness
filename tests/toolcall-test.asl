@@ -16,12 +16,13 @@
              :deterministic true))
         (schema (tc/tool-to-openai-schema t))
         (json (.-parameters-json schema))]
-    (and (string-contains? json "\"file_path\": {\"type\": \"string\"")
-         (and (string-contains? json "\"line_count\": {\"type\": \"integer\"")
-              (and (string-contains? json "\"dry_run\": {\"type\": \"boolean\"")
-                   (and (string-contains? json "\"required\": [\"file_path\", \"line_count\"]")
-                        (and (not (string-contains? json ", }"))
-                             (not (string-contains? json ", ]")))))))))
+    (assert (string-contains? json "\"file_path\": {\"type\": \"string\"") "schema has file_path string")
+    (assert (string-contains? json "\"line_count\": {\"type\": \"integer\"") "schema has line_count integer")
+    (assert (string-contains? json "\"dry_run\": {\"type\": \"boolean\"") "schema has dry_run boolean")
+    (assert (string-contains? json "\"required\": [\"file_path\", \"line_count\"]") "schema has required array")
+    (assert (not (string-contains? json ", }")) "no trailing comma before }")
+    (assert (not (string-contains? json ", ]")) "no trailing comma before ]")
+    true))
 
 (df test-parse-openai-tool-call [] -> Bool
   :d "Validates structured argument parsing from JSON into ASL key-value pairs."
@@ -31,11 +32,12 @@
                 :arguments-json "{\"path\": \"src/main.asl\", \"line_count\": 50}"))
         (parsed (tc/parse-openai-tool-call call))
         (args (.-arguments parsed))]
-    (and (= (.-id parsed) "call_001")
-         (and (= (.-tool-name parsed) "fs-read")
-              (and (= (list-length args) 2)
-                   (and (= (fst (list-head args)) "path")
-                        (= (snd (list-head args)) "src/main.asl")))))))
+    (assert (= (.-id parsed) "call_001") "id is call_001")
+    (assert (= (.-tool-name parsed) "fs-read") "tool-name is fs-read")
+    (assert (= (list-length args) 2) "args length is 2")
+    (assert (= (fst (list-head args)) "path") "first arg key is path")
+    (assert (= (snd (list-head args)) "src/main.asl") "first arg val is src/main.asl")
+    true))
 
 (df test-asn-call-to-openai-json [] -> Bool
   :d "Validates translating internal ToolCall into valid OpenAI JSON payload."
@@ -44,26 +46,30 @@
                 :tool-name "fs-write"
                 :arguments (list (pair "path" "output.txt") (pair "content" "hello"))))
         (json (tc/asn-call-to-openai-json call))]
-    (and (string-contains? json "\"id\": \"call_002\"")
-         (and (string-contains? json "\"name\": \"fs_write\"")
-              (and (string-contains? json "\"path\": \\\"output.txt\\\"")
-                   (not (string-contains? json ", }")))))))
+    (assert (string-contains? json "\"id\": \"call_002\"") "json has id call_002")
+    (assert (string-contains? json "\"name\": \"fs_write\"") "json has name fs_write")
+    (assert (string-contains? json "\"path\": \\\"output.txt\\\"") "json has path output.txt")
+    (assert (not (string-contains? json ", }")) "no trailing comma before }")
+    true))
 
 (df test-tools-to-openai-json [] -> Bool
   :d "Validates generating valid OpenAI tools array without trailing commas."
   (let [(tools (c/standard-coding-tools))
         (json (tc/tools-to-openai-json tools))]
-    (and (string-starts-with? json "[")
-         (and (string-ends-with? json "]")
-              (and (not (string-contains? json ", ]"))
-                   (string-contains? json "\"name\": \"fs_read\""))))))
+    (assert (string-starts-with? json "[") "starts with [")
+    (assert (string-ends-with? json "]") "ends with ]")
+    (assert (not (string-contains? json ", ]")) "no trailing comma before ]")
+    (assert (string-contains? json "\"name\": \"fs_read\"") "contains fs_read")
+    true))
 
 (df test-toolcall [] -> Bool
   :d "Aggregate toolcall test runner for benchmark/grammar registry."
-  (and (test-tool-schema-typing)
-       (and (test-parse-openai-tool-call)
-            (and (test-asn-call-to-openai-json)
-                 (test-tools-to-openai-json)))))
+  (do
+    (test-tool-schema-typing)
+    (test-parse-openai-tool-call)
+    (test-asn-call-to-openai-json)
+    (test-tools-to-openai-json)
+    true))
 
 (df run-tests [] -> Bool
   :d "Executes all toolcall unit tests."

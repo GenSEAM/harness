@@ -1,7 +1,7 @@
 (module asl-harness/anti-hallucination
   :d "Pure AgentScript In-Memory Anti-Hallucination FSM and Delimiter Balancer"
   :x [ThinkingResult ToolCallResult FsmRepairReport repair-and-normalize]
-  :i [])
+  :i [(asl-parser/balance :a bal)])
 
 (dfs ThinkingResult
   (:f thinking Str "Chain-of-thought tokens extracted from <think>")
@@ -21,16 +21,20 @@
 
 (df extract-thinking [(raw Str)] -> ThinkingResult
   :d "Separates reasoning thoughts inside <think>...</think> from code"
-  (if (string-contains? raw "<think>")
-    (if (string-contains? raw "</think>")
-      (let [(parts (string-split raw "</think>"))
-            (think-part (string-replace (list-head parts) "<think>" ""))
-            (code-part (if (> (list-len parts) 1) (string-join "</think>" (list-tail parts 1)) ""))]
-        (ThinkingResult :thinking (string-trim think-part) :code (string-trim code-part)))
-      (let [(parts (string-split raw "<think>"))
-            (think-part (if (> (list-len parts) 1) (list-ref parts 1) ""))]
-        (ThinkingResult :thinking (string-trim think-part) :code "")))
-    (ThinkingResult :thinking "" :code raw)))
+  (if (and (string-contains? raw "<think>") (string-contains? raw "</think>"))
+    (let [(p1 (string-split raw "<think>"))
+          (pre (option-or (list-head p1) ""))
+          (rest (option-or (list-head (list-drop p1 1)) ""))
+          (p2 (string-split rest "</think>"))
+          (think (option-or (list-head p2) ""))
+          (post (option-or (list-head (list-drop p2 1)) ""))
+          (code (str pre post))]
+      (ThinkingResult :thinking (string-trim think) :code (string-trim code)))
+    (if (string-contains? raw "<think>")
+      (let [(p1 (string-split raw "<think>"))
+            (think (option-or (list-head (list-drop p1 1)) ""))]
+        (ThinkingResult :thinking (string-trim think) :code ""))
+      (ThinkingResult :thinking "" :code raw))))
 
 (df strip-markdown-fences [(raw Str)] -> Str
   :d "Cleans code blocks and extracts raw content from markdown code fences"
@@ -48,10 +52,8 @@
     (string-trim clean9)))
 
 (df balance-delimiters [(raw Str)] -> Str
-  :d "Balances unclosed parentheses in S-expressions"
-  (let [(open-count (string-count-char raw "("))
-        (close-count (string-count-char raw ")"))
-        (delta (- open-count close-count))]
+  :d "Balances unclosed parentheses in S-expressions with quote and escape awareness via canonical asl-parser/balance."
+  (let [(delta (bal/count-unclosed-parens raw))]
     (if (> delta 0)
       (string-concat raw (string-repeat ")" delta))
       raw)))
@@ -72,10 +74,8 @@
   (let [(th (extract-thinking raw))
         (stripped (strip-markdown-fences (.-code th)))
         (tc (extract-toolcall-kind stripped))
+        (delta (bal/count-unclosed-parens (.-code tc)))
         (balanced (balance-delimiters (.-code tc)))
-        (open-count (string-count-char stripped "("))
-        (close-count (string-count-char stripped ")"))
-        (delta (- open-count close-count))
         (was-repaired (or (> delta 0) (not (= raw balanced))))]
     (FsmRepairReport
       :raw raw

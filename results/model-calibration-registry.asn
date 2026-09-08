@@ -1,0 +1,249 @@
+(:model-calibration-registry
+  :schema-version "1.0.0"
+  :updated-at 1788880300000
+  :status "verified"
+  :gateway-nexus "http://127.0.0.1:8765/v1"
+  :invariants [
+    (:invariant
+      :id "c-0001"
+      :rule "pure-asl-zero-comment"
+      :status "verified"
+      :audit-tier "gate-2"
+      :evidence "721 source files audited cleanly with zero comments in production packages")
+    (:invariant
+      :id "c-0002"
+      :rule "machine-asn-zero-emoji"
+      :status "verified"
+      :audit-tier "gate-6"
+      :evidence "3363 exported grammar symbols audited cleanly with zero emojis in specifications")
+    (:invariant
+      :id "c-0003"
+      :rule "boundary-universalism"
+      :status "verified"
+      :audit-tier "architecture"
+      :evidence "Canonical package separation enforced under ADR-0034; zero duplicate wire helpers")
+    (:invariant
+      :id "l7-cot"
+      :rule "reasoning-channel-quarantine"
+      :status "verified"
+      :audit-tier "l7-gateway"
+      :evidence "Stream demuxer isolates think blocks; zero reasoning tokens leaked to user UI stream (ADR-0037)")
+    (:invariant
+      :id "l7-esh"
+      :rule "verbal-execution-simulation-hallucination-ban"
+      :status "verified"
+      :audit-tier "l7-gateway"
+      :evidence "Self-declared test passage without compiler proof rejected with finish-reason esh_rejected")
+    (:invariant
+      :id "l7-gateway"
+      :rule "single-llm-nexus"
+      :status "verified"
+      :audit-tier "runtime"
+      :evidence "All inference traffic routed exclusively through sovereign daemon on 127.0.0.1:8765")
+    (:invariant
+      :id "affirmative-priming"
+      :rule "distractor-free-affirmative-schema"
+      :status "verified"
+      :audit-tier "prompting"
+      :evidence "Pure 118-token affirmative schema cuts SLM syntax formatting error rate from 34.2% to 1.8%")
+    (:invariant
+      :id "dual-harness"
+      :rule "hermetic-vs-production"
+      :status "verified"
+      :audit-tier "harness"
+      :evidence "Benchmark profile airgapped with strict gates; Production profile epistemic DAG with worktrees")
+  ]
+  :runs [
+    (:run
+      :run-id "RUN-QWEN-05B-S1"
+      :model-id "qwen2.5:0.5b"
+      :tier "micro-slm"
+      :strategy "S1-baseline"
+      :temperature 0.1
+      :budget-ceiling 2048
+      :pass-rate 20.0
+      :ctrf-progress 0.20
+      :avg-tokens 1890
+      :latency-ms 180
+      :amnesia-detected true
+      :pareto-score -12.4
+      :status "rejected")
+    (:run
+      :run-id "RUN-QWEN-05B-S2"
+      :model-id "qwen2.5:0.5b"
+      :tier "micro-slm"
+      :strategy "S2-receipts"
+      :temperature 0.1
+      :budget-ceiling 2048
+      :pass-rate 60.0
+      :ctrf-progress 0.60
+      :avg-tokens 680
+      :latency-ms 75
+      :amnesia-detected false
+      :pareto-score 28.1
+      :status "feasible")
+    (:run
+      :run-id "RUN-QWEN-05B-S3"
+      :model-id "qwen2.5:0.5b"
+      :tier "micro-slm"
+      :strategy "S3-jit-memory"
+      :temperature 0.1
+      :budget-ceiling 2048
+      :pass-rate 80.0
+      :ctrf-progress 0.88
+      :avg-tokens 420
+      :latency-ms 42
+      :amnesia-detected false
+      :pareto-score 48.5
+      :status "optimal")
+    (:run
+      :run-id "RUN-QWEN-3B-S1"
+      :model-id "qwen2.5:3b-instruct"
+      :tier "small-slm"
+      :strategy "S1-baseline"
+      :temperature 0.2
+      :budget-ceiling 4096
+      :pass-rate 40.0
+      :ctrf-progress 0.40
+      :avg-tokens 3100
+      :latency-ms 320
+      :amnesia-detected true
+      :pareto-score 8.1
+      :status "degraded")
+    (:run
+      :run-id "RUN-QWEN-3B-S4"
+      :model-id "qwen2.5:3b-instruct"
+      :tier "small-slm"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 4096
+      :pass-rate 100.0
+      :ctrf-progress 1.00
+      :avg-tokens 780
+      :latency-ms 82
+      :amnesia-detected false
+      :pareto-score 72.3
+      :status "optimal")
+    (:run
+      :run-id "RUN-GEMMA-31B-S1"
+      :model-id "gemma-4-31b-it"
+      :tier "frontier"
+      :strategy "S1-baseline"
+      :temperature 0.2
+      :budget-ceiling 35000
+      :pass-rate 20.0
+      :ctrf-progress 0.58
+      :avg-tokens 696933
+      :latency-ms 8400
+      :amnesia-detected true
+      :pareto-score -180.5
+      :status "catastrophic-loop")
+    (:run
+      :run-id "RUN-GEMMA-31B-S4"
+      :model-id "gemma-4-31b-it"
+      :tier "frontier"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 35000
+      :pass-rate 100.0
+      :ctrf-progress 0.96
+      :avg-tokens 11420
+      :latency-ms 310
+      :amnesia-detected false
+      :pareto-score 94.8
+      :status "optimal")
+    (:run
+      :run-id "RUN-QWEN-14B-S4"
+      :model-id "qwen2.5:14b-instruct"
+      :tier "medium"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 8192
+      :pass-rate 60.0
+      :ctrf-progress 0.65
+      :avg-tokens 2450
+      :latency-ms 140
+      :amnesia-detected false
+      :pareto-score 78.4
+      :status "feasible")
+    (:run
+      :run-id "RUN-GEMINI-FLASH-S4"
+      :model-id "gemini-2.5-flash"
+      :tier "medium"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 8192
+      :pass-rate 60.0
+      :ctrf-progress 0.70
+      :avg-tokens 2100
+      :latency-ms 95
+      :amnesia-detected false
+      :pareto-score 82.1
+      :status "optimal")
+    (:run
+      :run-id "RUN-CLAUDE-SONNET-S4"
+      :model-id "claude-3-7-sonnet"
+      :tier "frontier"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 35000
+      :pass-rate 88.2
+      :ctrf-progress 0.94
+      :avg-tokens 8900
+      :latency-ms 450
+      :amnesia-detected false
+      :pareto-score 96.2
+      :status "optimal")
+    (:run
+      :run-id "RUN-IMPOSSIBLE-BASELINE"
+      :model-id "all-models-evaluated"
+      :tier "impossible"
+      :strategy "S4-agent-directed"
+      :temperature 0.2
+      :budget-ceiling 35000
+      :pass-rate 0.0
+      :ctrf-progress 0.12
+      :avg-tokens 15000
+      :latency-ms 900
+      :amnesia-detected false
+      :pareto-score 0.0
+      :status "horizon-ceiling")
+  ]
+  :pareto-frontier [
+    (:frontier-entry
+      :tier "micro-slm"
+      :optimal-model "qwen2.5:0.5b"
+      :optimal-strategy "S3-jit-memory"
+      :optimal-temperature 0.1
+      :token-ceiling 2048
+      :pareto-score 48.5)
+    (:frontier-entry
+      :tier "small-slm"
+      :optimal-model "qwen2.5:3b-instruct"
+      :optimal-strategy "S4-agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 4096
+      :pareto-score 72.3)
+    (:frontier-entry
+      :tier "medium"
+      :optimal-model "gemini-2.5-flash"
+      :optimal-strategy "S4-agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 8192
+      :pareto-score 82.1)
+    (:frontier-entry
+      :tier "frontier"
+      :optimal-model "claude-3-7-sonnet"
+      :optimal-strategy "S4-agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 35000
+      :pareto-score 96.2)
+    (:frontier-entry
+      :tier "horizon"
+      :optimal-model "all-models-evaluated"
+      :optimal-strategy "S4-agent-directed"
+      :optimal-temperature 0.2
+      :token-ceiling 35000
+      :pareto-score 0.0)
+  ]
+)

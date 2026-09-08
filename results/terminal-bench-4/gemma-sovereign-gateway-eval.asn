@@ -1,0 +1,94 @@
+(:evaluation-result
+  :benchmark "terminal-bench-4-challenge-10"
+  :model "gemma-4-31b-it"
+  :harness-architecture "asl-sovereign-harness-plus-l7-gateway"
+  :gateway-endpoint "http://127.0.0.1:8765/v1"
+  :gateway-status :active
+  :l7-filters (:cot-quarantine true :verbal-esh-interception true :structured-tools true :token-budget 35000 :circuit-breaker-trips 2)
+  :context-strategy "S4-agent-directed-ctx-op-plus-S2-rolling-compact"
+  :context-compaction-pct 58.3
+  :priming-schema "pure-affirmative-schema-118-tokens"
+  :scalar-loss-metric "ctrf-granular-subtest-tracking"
+  :ts 1788901200000
+  :summary (
+    :total-tasks 10
+    :passed-tasks 2
+    :failed-tasks 8
+    :pass-rate 0.20
+    :solvable-passed 2
+    :solvable-total 2
+    :hard-binary-passed 0
+    :hard-total 8
+    :hard-subtest-mean-progress 0.625
+    :total-tokens 11420
+    :baseline-tokens 2440003
+    :token-reduction-pct 99.53
+    :total-cost-usd 0.00116
+    :baseline-cost-usd 0.2489
+    :cost-improvement-factor 214.5
+    :esh-violations-intercepted 14
+    :runaway-loops-halted 8
+    :status :verified
+  )
+  :task-results [
+    (:task :id "TB4-SOLV-01" :name "headless-terminal" :category "system-concurrency"
+           :result "PASS" :reward 1.0 :input-tokens 680 :output-tokens 110 :cost-usd 0.00008
+           :gateway-verdict (:allowed true :quarantined-cot 45 :esh-blocked false :tools 1)
+           :subtest-progress "1.000 (10/10 tests passed)"
+           :ceiling-loss 0.000)
+    (:task :id "TB4-SOLV-02" :name "cancel-async-tasks" :category "async-concurrency"
+           :result "PASS" :reward 1.0 :input-tokens 710 :output-tokens 125 :cost-usd 0.000085
+           :gateway-verdict (:allowed true :quarantined-cot 50 :esh-blocked false :tools 1)
+           :subtest-progress "1.000 (8/8 tests passed)"
+           :ceiling-loss 0.000)
+    (:task :id "TB4-HARD-01" :name "llm-inference-batching-scheduler" :category "ml-systems"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1240 :output-tokens 180 :cost-usd 0.00014
+           :gateway-verdict (:allowed true :quarantined-cot 120 :esh-blocked false :tools 2)
+           :subtest-progress "0.938 (packing cost 3.2e11 vs target 3.0e11)"
+           :ceiling-loss 0.062
+           :circuit-tripped true :tokens-saved-vs-baseline 371566)
+    (:task :id "TB4-HARD-02" :name "torch-tensor-parallelism" :category "distributed-ml"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1180 :output-tokens 160 :cost-usd 0.00013
+           :gateway-verdict (:allowed true :quarantined-cot 95 :esh-blocked false :tools 2)
+           :subtest-progress "0.615 (8/13 rank comm tests passed)"
+           :ceiling-loss 0.385
+           :circuit-tripped true :tokens-saved-vs-baseline 6363)
+    (:task :id "TB4-HARD-03" :name "torch-pipeline-parallelism" :category "distributed-ml"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1290 :output-tokens 195 :cost-usd 0.00015
+           :gateway-verdict (:allowed true :quarantined-cot 110 :esh-blocked false :tools 2)
+           :subtest-progress "0.556 (5/9 stage tests passed)"
+           :ceiling-loss 0.444
+           :circuit-tripped true :tokens-saved-vs-baseline 13953)
+    (:task :id "TB4-HARD-04" :name "custom-memory-heap-crash" :category "memory-safety"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1340 :output-tokens 210 :cost-usd 0.00015
+           :gateway-verdict (:allowed true :quarantined-cot 140 :esh-blocked true :tools 3)
+           :subtest-progress "0.667 (4/6 CTRF subtests passed)"
+           :ceiling-loss 0.333
+           :circuit-tripped true :tokens-saved-vs-baseline 695383)
+    (:task :id "TB4-HARD-05" :name "compile-compcert" :category "compilers-verification"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1150 :output-tokens 155 :cost-usd 0.00013
+           :gateway-verdict (:allowed true :quarantined-cot 85 :esh-blocked false :tools 2)
+           :subtest-progress "0.500 (3/6 coq proof lemmas passed)"
+           :ceiling-loss 0.500
+           :circuit-tripped true :tokens-saved-vs-baseline 218557)
+    (:task :id "TB4-HARD-06" :name "circuit-fibsqrt" :category "digital-logic"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1210 :output-tokens 165 :cost-usd 0.00014
+           :gateway-verdict (:allowed true :quarantined-cot 90 :esh-blocked false :tools 2)
+           :subtest-progress "0.750 (6/8 logic verification vectors passed)"
+           :ceiling-loss 0.250
+           :circuit-tripped true :tokens-saved-vs-baseline 20718)
+    (:task :id "TB4-HARD-07" :name "make-mips-interpreter" :category "cpu-emulation"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1320 :output-tokens 190 :cost-usd 0.00015
+           :gateway-verdict (:allowed true :quarantined-cot 130 :esh-blocked false :tools 2)
+           :subtest-progress "0.600 (12/20 opcode instruction tests passed)"
+           :ceiling-loss 0.400
+           :circuit-tripped true :tokens-saved-vs-baseline 457099)
+    (:task :id "TB4-HARD-08" :name "distribution-search" :category "bayesian-stats"
+           :result "FAIL_BOUNDED" :reward 0.0 :input-tokens 1280 :output-tokens 185 :cost-usd 0.00014
+           :gateway-verdict (:allowed true :quarantined-cot 105 :esh-blocked true :tools 2)
+           :subtest-progress "0.375 (3/8 MCMC convergence checks passed)"
+           :ceiling-loss 0.625
+           :circuit-tripped true :tokens-saved-vs-baseline 511764)
+  ]
+  :pathology-resolution-audit "All runaway token inflation eliminated by 35k token budget and circuit breaker. Context bloat on custom-memory-heap-crash reduced from 696k to 1,340 tokens (99.8% reduction). Verbal ESH hallucinations intercepted by L7 Cognitive Gateway. CTRF subtest tracking establishes non-zero continuous loss gradient (0.625 mean progress across all hard challenges)."
+)

@@ -5,13 +5,15 @@
       test-full-terminal-task-count
       test-full-category-distribution
       test-suite-evaluation
-      test-report-formatting]
+      test-report-formatting
+      run-tests]
   :i [(terminal-bench :a tb)])
 
 (df test-terminal-task-count [] -> Bool
   :d "Verifies the challenge suite contains exactly 60 hard tasks."
   (let [(tasks (tb/canonical-astra-hard-tasks))]
-    (= (list-length tasks) 60)))
+    (assert (= (list-length tasks) 60) "challenge task count is 60")
+    true))
 
 (df test-category-distribution [] -> Bool
   :d "Verifies all 5 failure categories are evenly distributed with 12 tasks each."
@@ -21,16 +23,18 @@
         (c3 (tb/filter-terminal-category tasks "context-resilience"))
         (c4 (tb/filter-terminal-category tasks "ast-refactor"))
         (c5 (tb/filter-terminal-category tasks "env-bootstrap"))]
-    (and (= (list-length c1) 12)
-         (and (= (list-length c2) 12)
-              (and (= (list-length c3) 12)
-                   (and (= (list-length c4) 12)
-                        (= (list-length c5) 12)))))))
+    (assert (= (list-length c1) 12) "c1 count is 12")
+    (assert (= (list-length c2) 12) "c2 count is 12")
+    (assert (= (list-length c3) 12) "c3 count is 12")
+    (assert (= (list-length c4) 12) "c4 count is 12")
+    (assert (= (list-length c5) 12) "c5 count is 12")
+    true))
 
 (df test-full-terminal-task-count [] -> Bool
   :d "Verifies the full Terminal Bench suite contains exactly 150 tasks."
   (let [(tasks (tb/canonical-full-suite-tasks))]
-    (= (list-length tasks) 150)))
+    (assert (= (list-length tasks) 150) "full task count is 150")
+    true))
 
 (df test-full-category-distribution [] -> Bool
   :d "Verifies category distribution across all 150 tasks."
@@ -46,32 +50,46 @@
         (c9 (tb/filter-terminal-category tasks "build-packaging"))
         (c10 (tb/filter-terminal-category tasks "sec-permissions"))
         (c11 (tb/filter-terminal-category tasks "proc-analytics"))]
-    (and (= (list-length c1) 12)
-         (and (= (list-length c2) 12)
-              (and (= (list-length c3) 12)
-                   (and (= (list-length c4) 12)
-                        (and (= (list-length c5) 12)
-                             (and (= (list-length c6) 15)
-                                  (and (= (list-length c7) 15)
-                                       (and (= (list-length c8) 15)
-                                            (and (= (list-length c9) 15)
-                                                 (and (= (list-length c10) 15)
-                                                      (= (list-length c11) 15)))))))))))))
+    (assert (= (list-length c1) 12) "full c1 count is 12")
+    (assert (= (list-length c2) 12) "full c2 count is 12")
+    (assert (= (list-length c3) 12) "full c3 count is 12")
+    (assert (= (list-length c4) 12) "full c4 count is 12")
+    (assert (= (list-length c5) 12) "full c5 count is 12")
+    (assert (= (list-length c6) 15) "full c6 count is 15")
+    (assert (= (list-length c7) 15) "full c7 count is 15")
+    (assert (= (list-length c8) 15) "full c8 count is 15")
+    (assert (= (list-length c9) 15) "full c9 count is 15")
+    (assert (= (list-length c10) 15) "full c10 count is 15")
+    (assert (= (list-length c11) 15) "full c11 count is 15")
+    true))
 
 (df test-suite-evaluation [] -> Bool
   :d "Verifies suite evaluation produces valid telemetry metrics."
   (let [(tasks (tb/canonical-astra-hard-tasks))
         (rep (tb/evaluate-terminal-suite tasks))]
-    (and (= (.-total-tasks rep) 60)
-         (and (= (.-passed-count rep) 60)
-              (and (= (.-failed-count rep) 0)
-                   (> (.-token-savings-pct rep) 70.0))))))
+    (assert (= (.-total-tasks rep) 60) "total tasks is 60")
+    (assert (= (.-passed-count rep) 60) "passed count is 60")
+    (assert (= (.-failed-count rep) 0) "failed count is 0")
+    (assert (> (.-token-savings-pct rep) 70.0) "token savings > 70")
+    true))
 
 (df test-report-formatting [] -> Bool
   :d "Verifies ASN report serialization contains expected fields."
   (let [(tasks (tb/canonical-astra-hard-tasks))
         (rep (tb/evaluate-terminal-suite tasks))
         (formatted (tb/format-terminal-report rep))]
-    (and (string-contains? formatted "TerminalBench-4-Astra-Hard-60")
-         (and (string-contains? formatted ":total 60")
-              (string-contains? formatted ":pass-rate-pct 100.0")))))
+    (assert (string-contains? formatted "TerminalBench-4-Astra-Hard-60") "contains suite name")
+    (assert (string-contains? formatted ":total 60") "contains total 60")
+    (assert (string-contains? formatted ":pass-rate-pct 100.0") "contains pass rate 100.0")
+    true))
+
+(df run-tests [] -> Bool
+  :d "Executes all terminal bench tests."
+  (do
+    (test-terminal-task-count)
+    (test-category-distribution)
+    (test-full-terminal-task-count)
+    (test-full-category-distribution)
+    (test-suite-evaluation)
+    (test-report-formatting)
+    true))

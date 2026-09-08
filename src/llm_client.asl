@@ -7,7 +7,8 @@
       parse-model-response
       compile-asn-grammar-constraint
       calculate-tok-sec
-      compute-dynamic-temperature]
+      compute-dynamic-temperature
+      json-escape-str]
   :i [])
 
 (dfs ModelOptions
@@ -39,12 +40,22 @@
       0.0
       (/ (* (int64-to-float64 output-tokens) 1000.0) (int64-to-float64 duration-ms))))
 
+(df json-escape-str [(s Str)] -> Str
+  :d "Escapes backslashes, double quotes, and control characters for RFC 8259 JSON literals."
+  (let [(s1 (string-replace s "\\" "\\\\"))
+        (s2 (string-replace s1 "\"" "\\\""))
+        (s3 (string-replace s2 "\n" "\\n"))
+        (s4 (string-replace s3 "\r" "\\r"))]
+    (string-replace s4 "\t" "\\t")))
+
 (df format-model-request [(opts ModelOptions) (prompt Str)] -> Str
   :d "Serializes model options and prompt into provider-compatible JSON payload"
   (let [(grammar-part (mt (.-grammar-constraint opts)
-                        ((some g) (str ", \"grammar\": \"" g "\""))
-                        ((none) "")))]
-    (str "{\"model\": \"" (.-model opts) "\", \"temperature\": " (string-from-float64 (.-temperature opts)) ", \"max_tokens\": " (string-from-int64 (.-max-tokens opts)) ", \"system\": \"" (.-system opts) "\", \"prompt\": \"" prompt "\"" grammar-part "}")))
+                        ((some g) (str ", \"grammar\": \"" (json-escape-str g) "\""))
+                        ((none) "")))
+        (esc-sys (json-escape-str (.-system opts)))
+        (esc-prompt (json-escape-str prompt))]
+    (str "{\"model\": \"" (.-model opts) "\", \"temperature\": " (string-from-float64 (.-temperature opts)) ", \"max_tokens\": " (string-from-int64 (.-max-tokens opts)) ", \"system\": \"" esc-sys "\", \"prompt\": \"" esc-prompt "\"" grammar-part "}")))
 
 (df extract-first-digits [(chars (List Str)) (acc Str)] -> Str
   :d "Extracts consecutive digits from character list"

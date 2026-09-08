@@ -8,7 +8,8 @@
       test-doctor-llm-chain-fast-path-skip
       test-doctor-llm-chain-activation-on-issues
       test-format-doctor-report
-      run-doctor-tests]
+      run-doctor-tests
+      run-tests]
   :i [(plugin :a pl)
       (doctor :a doc)
       (config :a cfg)])
@@ -17,22 +18,24 @@
   :d "Tests assembly of standard built-in harness plugins"
   (let [(reg (pl/build-standard-harness-plugins))
         (tools (pl/registry-get-tools reg))]
-    (and (= (.-active-count reg) 5)
-         (pl/contains-string? tools "intel-preload")
-         (pl/contains-string? tools "audit-ast-mutation")
-         (pl/contains-string? tools "extract-css-variables")
-         (pl/contains-string? tools "scan-component-usages")
-         (pl/contains-string? tools "run-sandboxed-script"))))
+    (assert (= (.-active-count reg) 5) "reg count is 5")
+    (assert (pl/contains-string? tools "intel-preload") "has intel-preload")
+    (assert (pl/contains-string? tools "audit-ast-mutation") "has audit-ast-mutation")
+    (assert (pl/contains-string? tools "extract-css-variables") "has extract-css-variables")
+    (assert (pl/contains-string? tools "scan-component-usages") "has scan-component-usages")
+    (assert (pl/contains-string? tools "run-sandboxed-script") "has run-sandboxed-script")
+    true))
 
 (df test-doctor-clean-baseline [] -> Bool
   :d "Tests that default standard plugins pass doctor inspection with 100% health"
   (let [(reg (pl/build-standard-harness-plugins))
         (diag (doc/diagnose-agent-plugins reg))]
-    (and (.-healthy diag)
-         (= (.-health-score diag) 100)
-         (= (list-length (.-collisions diag)) 0)
-         (= (list-length (.-contradictions diag)) 0)
-         (= (list-length (.-missing-deps diag)) 0))))
+    (assert (.-healthy diag) "clean is healthy")
+    (assert (= (.-health-score diag) 100) "health score is 100")
+    (assert (= (list-length (.-collisions diag)) 0) "0 collisions")
+    (assert (= (list-length (.-contradictions diag)) 0) "0 contradictions")
+    (assert (= (list-length (.-missing-deps diag)) 0) "0 missing deps")
+    true))
 
 (df test-doctor-detect-tool-collision [] -> Bool
   :d "Tests detection of duplicate tool names across plugins"
@@ -50,12 +53,13 @@
                         :conflicts (list))))
         (reg-with-collision (pl/registry-add reg bad-plugin))
         (diag (doc/diagnose-agent-plugins reg-with-collision))]
-    (and (not (.-healthy diag))
-         (< (.-health-score diag) 100)
-         (= (list-length (.-collisions diag)) 1)
-         (let [(c (option-or (list-head (.-collisions diag))
-                             (doc/ToolCollision :tool-name "" :plugin-a "" :plugin-b "")))]
-           (= (.-tool-name c) "intel-preload")))))
+    (assert (not (.-healthy diag)) "collision is not healthy")
+    (assert (< (.-health-score diag) 100) "health score < 100")
+    (assert (= (list-length (.-collisions diag)) 1) "1 collision found")
+    (let [(c (option-or (list-head (.-collisions diag))
+                        (doc/ToolCollision :tool-name "" :plugin-a "" :plugin-b "")))]
+      (assert (= (.-tool-name c) "intel-preload") "collision tool is intel-preload"))
+    true))
 
 (df test-doctor-detect-missing-dependency [] -> Bool
   :d "Tests detection of unfulfilled plugin dependencies"
@@ -73,8 +77,9 @@
                :conflicts (list))))
         (reg-unmet (pl/registry-add reg p))
         (diag (doc/diagnose-agent-plugins reg-unmet))]
-    (and (not (.-healthy diag))
-         (= (list-length (.-missing-deps diag)) 1))))
+    (assert (not (.-healthy diag)) "missing dep is not healthy")
+    (assert (= (list-length (.-missing-deps diag)) 1) "1 missing dep found")
+    true))
 
 (df test-doctor-detect-prompt-contradiction [] -> Bool
   :d "Tests detection of contradictory prompt directives"
@@ -103,16 +108,18 @@
                 :conflicts (list))))
         (reg-conflict (pl/registry-add (pl/registry-add reg p1) p2))
         (diag (doc/diagnose-agent-plugins reg-conflict))]
-    (and (not (.-healthy diag))
-         (> (list-length (.-contradictions diag)) 0))))
+    (assert (not (.-healthy diag)) "contradiction is not healthy")
+    (assert (> (list-length (.-contradictions diag)) 0) "contradictions found")
+    true))
 
 (df test-doctor-llm-chain-fast-path-skip [] -> Bool
   :d "Tests that healthy setup skips LLM inspection (0 token cost)"
   (let [(reg (pl/build-standard-harness-plugins))
         (diag (doc/diagnose-agent-plugins reg))
         (after (doc/inspect-with-llm diag "gemma-31b"))]
-    (and (.-healthy after)
-         (not (.-llm-inspected after)))))
+    (assert (.-healthy after) "fast path is healthy")
+    (assert (not (.-llm-inspected after)) "llm was not inspected")
+    true))
 
 (df test-doctor-llm-chain-activation-on-issues [] -> Bool
   :d "Tests that LLM chain inspector is triggered when issues exist"
@@ -128,25 +135,33 @@
         (reg-bad (pl/registry-add (pl/registry-add reg p1) p2))
         (diag (doc/diagnose-agent-plugins reg-bad))
         (after (doc/inspect-with-llm diag "qwen-2.5-coder"))]
-    (and (not (.-healthy after))
-         (.-llm-inspected after)
-         (> (list-length (.-remediations after)) 0))))
+    (assert (not (.-healthy after)) "issues not healthy")
+    (assert (.-llm-inspected after) "llm was inspected")
+    (assert (> (list-length (.-remediations after)) 0) "remediations exist")
+    true))
 
 (df test-format-doctor-report [] -> Bool
   :d "Tests markdown formatting of doctor diagnosis report"
   (let [(reg (pl/build-standard-harness-plugins))
         (diag (doc/diagnose-agent-plugins reg))
         (report (doc/format-doctor-report diag))]
-    (and (string-contains? report "Agent Doctor Inspection Report")
-         (string-contains? report "HEALTHY (100/100)"))))
+    (assert (string-contains? report "Agent Doctor Inspection Report") "report header present")
+    (assert (string-contains? report "HEALTHY (100/100)") "healthy text present")
+    true))
 
 (df run-doctor-tests [] -> Bool
   :d "Runs complete test suite for Agent Doctor and Plugin System"
-  (and (test-plugin-registry-creation)
-       (test-doctor-clean-baseline)
-       (test-doctor-detect-tool-collision)
-       (test-doctor-detect-missing-dependency)
-       (test-doctor-detect-prompt-contradiction)
-       (test-doctor-llm-chain-fast-path-skip)
-       (test-doctor-llm-chain-activation-on-issues)
-       (test-format-doctor-report)))
+  (do
+    (test-plugin-registry-creation)
+    (test-doctor-clean-baseline)
+    (test-doctor-detect-tool-collision)
+    (test-doctor-detect-missing-dependency)
+    (test-doctor-detect-prompt-contradiction)
+    (test-doctor-llm-chain-fast-path-skip)
+    (test-doctor-llm-chain-activation-on-issues)
+    (test-format-doctor-report)
+    true))
+
+(df run-tests [] -> Bool
+  :d "Alias for run-doctor-tests"
+  (run-doctor-tests))

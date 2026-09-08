@@ -172,11 +172,24 @@
     (:sym :name "PluginHook" :kind :enum :tokens 2)
     (:sym :name "HarnessPlugin" :kind :struct :tokens 2)
     (:sym :name "HarnessConfig" :kind :struct :tokens 2)
+    (:sym :name "CoverageConfig" :kind :struct :tokens 2)
     (:sym :name "profile-gemma-31b" :kind :fn :tokens 3
           :rationale "Profile preset for Gemma 31B target model")
     (:sym :name "profile-default" :kind :fn :tokens 2)
     (:sym :name "default-harness-config" :kind :fn :tokens 3
           :rationale "Constructs standard default configuration record")
+    (:sym :name "benchmark-harness-config" :kind :fn :tokens 3
+          :rationale "Constructs hermetic benchmark harness configuration")
+    (:sym :name "production-harness-config" :kind :fn :tokens 3
+          :rationale "Constructs production engineering harness configuration")
+    (:sym :name "default-coverage-config" :kind :fn :tokens 3
+          :rationale "Constructs standard default coverage configuration record")
+    (:sym :name "coverage-config-to-asn-node" :kind :fn :tokens 5
+          :rationale "Serializes coverage configuration into ASN constructor AST node")
+    (:sym :name "coverage-config-from-asn-node" :kind :fn :tokens 5
+          :rationale "Parses typed coverage configuration directly from ASN AST node")
+    (:sym :name "test-coverage-config" :kind :fn :tokens 3
+          :rationale "Unit test verifying coverage configuration serialization and parsing")
     (:sym :name "toggle-feature" :kind :fn :tokens 2)
     (:sym :name "feature-enabled?" :kind :fn :tokens 2)
     (:sym :name "register-plugin" :kind :fn :tokens 2)
@@ -1354,6 +1367,34 @@
           :rationale "Compares token and syntax efficiency across condition profiles")
     (:sym :name "format-protocol-comparison" :kind :fn :tokens 3
           :rationale "Formats comparative benchmark metrics into human-readable ledger")
+
+    ;; Phase 350 Model Calibration Registry & MCP Bridge Symbols
+    (:sym :name "format-model-run-asn" :kind :fn :tokens 4
+          :rationale "Formats an individual model run into canonical ASN representation")
+    (:sym :name "format-calibration-registry-asn" :kind :fn :tokens 4
+          :rationale "Formats entire master calibration registry into canonical machine-readable ASN")
+    (:sym :name "test-format-calibration-registry-asn" :kind :fn :tokens 4
+          :rationale "Unit test for master calibration registry serialization")
+    (:sym :name "medium-calibration-tasks" :kind :fn :tokens 3
+          :rationale "Returns the 5 canonical medium SLM and flash calibration canary tasks")
+    (:sym :name "super-hard-calibration-tasks" :kind :fn :tokens 3
+          :rationale "Returns the 2 canonical horizon challenge tasks with zero baseline pass rate")
+    (:sym :name "full-spectrum-canary-tasks" :kind :fn :tokens 4
+          :rationale "Returns the complete 17-task continuous calibration challenge suite")
+    (:sym :name "tasks-for-tier" :kind :fn :tokens 3
+          :rationale "Retrieves calibration canary tasks matching specific scale tier")
+    (:sym :name "generate-claude-mcp-config" :kind :fn :tokens 4
+          :rationale "Generates JSON configuration for isolated Claude Code invocation")
+    (:sym :name "standard-genseam-servers" :kind :fn :tokens 3
+          :rationale "Standard GenSEAM MCP servers for Claude Code comparative benchmarking")
+    (:sym :name "verify-bridge-connectivity" :kind :fn :tokens 3
+          :rationale "Validates that all declared MCP bridges are syntactically and structurally ready")
+    (:sym :name "test-standard-servers-count" :kind :fn :tokens 4
+          :rationale "Unit test for standard MCP servers count")
+    (:sym :name "test-generate-claude-config" :kind :fn :tokens 4
+          :rationale "Unit test for Claude Code MCP configuration generation")
+    (:sym :name "test-verify-bridge-connectivity" :kind :fn :tokens 4
+          :rationale "Unit test for MCP bridge connectivity check")
   ]
 )
 

@@ -98,32 +98,35 @@
 
 (df scan-line-for-tags [(line Str) (file-path Str) (line-num I64)] -> (List ElementUsage)
   :d "Extracts JSX/HTML element tags from a single line."
-  (let [(parts (string-split line "<"))]
-    (fold (fn [(acc (List ElementUsage)) (part Str)] -> (List ElementUsage)
-            (let [(trimmed (string-trim part))]
-              (if (or (string-empty? trimmed)
-                      (or (string-starts-with? trimmed "/")
-                          (or (string-starts-with? trimmed "!")
-                              (string-starts-with? trimmed "?"))))
-                  acc
-                  (let [(space-idx (string-index-of trimmed " "))
-                        (gt-idx (string-index-of trimmed ">"))
-                        (slash-idx (string-index-of trimmed "/"))
-                        (end-idx (min-valid-index space-idx gt-idx slash-idx (string-length trimmed)))
-                        (tag-name (option-or (string-slice trimmed 0 end-idx) ""))]
-                    (if (and (> (string-length tag-name) 0) (is-valid-tag-name? tag-name))
-                        (let [(native (is-native-tag? tag-name))
-                              (classes (extract-classes-from-line line))
-                              (usage (ElementUsage
-                                       :tag-name tag-name
-                                       :is-native native
-                                       :file-path file-path
-                                       :line line-num
-                                       :class-names classes))]
-                          (list-append acc (list usage)))
-                        acc)))))
-          (list)
-          parts)))
+  (if (not (string-contains? line "<"))
+      (list)
+      (let [(parts (string-split line "<"))
+            (tag-parts (option-or (list-tail parts) (list)))]
+        (fold (fn [(acc (List ElementUsage)) (part Str)] -> (List ElementUsage)
+                (let [(trimmed (string-trim part))]
+                  (if (or (string-empty? trimmed)
+                          (or (string-starts-with? trimmed "/")
+                              (or (string-starts-with? trimmed "!")
+                                  (string-starts-with? trimmed "?"))))
+                      acc
+                      (let [(space-idx (string-index-of trimmed " "))
+                            (gt-idx (string-index-of trimmed ">"))
+                            (slash-idx (string-index-of trimmed "/"))
+                            (end-idx (min-valid-index space-idx gt-idx slash-idx (string-length trimmed)))
+                            (tag-name (option-or (string-slice trimmed 0 end-idx) ""))]
+                        (if (and (> (string-length tag-name) 0) (is-valid-tag-name? tag-name))
+                            (let [(native (is-native-tag? tag-name))
+                                  (classes (extract-classes-from-line line))
+                                  (usage (ElementUsage
+                                            :tag-name tag-name
+                                            :is-native native
+                                            :file-path file-path
+                                            :line line-num
+                                            :class-names classes))]
+                              (list-append acc (list usage)))
+                            acc)))))
+              (list)
+              tag-parts))))
 
 (df min-valid-index [(s (Option I64)) (g (Option I64)) (sl (Option I64)) (fallback I64)] -> I64
   :d "Finds smallest positive index delimiter."
@@ -187,15 +190,9 @@
           (BatchTransformResult
             :occurrences-replaced delimited-count
             :modified-content modified))
-        (if (string-contains? source-code target-str)
-            (let [(occurrences (- (list-length (string-split source-code target-str)) 1))
-                  (modified (string-replace source-code target-str replace-str))]
-              (BatchTransformResult
-                :occurrences-replaced occurrences
-                :modified-content modified))
-            (BatchTransformResult
-              :occurrences-replaced 0
-              :modified-content source-code)))))
+        (BatchTransformResult
+          :occurrences-replaced 0
+          :modified-content source-code))))
 
 (df audit-design-policy [(map ComponentMap) (forbidden-native-tags (List Str)) (replacement-component Str)] -> PolicyAuditReport
   :d "Audits component map against forbidden native elements in design policy."
