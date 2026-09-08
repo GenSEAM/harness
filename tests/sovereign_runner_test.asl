@@ -6,6 +6,9 @@
       test-timeout-supervision
       test-mixed-challenge-matrix-execution
       test-benchmark-receipt-formatting
+      test-mode-2-standard-pipeline
+      test-mode-3-deep-pipeline
+      test-mode-comparative-metrics
       run-tests]
   :i [(sovereign_runner :a sr)])
 
@@ -126,6 +129,82 @@
       (assert (string-contains? receipt-empty ":receipts []") "Empty receipt must serialize empty receipt list")
       true)))
 
+(df test-mode-2-standard-pipeline [] -> Bool
+  :d "Verifies Mode 2 Standard Epistemic Loop: 4 discrete steps, token budget, and timeout handling."
+  (let [(trace (sr/run-epistemic-task "TB4-SOLV-01" 2 30000))
+        (steps (.-steps trace))
+        (dummy (sr/make-epistemic-step "" "" "" 0 ""))
+        (s0 (option-or (list-get steps 0) dummy))
+        (s1 (option-or (list-get steps 1) dummy))
+        (s2 (option-or (list-get steps 2) dummy))
+        (s3 (option-or (list-get steps 3) dummy))
+        (timeout-trace (sr/run-epistemic-task "TB4-SOLV-01" 2 0))]
+    (do
+      (assert (= (list-length steps) 4) "Mode 2 must produce exactly 4 steps")
+      (assert (= (.-name s0) "scout") "Mode 2 step 0 must be scout")
+      (assert (= (.-name s1) "plan-and-gap") "Mode 2 step 1 must be plan-and-gap")
+      (assert (= (.-name s2) "implement") "Mode 2 step 2 must be implement")
+      (assert (= (.-name s3) "reconcile") "Mode 2 step 3 must be reconcile")
+      (assert (.-passed trace) "Solvable task must pass under Mode 2")
+      (assert (= (.-total-tokens trace) 750) "Mode 2 total token consumption must equal 750")
+      (assert (not (.-passed timeout-trace)) "Timed out Mode 2 execution must record passed false")
+      (assert (= (list-length (.-steps timeout-trace)) 0) "Timed out run must have 0 steps")
+      true)))
+
+(df test-mode-3-deep-pipeline [] -> Bool
+  :d "Verifies Mode 3 Deep Sovereign Epistemic Loop: 5 discrete steps, adversarial gap audit, and hard task rejection."
+  (let [(trace (sr/run-epistemic-task "TB4-SOLV-01" 3 30000))
+        (steps (.-steps trace))
+        (dummy (sr/make-epistemic-step "" "" "" 0 ""))
+        (s0 (option-or (list-get steps 0) dummy))
+        (s1 (option-or (list-get steps 1) dummy))
+        (s2 (option-or (list-get steps 2) dummy))
+        (s3 (option-or (list-get steps 3) dummy))
+        (s4 (option-or (list-get steps 4) dummy))
+        (hard-trace (sr/run-epistemic-task "TB4-HARD-01" 3 30000))
+        (hard-steps (.-steps hard-trace))
+        (hard-gap (option-or (list-get hard-steps 2) dummy))]
+    (do
+      (assert (= (list-length steps) 5) "Mode 3 must produce exactly 5 steps")
+      (assert (= (.-name s0) "scout") "Mode 3 step 0 must be scout")
+      (assert (= (.-name s1) "plan") "Mode 3 step 1 must be plan")
+      (assert (= (.-name s2) "gap-audit") "Mode 3 step 2 must be gap-audit")
+      (assert (= (.-name s3) "implement") "Mode 3 step 3 must be implement")
+      (assert (= (.-name s4) "reconcile") "Mode 3 step 4 must be reconcile")
+      (assert (.-passed trace) "Solvable task must pass under Mode 3")
+      (assert (= (.-total-tokens trace) 1080) "Mode 3 total token consumption must equal 1080")
+      (assert (not (.-passed hard-trace)) "Hard challenge must fail under Mode 3")
+      (assert (= (.-status hard-gap) ":failed") "Gap audit step must fail on hard challenge")
+      (assert (string-contains? (.-receipt hard-gap) "unresolvable-constraint") "Gap audit receipt must identify unresolvable constraint")
+      true)))
+
+(df test-mode-comparative-metrics [] -> Bool
+  :d "Verifies comparative metrics ledger between Mode 2 and Mode 3 and epistemic trace formatting."
+  (let [(cmp-solv (sr/compare-epistemic-modes "TB4-SOLV-01" 30000))
+        (t2 (sr/run-epistemic-task "TB4-SOLV-01" 2 30000))
+        (fmt2 (sr/format-epistemic-trace t2))
+        (t3 (sr/run-epistemic-task "TB4-SOLV-01" 3 30000))
+        (fmt3 (sr/format-epistemic-trace t3))]
+    (do
+      (assert (or (string-contains? cmp-solv "(:mode-comparison")
+                  (string-contains? cmp-solv "(:comparative-epistemic-run"))
+              "Comparative output must contain ASN comparison block")
+      (assert (or (string-contains? cmp-solv ":mode-2")
+                  (string-contains? cmp-solv ":mode 2"))
+              "Comparative output must record Mode 2 metrics")
+      (assert (or (string-contains? cmp-solv ":mode-3")
+                  (string-contains? cmp-solv ":mode 3"))
+              "Comparative output must record Mode 3 metrics")
+      (assert (string-contains? cmp-solv ":step-delta 1") "Step delta between Mode 3 and Mode 2 must equal 1")
+      (assert (string-contains? cmp-solv ":token-overhead 330") "Token overhead must equal 330")
+      (assert (string-contains? fmt2 "(:epistemic-trace") "Formatted trace 2 must start with :epistemic-trace")
+      (assert (string-contains? fmt2 ":mode 2") "Formatted trace 2 must record :mode 2")
+      (assert (string-contains? fmt2 ":total-tokens 750") "Formatted trace 2 must record total tokens 750")
+      (assert (string-contains? fmt3 "(:epistemic-trace") "Formatted trace 3 must start with :epistemic-trace")
+      (assert (string-contains? fmt3 ":mode 3") "Formatted trace 3 must record :mode 3")
+      (assert (string-contains? fmt3 ":total-tokens 1080") "Formatted trace 3 must record total tokens 1080")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Runs all sovereign benchmark runner unit and integration tests."
   (and (test-benchmark-matrix-construction)
@@ -133,4 +212,8 @@
             (and (test-unsolved-hard-tasks-execution)
                  (and (test-timeout-supervision)
                       (and (test-mixed-challenge-matrix-execution)
-                           (test-benchmark-receipt-formatting)))))))
+                           (and (test-benchmark-receipt-formatting)
+                                (and (test-mode-2-standard-pipeline)
+                                     (and (test-mode-3-deep-pipeline)
+                                          (test-mode-comparative-metrics))))))))))
+
