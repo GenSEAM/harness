@@ -1330,6 +1330,30 @@
           :rationale "Formats benchmark run result into structured ASN receipt string")
     (:sym :name "compute-dynamic-temperature" :kind :fn :tokens 3
           :rationale "Computes dynamic temperature based on attempt number and retry ceiling")
+
+    ;; Phase 340 Pure ASN Protocol Benchmark & Cross-Model Sweep Symbols
+    (:sym :name "AsnAgentState" :kind :type :tokens 2)
+    (:sym :name "AsnToolDefinition" :kind :type :tokens 2)
+    (:sym :name "AsnToolCall" :kind :type :tokens 2)
+    (:sym :name "AsnToolReturn" :kind :type :tokens 2)
+    (:sym :name "AsnParsedCompletion" :kind :type :tokens 2)
+    (:sym :name "ProtocolProfile" :kind :type :tokens 2)
+    (:sym :name "ComparisonMetrics" :kind :type :tokens 2)
+    (:sym :name "ProtocolBenchmarkReport" :kind :type :tokens 2)
+    (:sym :name "format-asn-tool-schema" :kind :fn :tokens 4
+          :rationale "Formats list of tool definitions into compact ASN schema representation")
+    (:sym :name "format-asn-agent-prompt" :kind :fn :tokens 4
+          :rationale "Encodes agent state, context buffer, and tool schemas into pure ASN prompt")
+    (:sym :name "parse-asn-completion" :kind :fn :tokens 3
+          :rationale "Parses pure ASN completion into typed structured completion record")
+    (:sym :name "format-asn-tool-return" :kind :fn :tokens 4
+          :rationale "Formats tool execution result as compact ASN S-expression")
+    (:sym :name "measure-protocol-tokens" :kind :fn :tokens 3
+          :rationale "Measures token consumption of serialized protocol payload")
+    (:sym :name "compare-protocol-efficiency" :kind :fn :tokens 3
+          :rationale "Compares token and syntax efficiency across condition profiles")
+    (:sym :name "format-protocol-comparison" :kind :fn :tokens 3
+          :rationale "Formats comparative benchmark metrics into human-readable ledger")
   ]
 )
 

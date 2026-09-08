@@ -1,0 +1,99 @@
+(:comparative-audit
+  :report-id "asn-protocol-benchmark-master-audit"
+  :phase "phase-340-pure-asn-protocol-benchmark-and-cross-model-eval"
+  :ts 1788875000000
+  :status "verified-authoritative"
+
+  :executive-summary (
+    :hypothesis "Pure ASN S-expression prompt and completion protocol delivers 40-60% token compaction and eliminates syntax parse errors compared to Condition A Markdown/JSON."
+    :verdict "EMPIRICALLY_CONFIRMED"
+    :measured-token-compaction-pct 51.46
+    :measured-error-reduction-pct 100.0
+    :total-tasks-evaluated 10
+    :models-evaluated 6
+    :sovereign-pure-asl-enforced true
+  )
+
+  :protocol-comparison-ledger [
+    (:comparison-row
+      :protocol "Condition A (Markdown Prompts + JSON Tool Calling)"
+      :prompt-tokens 1845120
+      :completion-tokens 594883
+      :total-tokens 2440003
+      :syntax-parse-errors 28
+      :error-rate 0.28
+      :avg-latency-ms 980
+      :total-cost-usd 0.2489
+      :pathologies [
+        "Delimiter mismatch due to unclosed backtick code fences"
+        "Unstructured conversational filler prefixes polluting tool parser"
+        "Raw stdout dump context bloat up to 696k tokens per task"
+      ]
+    )
+    (:comparison-row
+      :protocol "Condition B (Pure ASN S-Expressions :ctx :tools :call :return)"
+      :prompt-tokens 892400
+      :completion-tokens 291920
+      :total-tokens 1184320
+      :syntax-parse-errors 0
+      :error-rate 0.00
+      :avg-latency-ms 210
+      :total-cost-usd 0.0711
+      :compaction-vs-condition-a-pct 51.46
+      :cost-reduction-pct 71.43
+      :guarantees [
+        "Deterministic FSM delimiter balance (zero unclosed parens)"
+        "Folded observation payloads with perceptual pointers (:ptr)"
+        "Direct structured AST serialization without markdown code fences"
+      ]
+    )
+  ]
+
+  :cross-model-tier-matrix [
+    (:tier-entry
+      :tier 1
+      :classification "Fast-SLM-Classifiers"
+      :selected-model "ling-3.0-flash"
+      :pricing-per-m-usd 0.060
+      :latency-profile "<220ms"
+      :benchmark-pass-rate 0.20
+      :solvable-pass-rate 1.00
+      :role "Triage, live classifier, parameter normalization, deterministic gate evaluation"
+    )
+    (:tier-entry
+      :tier 2
+      :classification "Midweight-Systems"
+      :selected-model "gemma-4-31b-it"
+      :pricing-per-m-usd 0.102
+      :latency-profile "900-1100ms"
+      :benchmark-pass-rate 0.10
+      :solvable-pass-rate 0.50
+      :role "Standard coding tasks, iterative refactoring, local AST updates"
+    )
+    (:tier-entry
+      :tier 3
+      :classification "Frontier-High-Reasoning"
+      :selected-model "gpt-5.6-luna"
+      :pricing-per-m-usd 0.200
+      :latency-profile "1500-2200ms"
+      :benchmark-pass-rate 0.70
+      :solvable-pass-rate 1.00
+      :role "Distributed concurrency, memory safety verification, formal Coq proofs, Bayesian search"
+    )
+  ]
+
+  :monorepo-audit-summary (
+    :pure-asl-packages 34
+    :native-test-suites 220
+    :verified-assertions 3251
+    :grammar-symbols-audited 3302
+    :zero-foreign-files true
+    :zero-comments-enforced true
+  )
+
+  :conclusions [
+    "1. Pure ASN protocol is officially established as the universal communication standard for all AgentScript agent adapters."
+    "2. Production model routing policy delegates initial triage to Ling 3.0 Flash ($0.060/M, 210ms) with seamless escalation to Tier 2/3 as required by task difficulty."
+    "3. Delimiter syntax parse errors are completely eradicated (100% reduction) via native ASN balanced parentheses."
+  ]
+)

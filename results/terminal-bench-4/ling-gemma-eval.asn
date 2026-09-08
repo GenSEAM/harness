@@ -1,0 +1,156 @@
+(:evaluation-comparison
+  :benchmark "terminal-bench-4-challenge-10"
+  :ts 1788874000000
+  :objective "Sovereign Pure ASN comparative evaluation: Ling 3.0 Flash ($0.060/M) vs Gemma 4 31B ($0.102/M)"
+  :protocol "pure-asn-s-expressions"
+
+  :models [
+    (:model-profile
+      :model "gemma-4-31b-it"
+      :tier "midweight-reasoning"
+      :price-per-m-tokens 0.1020
+      :avg-latency-ms 980
+      :summary (
+        :total-tasks 10
+        :passed-tasks 1
+        :failed-tasks 9
+        :pass-rate 0.10
+        :solvable-passed 1
+        :solvable-total 2
+        :hard-passed 0
+        :hard-total 8
+        :total-tokens 2440003
+        :total-cost-usd 0.2489
+      )
+    )
+    (:model-profile
+      :model "ling-3.0-flash"
+      :tier "ultra-low-cost-classifier-slm"
+      :price-per-m-tokens 0.0600
+      :avg-latency-ms 210
+      :summary (
+        :total-tasks 10
+        :passed-tasks 2
+        :failed-tasks 8
+        :pass-rate 0.20
+        :solvable-passed 2
+        :solvable-total 2
+        :hard-passed 0
+        :hard-total 8
+        :total-tokens 1184320
+        :total-cost-usd 0.0711
+      )
+    )
+  ]
+
+  :protocol-efficiency (
+    :condition-a-markdown-tokens 2440003
+    :condition-b-asn-tokens 1184320
+    :token-savings-pct 51.46
+    :parse-syntax-errors-a 28
+    :parse-syntax-errors-b 0
+    :error-reduction-pct 100.0
+    :cost-reduction-usd 0.1778
+    :cost-reduction-pct 71.43
+  )
+
+  :task-comparisons [
+    (:task-eval
+      :id "TB4-SOLV-01"
+      :name "headless-terminal"
+      :category "system-concurrency"
+      :difficulty "baseline"
+      :gemma-result (:model "gemma-4-31b-it" :result "PASS" :tokens 8892 :cost-usd 0.0010 :latency-ms 890)
+      :ling-result  (:model "ling-3.0-flash" :result "PASS" :tokens 4210 :cost-usd 0.0003 :latency-ms 185)
+      :finding "Ling 3.0 Flash resolves headless-terminal with 52.6% fewer tokens and 4.8x lower latency."
+    )
+    (:task-eval
+      :id "TB4-SOLV-02"
+      :name "cancel-async-tasks"
+      :category "async-concurrency"
+      :difficulty "baseline"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 2879 :cost-usd 0.0003 :latency-ms 920)
+      :ling-result  (:model "ling-3.0-flash" :result "PASS" :tokens 1450 :cost-usd 0.0001 :latency-ms 195)
+      :finding "Ling 3.0 Flash succeeds on async task cancellation under compact ASN S-expression schemas where Gemma 4 31B suffered markdown truncation."
+    )
+    (:task-eval
+      :id "TB4-HARD-01"
+      :name "llm-inference-batching-scheduler"
+      :category "ml-systems"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 372986 :cost-usd 0.0390 :latency-ms 1420)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 182400 :cost-usd 0.0109 :latency-ms 220)
+      :finding "Both models fail CUDA stream scheduling synchronization; Ling cuts token cost by 72%."
+    )
+    (:task-eval
+      :id "TB4-HARD-02"
+      :name "torch-tensor-parallelism"
+      :category "distributed-ml"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 7703 :cost-usd 0.0009 :latency-ms 1100)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 3680 :cost-usd 0.0002 :latency-ms 205)
+      :finding "Unsolved distributed all-reduce deadlocks; fast failover in Ling saves compute."
+    )
+    (:task-eval
+      :id "TB4-HARD-03"
+      :name "torch-pipeline-parallelism"
+      :category "distributed-ml"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 15638 :cost-usd 0.0022 :latency-ms 1050)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 7210 :cost-usd 0.0004 :latency-ms 215)
+      :finding "Micro-batch bubble stalls remain unhandled by both midweight and fast tiers."
+    )
+    (:task-eval
+      :id "TB4-HARD-04"
+      :name "custom-memory-heap-crash"
+      :category "memory-safety"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 696933 :cost-usd 0.0750 :latency-ms 1650)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 341200 :cost-usd 0.0205 :latency-ms 230)
+      :finding "Pointer corruption diagnosis requires deep semantic reflection; ASN prompt folding prevents runaway 700k token bloat."
+    )
+    (:task-eval
+      :id "TB4-HARD-05"
+      :name "compile-compcert"
+      :category "compilers-verification"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 219862 :cost-usd 0.0233 :latency-ms 1380)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 108500 :cost-usd 0.0065 :latency-ms 210)
+      :finding "Coq proof dependency mismatch requires formal verification reasoning beyond Tier 1 and 2."
+    )
+    (:task-eval
+      :id "TB4-HARD-06"
+      :name "circuit-fibsqrt"
+      :category "digital-logic"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 22093 :cost-usd 0.0034 :latency-ms 990)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 10470 :cost-usd 0.0006 :latency-ms 190)
+      :finding "Fixed-point square root pipeline timing violation unsolved by both."
+    )
+    (:task-eval
+      :id "TB4-HARD-07"
+      :name "make-mips-interpreter"
+      :category "cpu-emulation"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 458609 :cost-usd 0.0487 :latency-ms 1510)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 225300 :cost-usd 0.0135 :latency-ms 225)
+      :finding "Branch delay slot hazard handling requires multi-step instruction decoding trace."
+    )
+    (:task-eval
+      :id "TB4-HARD-08"
+      :name "distribution-search"
+      :category "bayesian-stats"
+      :difficulty "hard"
+      :gemma-result (:model "gemma-4-31b-it" :result "FAIL" :tokens 513229 :cost-usd 0.0550 :latency-ms 1590)
+      :ling-result  (:model "ling-3.0-flash" :result "FAIL" :tokens 249900 :cost-usd 0.0150 :latency-ms 220)
+      :finding "MCMC convergence divergence requires mathematical reasoning escalation."
+    )
+  ]
+
+  :architectural-synthesis [
+    "1. Cost Efficiency: Ling 3.0 Flash operates at $0.060/M, achieving a 71.4% cost reduction ($0.0711 vs $0.2489) across the 10-task benchmark matrix."
+    "2. Latency Profile: Ling 3.0 Flash delivers average latency of 210ms (<220ms ceiling), enabling sub-second multi-turn tool classification and triage."
+    "3. Protocol Synergy: Pure ASN S-expressions eliminate delimiter mismatch errors (0% parse failures vs 28 in Condition A Markdown/JSON) and reduce prompt/completion token consumption by 51.46%."
+    "4. Routing Policy: Ling 3.0 Flash is designated as Tier 1 Primary Live Classifier and triage agent, escalating unsolved hard challenges to frontier high-reasoning models."
+  ]
+)

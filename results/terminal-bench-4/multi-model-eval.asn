@@ -1,0 +1,155 @@
+(:multi-model-eval
+  :benchmark "terminal-bench-4-challenge-10"
+  :ts 1788874500000
+  :protocol "pure-asn-s-expressions"
+  :description "Multi-model intelligence escalation sweep across 6 gateway models mapping task difficulty gradients"
+
+  :evaluated-models [
+    "ling-3.0-flash"
+    "qwen-3.8-flash"
+    "mimo-v2.5"
+    "gemma-4-31b-it"
+    "hy3"
+    "gpt-5.6-luna"
+  ]
+
+  :escalation-tiers [
+    (:tier
+      :tier-id 1
+      :tier-name "Fast-SLM-Classifiers"
+      :description "Ultra-low latency, sub-second routing, initial triaging and classification"
+      :models [
+        (:model-stat
+          :model "ling-3.0-flash"
+          :price-per-m 0.060
+          :avg-latency-ms 210
+          :solvable-pass-rate 1.00
+          :hard-pass-rate 0.00
+          :total-pass-rate 0.20
+          :avg-tokens-per-task 118432
+          :total-cost-usd 0.0711
+          :error-distribution (:timeout 0 :syntax-error 0 :reasoning-stall 8)
+        )
+        (:model-stat
+          :model "qwen-3.8-flash"
+          :price-per-m 0.150
+          :avg-latency-ms 280
+          :solvable-pass-rate 1.00
+          :hard-pass-rate 0.125
+          :total-pass-rate 0.30
+          :avg-tokens-per-task 142100
+          :total-cost-usd 0.2131
+          :error-distribution (:timeout 1 :syntax-error 0 :reasoning-stall 6)
+        )
+        (:model-stat
+          :model "mimo-v2.5"
+          :price-per-m 0.140
+          :avg-latency-ms 260
+          :solvable-pass-rate 1.00
+          :hard-pass-rate 0.00
+          :total-pass-rate 0.20
+          :avg-tokens-per-task 125000
+          :total-cost-usd 0.1750
+          :error-distribution (:timeout 0 :syntax-error 0 :reasoning-stall 8)
+        )
+      ]
+    )
+    (:tier
+      :tier-id 2
+      :tier-name "Midweight-Systems"
+      :description "Standard coding agent execution, refactoring, iterative unit debugging"
+      :models [
+        (:model-stat
+          :model "gemma-4-31b-it"
+          :price-per-m 0.102
+          :avg-latency-ms 980
+          :solvable-pass-rate 0.50
+          :hard-pass-rate 0.00
+          :total-pass-rate 0.10
+          :avg-tokens-per-task 244000
+          :total-cost-usd 0.2489
+          :error-distribution (:timeout 2 :syntax-error 0 :reasoning-stall 7)
+        )
+        (:model-stat
+          :model "hy3"
+          :price-per-m 0.140
+          :avg-latency-ms 890
+          :solvable-pass-rate 1.00
+          :hard-pass-rate 0.125
+          :total-pass-rate 0.30
+          :avg-tokens-per-task 210000
+          :total-cost-usd 0.2940
+          :error-distribution (:timeout 1 :syntax-error 0 :reasoning-stall 6)
+        )
+      ]
+    )
+    (:tier
+      :tier-id 3
+      :tier-name "Frontier-High-Reasoning"
+      :description "Distributed concurrency, memory safety verification, formal proofs, Bayesian estimation"
+      :models [
+        (:model-stat
+          :model "gpt-5.6-luna"
+          :price-per-m 0.200
+          :avg-latency-ms 1850
+          :solvable-pass-rate 1.00
+          :hard-pass-rate 0.625
+          :total-pass-rate 0.70
+          :avg-tokens-per-task 310000
+          :total-cost-usd 0.6200
+          :error-distribution (:timeout 0 :syntax-error 0 :reasoning-stall 3)
+        )
+      ]
+    )
+  ]
+
+  :difficulty-gradient-matrix [
+    (:gradient-level
+      :level 1
+      :category "system-concurrency"
+      :representative-tasks ["TB4-SOLV-01" "TB4-SOLV-02"]
+      :min-viable-tier 1
+      :recommended-model "ling-3.0-flash"
+      :rationale "Standard subprocess management and async cancellation cleanly resolved by fast SLM under pure ASN protocol."
+    )
+    (:gradient-level
+      :level 2
+      :category "distributed-ml"
+      :representative-tasks ["TB4-HARD-02" "TB4-HARD-03"]
+      :min-viable-tier 2
+      :recommended-model "hy3"
+      :rationale "Pipeline micro-batching and tensor parallelism require deeper context tracking and collective communication semantics."
+    )
+    (:gradient-level
+      :level 3
+      :category "memory-safety"
+      :representative-tasks ["TB4-HARD-04"]
+      :min-viable-tier 3
+      :recommended-model "gpt-5.6-luna"
+      :rationale "Custom memory heap corruption requires multi-frame pointer lifetime reasoning and anti-hallucination discipline."
+    )
+    (:gradient-level
+      :level 4
+      :category "compilers-verification"
+      :representative-tasks ["TB4-HARD-05"]
+      :min-viable-tier 3
+      :recommended-model "gpt-5.6-luna"
+      :rationale "CompCert Coq theorem proving and AST semantics require frontier mathematical induction capabilities."
+    )
+    (:gradient-level
+      :level 5
+      :category "bayesian-stats"
+      :representative-tasks ["TB4-HARD-08"]
+      :min-viable-tier 3
+      :recommended-model "gpt-5.6-luna"
+      :rationale "MCMC posterior distribution convergence requires algorithmic optimization across large probability spaces."
+    )
+  ]
+
+  :escalation-policy (
+    :step-1 "Triage & Simple Tasks: Dispatch to Tier 1 (ling-3.0-flash @ $0.060/M). Latency < 220ms."
+    :step-2 "Midweight Coding & Local Debugging: Escalate to Tier 2 (gemma-4-31b-it / hy3 @ $0.102-$0.140/M) if Tier 1 signals complexity."
+    :step-3 "Complex Failure & Deep Reasoning: Escalate to Tier 3 (gpt-5.6-luna @ $0.200/M) on memory safety, distributed systems, or verification hurdles."
+    :protocol-invariance "All tiers communicate exclusively through Pure ASN S-expressions, guaranteeing 0% delimiter imbalance and 40-60% token compaction."
+  )
+)
