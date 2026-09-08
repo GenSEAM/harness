@@ -1236,6 +1236,19 @@
           :rationale "Unit test verifying fact retention checking and data loss reporting")
     (:sym :name "run-amnesia-gate-tests" :kind :fn :tokens 4
           :rationale "Runs complete amnesia gate and dynamic suite runner test suite")
+
+    ;; Phase 320 Dynamic Context Prioritization Symbols
+    (:sym :name "ContextPriorityRecord" :kind :type :tokens 2)
+    (:sym :name "score-context-chunk" :kind :fn :tokens 3
+          :rationale "Calculates dynamic priority score for context chunk based on relevance and token footprint")
+    (:sym :name "rank-context-chunks" :kind :fn :tokens 3
+          :rationale "Orders context priority records in descending priority score order")
+    (:sym :name "apply-token-budget" :kind :fn :tokens 3
+          :rationale "Applies token budget ceiling marking affordable chunks retained and trailing chunks evicted")
+    (:sym :name "filter-retained-chunks" :kind :fn :tokens 3
+          :rationale "Filters context priority records to return only chunks marked retained")
+    (:sym :name "total-retained-tokens" :kind :fn :tokens 3
+          :rationale "Computes aggregate token weight across all retained context chunks")
   ]
 )
 
