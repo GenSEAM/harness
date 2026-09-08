@@ -1301,6 +1301,15 @@
           :rationale "Chains two step decisions preserving mutation flags and halting on abort")
     (:sym :name "execute-step-pipeline" :kind :fn :tokens 3
           :rationale "Executes StepContext sequentially through pre-step, pre-tool, post-tool, and post-step middleware hooks")
+
+    ;; Phase 336 KV-Cache Deterministic Prefix Aligner Symbols (asl-harness/prompt-cache)
+    (:sym :name "PromptPrefix" :kind :type :tokens 2)
+    (:sym :name "freeze-system-prefix" :kind :fn :tokens 3
+          :rationale "Serializes canonical sorted axioms and tools into frozen prompt prefix record")
+    (:sym :name "assemble-cached-prompt" :kind :fn :tokens 3
+          :rationale "Appends dynamic turns to frozen prompt prefix for KV-cache alignment")
+    (:sym :name "verify-prefix-stability" :kind :fn :tokens 3
+          :rationale "Verifies bit-for-bit identity of prompt prefixes across dynamic turns")
   ]
 )
 
