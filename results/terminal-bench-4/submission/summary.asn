@@ -1,11 +1,11 @@
 ;; Terminal-Bench 4.0 Benchmark Run Summary
-;; Generated strictly from real execution results in 2026-09-07__01-43-21
+;; Generated from Modal execution in 2026-09-09__01-19-47
 (:summary
   :benchmark "terminal-bench-4.0"
-  :total-tasks 89
-  :evaluated-tasks 89
-  :passed-tasks 12
-  :failed-tasks 77
-  :pass-rate-pct 13.5
+  :total-tasks 1
+  :evaluated-tasks 1
+  :passed-tasks 0
+  :failed-tasks 1
+  :pass-rate-pct 0.0
   :model "gemma-4-31b-it"
-  :date "2026-09-07T07:24:04.615484+00:00")
+  :date "2026-09-08T22:20:18.191237+00:00")
