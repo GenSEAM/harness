@@ -1283,6 +1283,24 @@
           :rationale "Exports curated interaction pairs into standardized benchmark evaluation fixtures")
     (:sym :name "export-preference-pairs" :kind :fn :tokens 3
           :rationale "Segregates passing and failing pairs into contrastive SFT/DPO preference sets")
+
+    ;; Phase 335 Universal Harness Step Plugin & Onion Middleware Symbols
+    (:sym :name "PluginConfig" :kind :type :tokens 2)
+    (:sym :name "PluginManifest" :kind :type :tokens 2)
+    (:sym :name "make-plugin-config" :kind :fn :tokens 2
+          :rationale "Constructs standard PluginConfig record with empty config map")
+    (:sym :name "make-plugin-config-with-options" :kind :fn :tokens 3
+          :rationale "Constructs PluginConfig record with explicit configuration map")
+    (:sym :name "load-plugin-from-source" :kind :fn :tokens 3
+          :rationale "Discovers and pre-compiles ASL plugin from file path into resident memory symbol table")
+    (:sym :name "event-to-middleware-kind" :kind :fn :tokens 3
+          :rationale "Maps event string to Onion MiddlewareKind variant")
+    (:sym :name "build-plugin-pipeline" :kind :fn :tokens 3
+          :rationale "Assembles topologically sorted OnionPipeline from list of configured plugin declarations")
+    (:sym :name "chain-step-decision" :kind :fn :tokens 3
+          :rationale "Chains two step decisions preserving mutation flags and halting on abort")
+    (:sym :name "execute-step-pipeline" :kind :fn :tokens 3
+          :rationale "Executes StepContext sequentially through pre-step, pre-tool, post-tool, and post-step middleware hooks")
   ]
 )
 
