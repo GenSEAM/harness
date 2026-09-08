@@ -1249,6 +1249,16 @@
           :rationale "Filters context priority records to return only chunks marked retained")
     (:sym :name "total-retained-tokens" :kind :fn :tokens 3
           :rationale "Computes aggregate token weight across all retained context chunks")
+
+    ;; Phase 318 Canonical LLM Protocol Symbols
+    (:sym :name "LLMProtocolConfig" :kind :type :tokens 3
+          :rationale "Configuration record for canonical LLM protocol engine including model, position, target tokens, and schema mode")
+    (:sym :name "LLMResponseEnvelope" :kind :type :tokens 3
+          :rationale "Typed response record representing normalized LLM protocol output with intent, refs, markers, delta, and state")
+    (:sym :name "format-protocol-envelope" :kind :fn :tokens 3
+          :rationale "Generates compact standard protocol priming envelope for model handshake")
+    (:sym :name "parse-protocol-response" :kind :fn :tokens 3
+          :rationale "Parses and validates raw LLM protocol response extracting envelope components and rejecting markdown fences and fillers")
   ]
 )
 
