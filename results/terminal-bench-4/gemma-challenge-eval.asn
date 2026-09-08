@@ -1,0 +1,43 @@
+(:evaluation-result
+  :benchmark "terminal-bench-4-challenge-10"
+  :model "gemma-4-31b-it"
+  :harness-architecture "legacy-python-harbor"
+  :temp-schedule "staged"
+  :base-temperature 0.2
+  :ts 1788873540000
+  :summary (
+    :total-tasks 10
+    :passed-tasks 1
+    :failed-tasks 9
+    :pass-rate 0.10
+    :solvable-passed 1
+    :solvable-total 2
+    :hard-passed 0
+    :hard-total 8
+    :total-tokens 2440003
+    :total-cost-usd 0.2489
+  )
+  :task-results [
+    (:task :id "TB4-SOLV-01" :name "headless-terminal" :category "system-concurrency"
+           :result "PASS" :reward 1.0 :input-tokens 8892 :output-tokens 1214 :cost-usd 0.0010)
+    (:task :id "TB4-SOLV-02" :name "cancel-async-tasks" :category "async-concurrency"
+           :result "FAIL" :reward 0.0 :input-tokens 2879 :output-tokens 364 :cost-usd 0.0003)
+    (:task :id "TB4-HARD-01" :name "llm-inference-batching-scheduler" :category "ml-systems"
+           :result "FAIL" :reward 0.0 :input-tokens 372986 :output-tokens 9539 :cost-usd 0.0390)
+    (:task :id "TB4-HARD-02" :name "torch-tensor-parallelism" :category "distributed-ml"
+           :result "FAIL" :reward 0.0 :input-tokens 7703 :output-tokens 1377 :cost-usd 0.0009)
+    (:task :id "TB4-HARD-03" :name "torch-pipeline-parallelism" :category "distributed-ml"
+           :result "FAIL" :reward 0.0 :input-tokens 15638 :output-tokens 5478 :cost-usd 0.0022)
+    (:task :id "TB4-HARD-04" :name "custom-memory-heap-crash" :category "memory-safety"
+           :result "FAIL" :reward 0.0 :input-tokens 696933 :output-tokens 38640 :cost-usd 0.0750)
+    (:task :id "TB4-HARD-05" :name "compile-compcert" :category "compilers-verification"
+           :result "FAIL" :reward 0.0 :input-tokens 219862 :output-tokens 8635 :cost-usd 0.0233)
+    (:task :id "TB4-HARD-06" :name "circuit-fibsqrt" :category "digital-logic"
+           :result "FAIL" :reward 0.0 :input-tokens 22093 :output-tokens 11148 :cost-usd 0.0034)
+    (:task :id "TB4-HARD-07" :name "make-mips-interpreter" :category "cpu-emulation"
+           :result "FAIL" :reward 0.0 :input-tokens 458609 :output-tokens 18792 :cost-usd 0.0487)
+    (:task :id "TB4-HARD-08" :name "distribution-search" :category "bayesian-stats"
+           :result "FAIL" :reward 0.0 :input-tokens 513229 :output-tokens 25992 :cost-usd 0.0550)
+  ]
+  :pathology-audit "Context bloat pathology observed: custom-memory-heap-crash consumed 696k tokens and distribution-search consumed 513k tokens due to raw tool output dumps and markdown regex parsing failures in Python harness. Confirms urgent necessity of Sovereign Pure AgentScript Runner with pointer offloading (:ptr) and dense ASN protocol."
+)\n

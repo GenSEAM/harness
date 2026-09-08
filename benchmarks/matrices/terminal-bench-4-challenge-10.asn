@@ -1,0 +1,119 @@
+(:challenge-set
+  :id "terminal-bench-4-challenge-10"
+  :title "Terminal-Bench 4.0 Curated 10-Task Challenge Matrix"
+  :d "10-task evaluation matrix extracted from real Terminal-Bench 4.0 execution (89 evaluated trials). Contains 2 baseline solvable tasks and 8 hardest unsolved tasks covering complex systems, distributed ML, low-level compilers, and math."
+  :total-tasks 10
+  :solvable-tasks 2
+  :unsolvable-tasks 8
+  :models [
+    (:model :id "gemma-4-31b-it" :priority "main" :cost-per-m-in 0.102 :cost-per-m-out 0.102)
+    (:model :id "qwen3.8-flash" :priority "fast" :cost-per-m-in 0.150 :cost-per-m-out 0.150)
+    (:model :id "gpt-5.6-luna" :priority "high-reasoning" :cost-per-m-in 0.200 :cost-per-m-out 0.200)
+    (:model :id "ling-3.0-flash" :priority "gemma-alternative-and-live-classifier" :role "live-classification-and-budget-reasoning" :cost-per-m-in 0.060 :cost-per-m-out 0.060)
+    (:model :id "hy3" :priority "general" :cost-per-m-in 0.140 :cost-per-m-out 0.140)
+    (:model :id "mimo-v2.5" :priority "slm" :cost-per-m-in 0.140 :cost-per-m-out 0.140)
+  ]
+  :tasks [
+    ;; --- 2 Solvable Baseline Tasks ---
+    (:task
+      :id "TB4-SOLV-01"
+      :name "headless-terminal"
+      :category "system-concurrency"
+      :baseline-status "PASS"
+      :baseline-reward 1.0
+      :d "Implement BaseTerminal interface in Python. Requires starting an interactive bash shell, PTY/termios emulation, control keys (\\x03 SIGINT), and .bashrc sourcing."
+      :acceptance-criteria "from headless_terminal import HeadlessTerminal passes unit test suite in /tests/test_outputs.py"
+    )
+    (:task
+      :id "TB4-SOLV-02"
+      :name "cancel-async-tasks"
+      :category "async-concurrency"
+      :baseline-status "PASS"
+      :baseline-reward 1.0
+      :d "Implement graceful cancellation of asynchronous tasks in Python asyncio without hanging coroutines or leaking unhandled exceptions."
+      :acceptance-criteria "Passes asyncio cancellation and timeout test suite in /tests/test_outputs.py"
+    )
+
+    ;; --- 8 Hardest Unsolved Tasks (Gemma 0.0) ---
+    (:task
+      :id "TB4-HARD-01"
+      :name "llm-inference-batching-scheduler"
+      :category "ml-systems"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Algorithmic bin-packing cost violation (cost 2.88e12 vs target <= 3.0e11)"
+      :d "Implement a shape-aware static graph LLM inference batching scheduler grouping requests into <= 8 shapes (multiples of 64) minimizing total execution cost."
+      :acceptance-criteria "All requests packed, max 8 shapes, sequence align multiple of 64, bucket cost <= 3.0e11"
+    )
+    (:task
+      :id "TB4-HARD-02"
+      :name "torch-tensor-parallelism"
+      :category "distributed-ml"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Megatron-LM column/row parallel linear rank mismatch and All-Reduce failure (8 test failures)"
+      :d "Implement Megatron-LM tensor parallel ColumnParallelLinear and RowParallelLinear layers with gradient all-reduce hooks across distributed ranks."
+      :acceptance-criteria "Passes 13 tensor parallelism unit tests under torch.multiprocessing"
+    )
+    (:task
+      :id "TB4-HARD-03"
+      :name "torch-pipeline-parallelism"
+      :category "distributed-ml"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Multi-process queue deadlock and forward-backward 1F1B schedule timing violation"
+      :d "Implement 1F1B pipeline parallelism scheduling across multiple virtual stages with inter-stage activation queues and backward dependency resolution."
+      :acceptance-criteria "Passes 4 pipeline parallelism distributed execution tests"
+    )
+    (:task
+      :id "TB4-HARD-04"
+      :name "custom-memory-heap-crash"
+      :category "memory-safety"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Valgrind memory leak and memory corruption detection (2 test failures)"
+      :d "Debug and fix memory corruption, double-free, and memory leak bugs in a custom C heap allocator with block coalescing."
+      :acceptance-criteria "Passes 6 Valgrind memory leak and heap integrity test suites cleanly"
+    )
+    (:task
+      :id "TB4-HARD-05"
+      :name "compile-compcert"
+      :category "compilers-verification"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Build configuration drift in airgapped environment and unsupported feature gate failure"
+      :d "Compile formally verified CompCert C compiler from Coq/OCaml source and enforce language subset verification gates."
+      :acceptance-criteria "CompCert binary passes compilation of C test suite and correctly rejects unsupported constructs"
+    )
+    (:task
+      :id "TB4-HARD-06"
+      :name "circuit-fibsqrt"
+      :category "digital-logic"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Integer overflow on high Fibonacci indices and cycle latency assertion failure"
+      :d "Synthesize and verify fixed-point arithmetic digital logic computing integer square root of n-th Fibonacci number within bounded clock cycles."
+      :acceptance-criteria "Passes 3 circuit simulation and numerical exactness tests"
+    )
+    (:task
+      :id "TB4-HARD-07"
+      :name "make-mips-interpreter"
+      :category "cpu-emulation"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "Opcode decoding error on branch delay slots and frame buffer BMP mismatch"
+      :d "Implement a standalone MIPS I (R2000/R3000) instruction set emulator capable of executing binary programs and producing pixel-accurate graphical frame buffers."
+      :acceptance-criteria "Executes target MIPS binary and generates frame.bmp matching reference image similarity threshold"
+    )
+    (:task
+      :id "TB4-HARD-08"
+      :name "distribution-search"
+      :category "bayesian-stats"
+      :baseline-status "FAIL"
+      :baseline-reward 0.0
+      :failure-mode "KL divergence assertion failure (Forward KL > threshold, trapped in local modes)"
+      :d "Implement an advanced MCMC / Bayesian distribution search locating a target probability distribution minimizing both forward and reverse KL divergence."
+      :acceptance-criteria "Forward and reverse KL divergence both satisfy tight empirical bounds"
+    )
+  ]
+)

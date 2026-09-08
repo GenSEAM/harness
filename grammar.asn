@@ -486,7 +486,7 @@
     (:sym :name "ModelVariant" :kind :type :tokens 1)
     (:sym :name "BenchmarkConfig" :kind :type :tokens 1)
     (:sym :name "ModelBenchmarkRow" :kind :type :tokens 1)
-    (:sym :name "BenchmarkMatrix" :kind :type :tokens 1)
+    (:sym :name "BenchmarkMatrix" :kind :type :tokens 2)
     (:sym :name "make-benchmark-config" :kind :fn :tokens 3
           :rationale "Constructs benchmark configuration record with timeout and switches")
     (:sym :name "run-model-benchmark" :kind :fn :tokens 3
@@ -1320,6 +1320,16 @@
           :rationale "Filters tools keeping only those present in allowed names list")
     (:sym :name "format-slm-request" :kind :fn :tokens 3
           :rationale "Formats an SLM request into a compact ASN representation for gateway dispatch")
+
+    ;; Phase 338 Sovereign Pure ASL Benchmark & Agent Execution Harness
+    (:sym :name "BenchmarkRunResult" :kind :type :tokens 3
+          :rationale "Benchmark execution result tracking matrix id pass fail counts and receipts")
+    (:sym :name "run-sovereign-matrix" :kind :fn :tokens 3
+          :rationale "Executes sovereign benchmark matrix evaluating each task under process supervision")
+    (:sym :name "format-benchmark-receipt" :kind :fn :tokens 3
+          :rationale "Formats benchmark run result into structured ASN receipt string")
+    (:sym :name "compute-dynamic-temperature" :kind :fn :tokens 3
+          :rationale "Computes dynamic temperature based on attempt number and retry ceiling")
   ]
 )
 

@@ -6,7 +6,8 @@
       test-grammar-constraint-compilation
       test-trace-recording-and-serialization
       test-model-profiler-and-slow-provider
-      test-eval-corpus-curation-and-export]
+      test-eval-corpus-curation-and-export
+      test-dynamic-temperature-scheduling]
   :i [(llm_client :a lc)
       (trace_recorder :a tr)
       (eval_corpus :a ec)])
@@ -122,11 +123,31 @@
       (assert (and (> (list-length preferences) 0) (string-contains? (option-or (list-head preferences) "") ":chosen")) "export-preference-pairs must generate contrastive SFT/DPO preference pairs with chosen and rejected completions")
       true)))
 
+(df test-dynamic-temperature-scheduling [] -> Bool
+  :d "Verifies dynamic temperature scheduling across retry attempts, ceilings, and boundary clamping"
+  (let [(t0 (lc/compute-dynamic-temperature 0 4 0.2))
+        (t1 (lc/compute-dynamic-temperature 1 4 0.2))
+        (t2 (lc/compute-dynamic-temperature 2 4 0.2))
+        (t4 (lc/compute-dynamic-temperature 4 4 0.2))
+        (t-overflow (lc/compute-dynamic-temperature 6 4 0.2))
+        (t-single (lc/compute-dynamic-temperature 1 1 0.2))
+        (t-neg (lc/compute-dynamic-temperature 0 4 -0.5))]
+    (do
+      (assert (= t0 0.2) "Initial attempt 0 must preserve base temperature 0.2")
+      (assert (= t1 0.4) "First retry attempt must dynamically escalate temperature to 0.4")
+      (assert (= t2 0.6) "Second retry attempt must dynamically escalate temperature to 0.6")
+      (assert (= t4 1.0) "Final attempt reaching max-attempts must reach ceiling temperature 1.0")
+      (assert (= t-overflow 1.0) "Attempts exceeding max-attempts must saturate at ceiling 1.0")
+      (assert (= t-single 0.2) "Single attempt limit must preserve base temperature without escalation")
+      (assert (= t-neg 0.0) "Negative base temperature must clamp cleanly to 0.0")
+      true)))
+
 (df run-tests [] -> Bool
-  :d "Aggregates and executes all unit test suites for Phase 325"
+  :d "Aggregates and executes all unit test suites for Phase 325 and Phase 338"
   (and (test-model-options-and-request)
        (and (test-response-parsing-and-metrics)
             (and (test-grammar-constraint-compilation)
                  (and (test-trace-recording-and-serialization)
                       (and (test-model-profiler-and-slow-provider)
-                           (test-eval-corpus-curation-and-export)))))))
+                           (and (test-eval-corpus-curation-and-export)
+                                (test-dynamic-temperature-scheduling))))))))

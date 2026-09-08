@@ -6,7 +6,8 @@
       format-model-request
       parse-model-response
       compile-asn-grammar-constraint
-      calculate-tok-sec]
+      calculate-tok-sec
+      compute-dynamic-temperature]
   :i [])
 
 (dfs ModelOptions
@@ -116,3 +117,14 @@
     (if (string-empty? trimmed)
         (none)
         (some "root ::= \"(\" ws [a-zA-Z0-9_-]+ (ws \":\" [a-zA-Z0-9_-]+ ws value)* ws \")\"\nvalue ::= string | number | symbol | list\nstring ::= \"\\\"\" [^\\\"]* \"\\\"\"\nnumber ::= [0-9]+\nsymbol ::= [a-zA-Z0-9_-]+\nlist ::= \"[\" (ws value)* ws \"]\"\nws ::= [ \\t\\n\\r]*"))))
+
+(df compute-dynamic-temperature [(attempt I64) (max-attempts I64) (base-temp F64)] -> F64
+  :d "Computes dynamic temperature based on attempt number and retry ceiling"
+  (let [(clamped-base (if (< base-temp 0.0) 0.0 (if (> base-temp 1.0) 1.0 base-temp)))]
+    (if (or (<= max-attempts 1) (<= attempt 0))
+      clamped-base
+      (let [(clamped-attempt (if (> attempt max-attempts) max-attempts attempt))
+            (step (/ (- 1.0 clamped-base) (int64-to-float64 max-attempts)))
+            (temp (+ clamped-base (* (int64-to-float64 clamped-attempt) step)))]
+        (if (> temp 1.0) 1.0 (if (< temp 0.0) 0.0 temp))))))
+
