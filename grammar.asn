@@ -1178,6 +1178,62 @@
     (:sym :name "worker-step" :kind :fn :tokens 2)
     (:sym :name "run-worker-loop" :kind :fn :tokens 3
           :rationale "Executes autonomous implementer event loop across polling and verification cycles")
+
+    ;; Phase 309 Dynamic Test Harness Suite & Amnesia Pipeline Gate Symbols
+    (:sym :name "HarnessSuite" :kind :type :tokens 2)
+    (:sym :name "SuiteTest" :kind :type :tokens 2)
+    (:sym :name "SuiteOutcome" :kind :type :tokens 2)
+    (:sym :name "OverflowContext" :kind :type :tokens 2)
+    (:sym :name "AmnesiaAuditReport" :kind :type :tokens 3
+          :rationale "Record capturing context overflow emulation and fact retention audit results")
+    (:sym :name "AmnesiaInterceptResult" :kind :type :tokens 3
+          :rationale "Record capturing results from amnesia cascade trigger interception")
+    (:sym :name "harness-suite" :kind :fn :tokens 2
+          :rationale "Dynamic test harness suite definition macro and executor entrypoint")
+    (:sym :name "test-case" :kind :val :tokens 2
+          :rationale "Test case keyword descriptor")
+    (:sym :name "input-tokens" :kind :val :tokens 2
+          :rationale "Input token count parameter")
+    (:sym :name "threshold" :kind :val :tokens 1)
+    (:sym :name "notation" :kind :val :tokens 1)
+    (:sym :name "parse-harness-suite" :kind :fn :tokens 3
+          :rationale "Parses dynamic harness suite S-expression forms and configuration plists")
+    (:sym :name "parse-suite-test" :kind :fn :tokens 3
+          :rationale "Parses single harness test definition extracting notation metadata and assertions")
+    (:sym :name "evaluate-suite-assertion" :kind :fn :tokens 3
+          :rationale "Evaluates assertion forms against suite test execution state")
+    (:sym :name "run-harness-suite" :kind :fn :tokens 3
+          :rationale "Executes parsed test suite evaluating metadata notation and assertions")
+    (:sym :name "emulate-context-overflow" :kind :fn :tokens 3
+          :rationale "Generates synthetic token history exceeding configured amnesia threshold")
+    (:sym :name "intercept-amnesia-trigger" :kind :fn :tokens 3
+          :rationale "Intercepts context compaction and validates emitted memory chunk")
+    (:sym :name "verify-facts-retained" :kind :fn :tokens 3
+          :rationale "Compares pre-compression facts against retained memory chunk facts")
+    (:sym :name "run-amnesia-audit" :kind :fn :tokens 3
+          :rationale "Executes end-to-end amnesia overflow interception and fact audit pipeline")
+    (:sym :name "assert-compact-memory-emitted" :kind :fn :tokens 4
+          :rationale "Assertion validating that context overflow produced a valid compact memory chunk")
+    (:sym :name "assert-max-tokens-below" :kind :fn :tokens 4
+          :rationale "Assertion verifying that post-compression token count is below upper bound")
+    (:sym :name "assert-facts-retained" :kind :fn :tokens 3
+          :rationale "Assertion verifying all critical key-value facts are retained in memory chunk")
+    (:sym :name "ERR_AMNESIA_DATA_LOSS" :kind :val :tokens 4
+          :rationale "Error code returned when required facts are lost during amnesia compression")
+    (:sym :name "test-parse-harness-suite-structure" :kind :fn :tokens 5
+          :rationale "Unit test verifying dynamic harness suite parsing and structure")
+    (:sym :name "test-suite-testcase-metadata-notation" :kind :fn :tokens 5
+          :rationale "Unit test verifying suite testcase metadata notation tags")
+    (:sym :name "test-run-harness-suite-evaluator" :kind :fn :tokens 5
+          :rationale "Unit test verifying test suite assertion evaluation")
+    (:sym :name "test-emulate-context-overflow" :kind :fn :tokens 4
+          :rationale "Unit test verifying synthetic context overflow generation")
+    (:sym :name "test-intercept-amnesia-trigger" :kind :fn :tokens 4
+          :rationale "Unit test verifying amnesia trigger interception and chunk emission")
+    (:sym :name "test-verify-facts-retained-success-and-failure" :kind :fn :tokens 6
+          :rationale "Unit test verifying fact retention checking and data loss reporting")
+    (:sym :name "run-amnesia-gate-tests" :kind :fn :tokens 4
+          :rationale "Runs complete amnesia gate and dynamic suite runner test suite")
   ]
 )
 

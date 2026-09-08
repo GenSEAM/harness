@@ -3,5 +3,5 @@
  :entry "src/harness.asl"
  :description "Capability test harness and browser integration runner"
  :asl-first true
- :modules ["asl-harness/harness" "asl-harness/worker"]
+ :modules ["asl-harness/harness" "asl-harness/worker" "asl-harness/amnesia_gate" "asl-harness/suite_runner"]
  :dependencies [])
