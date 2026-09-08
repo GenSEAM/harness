@@ -100,9 +100,9 @@
       (assert (.-first res1) "Retained required fact must pass verification")
       (assert (.-first res2) "Multi-fact retention audit must pass when all facts preserved")
       (assert (not (.-first res3)) "Missing fact must cause audit failure")
-      (assert (= (.-second res4) (ag/ERR_AMNESIA_DATA_LOSS)) "Missing fact must yield ERR_AMNESIA_DATA_LOSS error code")
+      (assert (= (.-second res4) (ag/err-amnesia-data-loss)) "Missing fact must yield ERR_AMNESIA_DATA_LOSS error code")
       (assert (.-first res5) "Empty required facts list must pass vacuously")
-      (assert (and (not (.-first res6)) (= (.-second res6) (ag/ERR_AMNESIA_DATA_LOSS))) "Mismatched fact value must trigger failure with ERR_AMNESIA_DATA_LOSS")
+      (assert (and (not (.-first res6)) (= (.-second res6) (ag/err-amnesia-data-loss))) "Mismatched fact value must trigger failure with ERR_AMNESIA_DATA_LOSS")
       true)))
 
 (df run-tests [] -> Bool

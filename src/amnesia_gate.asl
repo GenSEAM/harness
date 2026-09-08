@@ -3,14 +3,14 @@
   :x [OverflowContext
       AmnesiaInterceptResult
       AmnesiaAuditReport
-      ERR_AMNESIA_DATA_LOSS
+      err-amnesia-data-loss
       emulate-context-overflow
       intercept-amnesia-trigger
       verify-facts-retained
       run-amnesia-audit]
   :i [])
 
-(df ERR_AMNESIA_DATA_LOSS [] -> Str
+(df err-amnesia-data-loss [] -> Str
   :d "Error code for fact loss during amnesia compression."
   "ERR_AMNESIA_DATA_LOSS")
 
@@ -41,7 +41,7 @@
   (let [(fact-msgs (map (fn [(f Str)] -> Str (str "[fact] " f)) required-facts))
         (base-msgs (list (str "[init] buffer " id " with " (string-from-int64 input-tokens) " tokens")
                          (str "[op] conversation backlog simulating task context for " id)))
-        (all-msgs (list-concat base-msgs fact-msgs))]
+        (all-msgs (list-append base-msgs fact-msgs))]
     (OverflowContext
       :buffer-id id
       :tokens input-tokens
@@ -84,7 +84,7 @@
       (let [(missing (filter (fn [(req Str)] -> Bool (not (fact-matches? req retained-facts))) required-facts))]
         (if (list-empty? missing)
             (pair true "")
-            (pair false (ERR_AMNESIA_DATA_LOSS))))))
+            (pair false (err-amnesia-data-loss))))))
 
 (df run-amnesia-audit [(test-id Str) (input-tokens I64) (threshold I64) (required-facts (List Str))] -> AmnesiaAuditReport
   :d "Executes end-to-end amnesia overflow interception and fact audit pipeline."

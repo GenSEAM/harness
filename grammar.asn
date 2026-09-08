@@ -1220,6 +1220,8 @@
           :rationale "Assertion verifying all critical key-value facts are retained in memory chunk")
     (:sym :name "ERR_AMNESIA_DATA_LOSS" :kind :val :tokens 4
           :rationale "Error code returned when required facts are lost during amnesia compression")
+    (:sym :name "err-amnesia-data-loss" :kind :fn :tokens 4
+          :rationale "Accessor returning ERR_AMNESIA_DATA_LOSS error constant string")
     (:sym :name "test-parse-harness-suite-structure" :kind :fn :tokens 5
           :rationale "Unit test verifying dynamic harness suite parsing and structure")
     (:sym :name "test-suite-testcase-metadata-notation" :kind :fn :tokens 5
