@@ -1129,6 +1129,55 @@
           :rationale "Constructs canonical teleological mandate for the Auditor and Critic truth guardian")
     (:sym :name "evaluate-stage-teleology" :kind :fn :tokens 3
           :rationale "Evaluates stage action compliance against associated teleological mandate")
+
+    ;; Phase 298 Autonomous Multi-Session Implementer Loop Symbols
+    (:sym :name "ProcessReceipt" :kind :type :tokens 2)
+    (:sym :name "WorkerConfig" :kind :type :tokens 2)
+    (:sym :name "WorkerState" :kind :type :tokens 2)
+    (:sym :name "StepOutcome" :kind :type :tokens 2)
+    (:sym :name "PhaseExecutionResult" :kind :type :tokens 3
+          :rationale "Aggregated work item execution batch result with receipts and early-halt status")
+    (:sym :name "BlastRadiusGuard" :kind :type :tokens 3
+          :rationale "Pre-commit blast-radius boundary integrity check record")
+    (:sym :name "WorkItem" :kind :type :tokens 2)
+    (:sym :name "PhaseRecord" :kind :type :tokens 2)
+    (:sym :name "LeaseRecord" :kind :type :tokens 2)
+    (:sym :name "RoadmapRecord" :kind :type :tokens 2)
+    (:sym :name "make-work-item" :kind :fn :tokens 3
+          :rationale "Constructs a work item record")
+    (:sym :name "make-phase-record" :kind :fn :tokens 3
+          :rationale "Constructs a phase record with work items")
+    (:sym :name "make-lease-record" :kind :fn :tokens 3
+          :rationale "Constructs an active phase lease record")
+    (:sym :name "make-roadmap-record" :kind :fn :tokens 3
+          :rationale "Constructs a roadmap record initialized at version 1")
+    (:sym :name "make-process-receipt" :kind :fn :tokens 3
+          :rationale "Constructs a compact ProcessReceipt with BPE token estimation under 80 tokens")
+    (:sym :name "render-process-receipt" :kind :fn :tokens 3
+          :rationale "Renders ProcessReceipt as compact S-expression string under 80 tokens")
+    (:sym :name "estimate-receipt-tokens" :kind :fn :tokens 3
+          :rationale "Estimates BPE tokens for rendered ProcessReceipt verifying ceiling")
+    (:sym :name "make-worker-config" :kind :fn :tokens 3
+          :rationale "Constructs configuration for autonomous implementer worker daemon")
+    (:sym :name "init-worker-state" :kind :fn :tokens 3
+          :rationale "Initializes autonomous worker state with empty history and idle status")
+    (:sym :name "path-in-boundaries?" :kind :fn :tokens 3
+          :rationale "Predicate asserting target path falls within declared ownership boundaries")
+    (:sym :name "poll-claimed-phase" :kind :fn :tokens 3
+          :rationale "Queries roadmap for claimed or ready phases assigned to worker agent")
+    (:sym :name "execute-work-item" :kind :fn :tokens 3
+          :rationale "Executes single plan work item verification gate and emits ProcessReceipt")
+    (:sym :name "execute-phase-items" :kind :fn :tokens 3
+          :rationale "Sequentially executes phase work item gates halting on first failure")
+    (:sym :name "verify-blast-radius" :kind :fn :tokens 3
+          :rationale "Validates that all modified symbols and paths remain inside declared owns boundaries")
+    (:sym :name "audit-pre-commit-safety" :kind :fn :tokens 4
+          :rationale "Audits blast radius and gate outcomes before permitting commit")
+    (:sym :name "commit-phase-diff" :kind :fn :tokens 3
+          :rationale "Commits phase changes if blast radius is safe or halts with boundary violation")
+    (:sym :name "worker-step" :kind :fn :tokens 2)
+    (:sym :name "run-worker-loop" :kind :fn :tokens 3
+          :rationale "Executes autonomous implementer event loop across polling and verification cycles")
   ]
 )
 
