@@ -1259,6 +1259,30 @@
           :rationale "Generates compact standard protocol priming envelope for model handshake")
     (:sym :name "parse-protocol-response" :kind :fn :tokens 3
           :rationale "Parses and validates raw LLM protocol response extracting envelope components and rejecting markdown fences and fillers")
+
+    ;; Phase 325 Unified LLM Model Dispatcher & Eval Ledger Symbols
+    (:sym :name "ModelOptions" :kind :type :tokens 2)
+    (:sym :name "CompletionResult" :kind :type :tokens 2)
+    (:sym :name "InteractionTrace" :kind :type :tokens 2)
+    (:sym :name "EvalCorpus" :kind :type :tokens 2)
+    (:sym :name "EvalInteractionPair" :kind :type :tokens 3
+          :rationale "Contrastive prompt-completion pair with execution telemetry and gate verdict")
+    (:sym :name "format-model-request" :kind :fn :tokens 3
+          :rationale "Serializes model options and chat messages into provider-compatible request payload")
+    (:sym :name "compile-asn-grammar-constraint" :kind :fn :tokens 4
+          :rationale "Compiles ASN schema declarations into GBNF grammar constraints for constrained decoding")
+    (:sym :name "record-interaction-trace" :kind :fn :tokens 3
+          :rationale "Records model prompt options and execution telemetry into evaluation trace ledger")
+    (:sym :name "update-model-profile" :kind :fn :tokens 3
+          :rationale "Updates rolling speed throughput and latency statistics for model telemetry profile")
+    (:sym :name "format-trace-asn" :kind :fn :tokens 3
+          :rationale "Serializes interaction trace record into compact canonical ASN S-expression string")
+    (:sym :name "curate-interaction-corpus" :kind :fn :tokens 3
+          :rationale "Filters interaction pairs by quality score threshold for offline evaluation")
+    (:sym :name "export-benchmark-dataset" :kind :fn :tokens 3
+          :rationale "Exports curated interaction pairs into standardized benchmark evaluation fixtures")
+    (:sym :name "export-preference-pairs" :kind :fn :tokens 3
+          :rationale "Segregates passing and failing pairs into contrastive SFT/DPO preference sets")
   ]
 )
 
