@@ -4,10 +4,10 @@
   :axioms [
     (:axiom :id "energy-conservation" :rule "Context is scarce energy: target SNR >= 0.75, ban whole-file dumps >50 lines")
     (:axiom :id "physical-truth" :rule "No claim without physical proof: required exit=0 and monotonically evaluated asserts>0")
-    (:axiom :id "boundary-universalism" :rule "Canonical shared packages for all wire protocols and delimiters (c-0003, d-0034)")
+    (:axiom :id "boundary-universalism" :rule "Canonical shared packages for all wire protocols and delimiters (c3, d34)")
     (:axiom :id "judicious-autonomy" :rule "Default to Fast-Path for routine work; escalate to Full-Rigor on boundaries or fault")
-    (:axiom :id "zero-sigils" :rule "Zero @ or # sigils across all identifiers, packages, and frames (c-0005, d-0048)")
-    (:axiom :id "pure-asn-memory" :rule "Zero markdown files in memory ledgers; 100% machine-native ASN with on-demand dual projection (d-0044)")
+    (:axiom :id "zero-sigils" :rule "Zero @ or # sigils across all identifiers, packages, and frames (c5, d48)")
+    (:axiom :id "pure-asn-memory" :rule "Zero markdown files in memory ledgers; 100% machine-native ASN with on-demand dual projection (d44)")
   ]
   :operating-modes [
     (:mode :id "fast-path"
@@ -23,7 +23,7 @@
   ]
   :action-ontology [
     (:act :id "perceive" :role "scout" :tools [:sym :read :out :grep] :rule "Read slice only, zero writes, max SNR")
-    (:act :id "transliterate" :role "transliterator" :tools [:voice :fast-path :slm] :rule "Convert voice/prompt to canonical ASN intent DAG (d-0049)")
+    (:act :id "transliterate" :role "transliterator" :tools [:voice :fast-path :slm] :rule "Convert voice/prompt to canonical ASN intent DAG (d49)")
     (:act :id "deliberate" :role "planner" :tools [:dag :gates :risks] :rule "Falsifiable gates before writing code")
     (:act :id "mutate" :role "implementer" :tools [:edit :patch :write] :rule "Strictly inside :owns, zero gate weakening")
     (:act :id "verify" :role "auditor" :tools [:test :gate :coverage] :rule "Clean context, physical receipts, dual polarity")
@@ -38,7 +38,7 @@
   :task-flow [:triage-backlog :plan-wave-dag :claim-session-lease :queue-steps-exec :verify-gate-receipt :settle]
   :task-leeway [
     (:rule :tier "strict-invariants"
-      :scope ["wire-protocols" "c-0001-no-comments" "c-0002-no-emojis" "c-0003-canonical-helpers" "c-0004-token-density" "c-0005-no-sigils" "gate-assertions"]
+      :scope ["wire-protocols" "c1-no-comments" "c2-no-emojis" "c3-canonical-helpers" "c4-token-density" "c5-no-sigils" "gate-assertions"]
       :freedom :zero)
     (:rule :tier "variance-leeway"
       :scope ["internal-helper-decomposition" "local-data-structures" "algorithm-choice" "extra-edge-case-tests"]
@@ -61,7 +61,19 @@
          :opt "(txt/starts? ...)"
          :savings "100% parseable intent")
     (:ex :bad "I inspected the code and will now modify lines 10 to 15"
-         :opt "(:mutate :file \"mem/vfs.asl\" :lines [10 15] :why \"c-0003\")"
+         :opt "(:mutate :file \"mem/vfs.asl\" :lines [10 15] :why \"c3\")"
          :savings "78% tokens")
+  ]
+  :decisions-alignment [
+    (:sync :id "d40" :topic "holistic-task-protocol" :ref ".asl/mem/decisions/ADR-0040-holistic-task-protocol-and-verification-receipts.asn")
+    (:sync :id "d41" :topic "epistemic-audit-crutch-taxonomy" :ref "harness/audit-protocols.asn")
+    (:sync :id "d42" :topic "daemon-process-supervision" :ref ".asl/mem/decisions/ADR-0042-unified-engine-global-daemon-and-process-supervision.asn")
+    (:sync :id "d43" :topic "epistemic-paradigm-judicious-autonomy" :ref "harness/paradigm.asn")
+    (:sync :id "d44" :topic "machine-native-asn-decisions" :ref ".asl/mem/decisions/ADR-0044-canonical-machine-native-asn-decisions.asn")
+    (:sync :id "d45" :topic "sovereign-task-pool-session-leases" :ref ".asl/mem/decisions/ADR-0045-sovereign-task-pool-and-session-leases.asn")
+    (:sync :id "d46" :topic "three-tier-lifecycle-bare-symbols" :ref ".asl/mem/decisions/ADR-0046-three-tier-task-lifecycle-and-bare-symbol-economics.asn")
+    (:sync :id "d47" :topic "token-profiler-compaction-paradigm" :ref ".asl/mem/decisions/ADR-0047-codebase-lexical-token-profiler.asn")
+    (:sync :id "d48" :topic "universal-sigil-eradication" :ref ".asl/mem/decisions/ADR-0048-universal-sigil-eradication-and-bare-symbols.asn")
+    (:sync :id "d49" :topic "ambient-voice-prompt-transliterator" :ref ".asl/mem/decisions/ADR-0049-ambient-voice-and-prompt-transliterator-engine.asn")
   ]
 )
