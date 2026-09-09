@@ -1383,12 +1383,6 @@
           :rationale "Returns the complete 17-task continuous calibration challenge suite")
     (:sym :name "tasks-for-tier" :kind :fn :tokens 3
           :rationale "Retrieves calibration canary tasks matching specific scale tier")
-    (:sym :name "generate-claude-mcp-config" :kind :fn :tokens 4
-          :rationale "Generates JSON configuration for isolated Claude Code invocation")
-    (:sym :name "standard-genseam-servers" :kind :fn :tokens 3
-          :rationale "Standard GenSEAM MCP servers for Claude Code comparative benchmarking")
-    (:sym :name "verify-bridge-connectivity" :kind :fn :tokens 3
-          :rationale "Validates that all declared MCP bridges are syntactically and structurally ready")
     (:sym :name "test-standard-servers-count" :kind :fn :tokens 4
           :rationale "Unit test for standard MCP servers count")
     (:sym :name "test-generate-claude-config" :kind :fn :tokens 4
