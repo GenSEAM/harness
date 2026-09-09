@@ -3,8 +3,8 @@
     "benchmark": "terminal-bench-4.0",
     "benchmark_url": "https://tbench.ai",
     "evaluation_protocol": "full-in-container-state-machine",
-    "submission_date": "2026-09-08T22:20:18.191237+00:00",
-    "git_commit": "2c9fc3ecfcbd8f8bc3f6573655e24b221e08b7b9",
+    "submission_date": "2026-09-09T00:09:36.744214+00:00",
+    "git_commit": "306f6b307e26c313fd7d656562328c86f4c6444a",
     "agent": {
       "name": "eddie",
       "version": "0.1.0",
@@ -25,9 +25,9 @@
       "isolation": "hermetic-microvm"
     },
     "results_summary": {
-      "total_tasks": 1,
+      "total_tasks": 66,
       "passed_tasks": 0,
-      "failed_tasks": 1,
+      "failed_tasks": 66,
       "pass_rate_pct": 0.0,
       "astra_baseline_pass_rate_pct": 0.0,
       "status": "verified"
@@ -35,8 +35,658 @@
   },
   "tasks": [
     {
+      "task_id": "layout-config-recreation2",
+      "trial_id": "layout-config-recreation2__nuSmZ4P",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "photonic-waveguide-routing",
+      "trial_id": "photonic-waveguide-routing__Jnv868w",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "mp-checkpoint-consolidation",
+      "trial_id": "mp-checkpoint-consolidation__nwMFgnx",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "biped-contact-dynamics",
+      "trial_id": "biped-contact-dynamics__toSQCJd",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "ks-solver-cpp",
+      "trial_id": "ks-solver-cpp__iV4ssjt",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "react-lead-form",
+      "trial_id": "react-lead-form__2Ui4Ah9",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "lake-temp-glm",
+      "trial_id": "lake-temp-glm__LdPHTpV",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "takens-embedding-lean",
+      "trial_id": "takens-embedding-lean__RoxfbUz",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "satb-audio-transcription",
+      "trial_id": "satb-audio-transcription__nHsbuJy",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "formal-crypto",
+      "trial_id": "formal-crypto__ibzaLpj",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "fin-saccr-rwa",
+      "trial_id": "fin-saccr-rwa__hGWffzs",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "embedding-drift-monitor",
+      "trial_id": "embedding-drift-monitor__6UpKHjz",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "math-eval-grader",
+      "trial_id": "math-eval-grader__KSDJNpt",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "pretrain-shard-corruption",
+      "trial_id": "pretrain-shard-corruption__tCeExDr",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "freight-dispatch-shift",
+      "trial_id": "freight-dispatch-shift__4em5zWb",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "sound-change-cascade",
+      "trial_id": "sound-change-cascade__UsuXG22",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "cad-model",
+      "trial_id": "cad-model__SBNJUCv",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "glycan-ms2-elucidation",
+      "trial_id": "glycan-ms2-elucidation__aqB9GQh",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "coq-block-bound",
+      "trial_id": "coq-block-bound__7xEWHCY",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "cargo-flight-dispatch",
+      "trial_id": "cargo-flight-dispatch__vvTXgvv",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "payments-pipeline-fix",
+      "trial_id": "payments-pipeline-fix__yrURvUp",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "heat-pump-warranty",
+      "trial_id": "heat-pump-warranty__vWMwR4U",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "foodstuff-beta-activity",
+      "trial_id": "foodstuff-beta-activity__mLcYu4Y",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "protein-autointerp-disulfide",
+      "trial_id": "protein-autointerp-disulfide__dc6EcGT",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "session-window-debug",
+      "trial_id": "session-window-debug__zJBSTAd",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "batched-eval-parity",
+      "trial_id": "batched-eval-parity__ys9j9bL",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "wal-recovery-ordering",
+      "trial_id": "wal-recovery-ordering__yxjMV9U",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "ctr-optimization",
+      "trial_id": "ctr-optimization__KLWJ9Dz",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "bun-sourcemap-leak",
+      "trial_id": "bun-sourcemap-leak__hBu3qNY",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "legacy-utility-triage",
+      "trial_id": "legacy-utility-triage__kNcD3kB",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "mvcc-lsm-compaction",
+      "trial_id": "mvcc-lsm-compaction__XGknT9X",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "risk-scorer-replay",
+      "trial_id": "risk-scorer-replay__JeruNpn",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "atrx-vep-crispr",
+      "trial_id": "atrx-vep-crispr__cKt26zF",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "nextjs-performance",
+      "trial_id": "nextjs-performance__dwhS3j2",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "live-database-cutover",
+      "trial_id": "live-database-cutover__cFVxmXn",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "cumulative-layout-shift",
+      "trial_id": "cumulative-layout-shift__Nwdsbsk",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "data-anonymization",
+      "trial_id": "data-anonymization__abdsMmA",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "vba-userform-port",
+      "trial_id": "vba-userform-port__4A3pjmG",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "freecad-impeller",
+      "trial_id": "freecad-impeller__fAz6ZYv",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "music-harmony",
+      "trial_id": "music-harmony__29XHyDK",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "telecom-entity-resolution",
+      "trial_id": "telecom-entity-resolution__5qBxdPm",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "distributed-dedup",
+      "trial_id": "distributed-dedup__c5PinVq",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "ontology-kg-querying",
+      "trial_id": "ontology-kg-querying__9yHWRHp",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "production-planning",
+      "trial_id": "production-planning__nRbxRJh",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "freecad-platform-drawing",
+      "trial_id": "freecad-platform-drawing__fEEB9LE",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "vpp-loss-divergence",
+      "trial_id": "vpp-loss-divergence__mbxTke8",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "gsea-proteomics",
+      "trial_id": "gsea-proteomics__MRduXPa",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "intrastat-meldung",
+      "trial_id": "intrastat-meldung__fiMnHxq",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "kv-live-surgery",
+      "trial_id": "kv-live-surgery__sBQJTDc",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
       "task_id": "html-js-filter",
-      "trial_id": "html-js-filter__cyhC3KC",
+      "trial_id": "html-js-filter__Xkhxy4H",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "interleaved-vigenere",
+      "trial_id": "interleaved-vigenere__gpiBtLH",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "uefi-bootkit",
+      "trial_id": "uefi-bootkit__zeXVMh6",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "layout-config-recreation",
+      "trial_id": "layout-config-recreation__U9NZ4Uj",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "shadow-relay",
+      "trial_id": "shadow-relay__EA3yDyu",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "vllm-deepseek-streaming",
+      "trial_id": "vllm-deepseek-streaming__YAD5Usq",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "roy-polymorph-cn",
+      "trial_id": "roy-polymorph-cn__tpsaCzr",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "rs-archive-clone",
+      "trial_id": "rs-archive-clone__R8MKFJN",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "wdm-design",
+      "trial_id": "wdm-design__SWwFZDj",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "freecad-spring-clip",
+      "trial_id": "freecad-spring-clip__wj3Py8e",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "fp8-rmsnorm-gemm",
+      "trial_id": "fp8-rmsnorm-gemm__KRCuLP9",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "vf2-speedup-networkx",
+      "trial_id": "vf2-speedup-networkx__haabKW7",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "jax-speedrun-gpu",
+      "trial_id": "jax-speedrun-gpu__4kC3CSx",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "medical-claims-processing",
+      "trial_id": "medical-claims-processing__iMMEv4A",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "retro-console-soc",
+      "trial_id": "retro-console-soc__fG8NuMi",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "sglang-qwen-burst",
+      "trial_id": "sglang-qwen-burst__46kcFZQ",
+      "status": "failed",
+      "reward": 0.0,
+      "verification_method": "harbor-verifier",
+      "stages_completed": [
+        "action-observation-loop"
+      ]
+    },
+    {
+      "task_id": "hof-topology-interpenetration",
+      "trial_id": "hof-topology-interpenetration__hKpiz8a",
       "status": "failed",
       "reward": 0.0,
       "verification_method": "harbor-verifier",

@@ -2,8 +2,8 @@
   "benchmark": "terminal-bench-4.0",
   "benchmark_url": "https://tbench.ai",
   "evaluation_protocol": "full-in-container-state-machine",
-  "submission_date": "2026-09-08T22:20:18.191237+00:00",
-  "git_commit": "2c9fc3ecfcbd8f8bc3f6573655e24b221e08b7b9",
+  "submission_date": "2026-09-09T00:09:36.744214+00:00",
+  "git_commit": "306f6b307e26c313fd7d656562328c86f4c6444a",
   "agent": {
     "name": "eddie",
     "version": "0.1.0",
@@ -24,9 +24,9 @@
     "isolation": "hermetic-microvm"
   },
   "results_summary": {
-    "total_tasks": 1,
+    "total_tasks": 66,
     "passed_tasks": 0,
-    "failed_tasks": 1,
+    "failed_tasks": 66,
     "pass_rate_pct": 0.0,
     "astra_baseline_pass_rate_pct": 0.0,
     "status": "verified"
