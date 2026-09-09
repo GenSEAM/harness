@@ -59,6 +59,7 @@
         (pruned (tw/prune-losing-lane branch))]
     (do
       (assert (= (.-status pruned) "aborted") "Pruned branch status must be aborted")
+      (assert (not (= (.-status pruned) "active")) "Pruned branch status must not be active")
       true)))
 
 (df test-lane-receipt-formatting [] -> Bool

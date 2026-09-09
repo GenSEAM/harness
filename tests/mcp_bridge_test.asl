@@ -30,6 +30,7 @@
   (let [(ok (mcp/verify-bridge-connectivity))]
     (do
       (assert ok "Bridge connectivity must return true")
+      (assert (not (= ok false)) "Bridge connectivity is not false")
       true)))
 
 (df run-tests [] -> Bool

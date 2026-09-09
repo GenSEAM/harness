@@ -36,6 +36,7 @@
         (clean-code "export function Form() { const [state, action] = useActionState(submitHandler, null); return <form action={action}/>; }")
         (res (rs/audit-code-diff clean-code prof))]
     (assert (.-allowed res) "clean code allowed")
+    (assert (not (list-contains? (.-violations res) "useFormState")) "no violations in clean code")
     true))
 
 (df test-audit-code-forbidden [] -> Bool

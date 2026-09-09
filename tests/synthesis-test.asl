@@ -28,15 +28,18 @@
                   (list r-risk)
                   scorecard))
         (md (.-raw-markdown report))]
-    (and (string-contains? md "## 1. Verified Findings & AST Grounding")
-         (and (string-contains? md "## 2. Intent Divergences & Reality Anchors")
-              (and (string-contains? md "## 3. Transparent Disclosures & Omissions")
-                   (and (string-contains? md "## 4. Blast Radius & Downstream Consequences")
-                        (and (string-contains? md "## 5. Epistemic Calibration Scorecard")
-                             (and (string-contains? (.-section-1-findings report) "Verified Findings & AST Grounding")
-                                  (and (string-contains? (.-section-4-consequences report) "schema drift")
-                                       (and (string-contains? (.-section-5-scorecard report) "calibrated")
-                                            (string-contains? (.-section-5-scorecard report) "0.98")))))))))))
+    (do
+      (assert (string-contains? md "## 1. Verified Findings & AST Grounding"))
+      (assert (string-contains? md "## 2. Intent Divergences & Reality Anchors"))
+      (assert (string-contains? md "## 3. Transparent Disclosures & Omissions"))
+      (assert (string-contains? md "## 4. Blast Radius & Downstream Consequences"))
+      (assert (string-contains? md "## 5. Epistemic Calibration Scorecard"))
+      (assert (string-contains? (.-section-1-findings report) "Verified Findings & AST Grounding"))
+      (assert (string-contains? (.-section-4-consequences report) "schema drift"))
+      (assert (string-contains? (.-section-5-scorecard report) "calibrated"))
+      (assert (string-contains? (.-section-5-scorecard report) "0.98"))
+      (assert (not (string-empty? md)))
+      true)))
 
 (df test-synthesis-disclose-gaps [] -> Bool
   :d "Verifies Section 3 integration with fb/disclose-observed-gaps for both empty and populated omissions."
@@ -61,10 +64,13 @@
                         scorecard))
         (s3-gaps (.-section-3-disclosures report-with-gaps))
         (s3-clean (.-section-3-disclosures report-clean))]
-    (and (string-contains? s3-gaps "Transparent Disclosures")
-         (and (string-contains? s3-gaps "ARM64 micro-benchmarking")
-              (and (string-contains? s3-gaps "Optional JSON pretty-printing")
-                   (string-contains? s3-clean "No unverified gaps or defects observed"))))))
+    (do
+      (assert (string-contains? s3-gaps "Transparent Disclosures"))
+      (assert (string-contains? s3-gaps "ARM64 micro-benchmarking"))
+      (assert (string-contains? s3-gaps "Optional JSON pretty-printing"))
+      (assert (string-contains? s3-clean "No unverified gaps or defects observed"))
+      (assert (not (string-contains? s3-clean "ARM64 micro-benchmarking")))
+      true)))
 
 (df run-tests [] -> Bool
   :d "Executes full synthesis delivery test suite."

@@ -56,6 +56,7 @@
                    "}\n"))
         (outline (pa/extract-ast-outline code "src/UserProfile.tsx"))]
     (assert (= (.-total-symbols outline) 3) "ts total symbols is 3")
+    (assert (not (= (.-total-symbols outline) 0)) "ts total symbols is not 0")
     true))
 
 (df test-extract-polyglot-go-ast [] -> Bool
@@ -72,6 +73,7 @@
                    "}\n"))
         (outline (pa/extract-ast-outline code "main.go"))]
     (assert (= (.-total-symbols outline) 3) "go total symbols is 3")
+    (assert (not (= (.-total-symbols outline) 0)) "go total symbols is not 0")
     true))
 
 (df test-extract-polyglot-rust-ast [] -> Bool
@@ -110,6 +112,7 @@
                    "}\n"))
         (outline (pa/extract-ast-outline code "app/Services/StripeGateway.php"))]
     (assert (= (.-total-symbols outline) 3) "php total symbols is 3")
+    (assert (not (= (.-total-symbols outline) 0)) "php total symbols is not 0")
     true))
 
 (df test-extract-composer-version [] -> Bool
@@ -130,6 +133,9 @@
     (assert (match v
               ((none) false)
               ((some ver) (= ver "7.8.1"))) "composer version is 7.8.1")
+    (assert (match (dp/extract-composer-version composer-lock "nonexistent/pkg")
+              ((none) true)
+              ((some _) false)) "nonexistent pkg returns none")
     true))
 
 (df test-extract-php-attributes [] -> Bool

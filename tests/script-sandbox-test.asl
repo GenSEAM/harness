@@ -57,6 +57,7 @@
                           "}\n"))
         (res (ss/run-sandboxed-script huge-script cfg))]
     (assert (= (.-exit-code res) 137) "memory limit exit code 137")
+    (assert (not (= (.-exit-code res) 0)) "exit code must not be 0")
     true))
 
 (df test-evaluate-expression [] -> Bool

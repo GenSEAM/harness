@@ -39,6 +39,7 @@
   :d "Verifies all tiers are concatenated and bounded by limit."
   (let [(all-res (eg/query-gateway "query-all" "all" 2 true))]
     (assert (<= (list-length all-res) 2) "result count respects limit")
+    (assert (not (list-empty? all-res)) "result count is not empty")
     true))
 
 (df test-resolve-query [] -> Bool

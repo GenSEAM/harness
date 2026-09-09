@@ -55,6 +55,7 @@
   (let [(raw "I completed the work. All tests pass cleanly.")
         (r (prov/parse-model-response raw false))]
     (assert (= (.-finish-reason r) "esh_rejected") "verbal ESH flagged")
+    (assert (not (= (.-finish-reason r) "stop")) "finish reason is not stop")
     true))
 
 (df run-tests [] -> Bool

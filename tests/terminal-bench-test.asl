@@ -13,6 +13,7 @@
   :d "Verifies the challenge suite contains exactly 60 hard tasks."
   (let [(tasks (tb/canonical-astra-hard-tasks))]
     (assert (= (list-length tasks) 60) "challenge task count is 60")
+    (assert (not (list-empty? tasks)) "tasks not empty")
     true))
 
 (df test-category-distribution [] -> Bool
@@ -34,6 +35,7 @@
   :d "Verifies the full Terminal Bench suite contains exactly 150 tasks."
   (let [(tasks (tb/canonical-full-suite-tasks))]
     (assert (= (list-length tasks) 150) "full task count is 150")
+    (assert (not (list-empty? tasks)) "tasks not empty")
     true))
 
 (df test-full-category-distribution [] -> Bool

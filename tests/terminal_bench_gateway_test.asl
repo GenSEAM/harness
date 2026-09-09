@@ -34,6 +34,7 @@
         (resp (prov/parse-model-response raw false))]
     (do
       (assert (= (.-finish-reason resp) "esh_rejected") "unverified verbal claim rejected as esh_rejected")
+      (assert (not (= (.-finish-reason resp) "stop")) "finish reason is not stop")
       true)))
 
 (df test-budget-ceiling-enforcement [] -> Bool

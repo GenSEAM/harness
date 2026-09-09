@@ -23,11 +23,13 @@
 (df test-validate-runner-security-clean [] -> Bool
   (let [(clean-str "export LLM_GATEWAY_API_KEY=\"$ENV_VAR_SECRET\"")]
     (assert (br/validate-runner-security clean-str) "clean string passes security validation")
+    (assert (not (br/validate-runner-security "export LLM_GATEWAY_API_KEY=\"llmgtwy_vLHJNl0D6XpsifrNXg2zKVtXDEX26m93H5E4g8RX\"")) "leaked secret rejected")
     true))
 
 (df test-validate-runner-security-leak [] -> Bool
   (let [(leaked-str "export LLM_GATEWAY_API_KEY=\"llmgtwy_vLHJNl0D6XpsifrNXg2zKVtXDEX26m93H5E4g8RX\"")]
     (assert (not (br/validate-runner-security leaked-str)) "leaked secret caught by security validation")
+    (assert (br/validate-runner-security "export LLM_GATEWAY_API_KEY=\"$ENV_VAR_SECRET\"") "clean secret accepted")
     true))
 
 (df test-format-runner-banner [] -> Bool

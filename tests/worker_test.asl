@@ -221,6 +221,7 @@
   (let [(guard (w/BlastRadiusGuard :is-safe true :violations (list) :affected-symbols (list) :details "Clean"))]
     (do
       (assert (w/audit-pre-commit-safety guard true true))
+      (assert (not (w/audit-pre-commit-safety guard false true)))
       true)))
 
 (df test-pre-commit-safety-blocked-by-blast [] -> Bool
@@ -228,6 +229,7 @@
   (let [(guard (w/BlastRadiusGuard :is-safe false :violations (list "mem/engine.asl") :affected-symbols (list) :details "Violation"))]
     (do
       (assert (not (w/audit-pre-commit-safety guard true true)))
+      (assert (w/audit-pre-commit-safety (w/BlastRadiusGuard :is-safe true :violations (list) :affected-symbols (list) :details "Clean") true true))
       true)))
 
 (df test-pre-commit-safety-blocked-by-gate [] -> Bool

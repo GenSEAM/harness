@@ -10,6 +10,9 @@
     (assert (match ver
               ((none) false)
               ((some v) (= v "3.4.0"))) "version extracted is 3.4.0")
+    (assert (match (php/extract-composer-version sample "nonexistent/pkg")
+              ((none) true)
+              ((some _) false)) "nonexistent pkg returns none")
     true))
 
 (df test-extract-php-attributes [] -> Bool

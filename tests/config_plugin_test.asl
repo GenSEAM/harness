@@ -16,26 +16,34 @@
   (let [(p0 (cfg/profile-gemma-31b))
         (node (cfg/model-profile-to-asn-node p0))
         (p-opt (cfg/model-profile-from-asn-node node))]
-    (and (option-is-some? p-opt)
-         (let [(p1 (option-unwrap p-opt))]
-           (and (= (.-name p1) (.-name p0))
-                (and (= (.-family p1) (.-family p0))
-                     (and (.-strict-firewall p1)
-                          (and (.-strict-normalizer p1)
-                               (and (.-in-memory-repl p1)
-                                    (= (.-max-tokens p1) 8192))))))))))
+    (do
+      (assert (option-is-some? p-opt))
+      (let [(p1 (option-unwrap p-opt))]
+        (do
+          (assert (= (.-name p1) (.-name p0)))
+          (assert (= (.-family p1) (.-family p0)))
+          (assert (.-strict-firewall p1))
+          (assert (.-strict-normalizer p1))
+          (assert (.-in-memory-repl p1))
+          (assert (= (.-max-tokens p1) 8192))
+          (assert (not (= (.-max-tokens p1) 0)))))
+      true)))
 
 (df test-storage-config-roundtrip [] -> Bool
   :d "Verifies lossless serialization and deserialization of StorageConfig directly to/from ASN constructor nodes."
   (let [(s0 (cfg/default-storage-config "/Users/dev/workspace"))
         (node (cfg/storage-config-to-asn-node s0))
         (s-opt (cfg/storage-config-from-asn-node node))]
-    (and (option-is-some? s-opt)
-         (let [(s1 (option-unwrap s-opt))]
-           (and (= (.-master-research-root s1) "/Users/dev/workspace/.research")
-                (and (= (.-master-scratch-root s1) "/Users/dev/workspace/scratch")
-                     (and (= (.-worktree-scratch-root s1) "/Users/dev/workspace/.worktree-scratch")
-                          (= (.-local-repo-root s1) "/Users/dev/workspace"))))))))
+    (do
+      (assert (option-is-some? s-opt))
+      (let [(s1 (option-unwrap s-opt))]
+        (do
+          (assert (= (.-master-research-root s1) "/Users/dev/workspace/.research"))
+          (assert (= (.-master-scratch-root s1) "/Users/dev/workspace/scratch"))
+          (assert (= (.-worktree-scratch-root s1) "/Users/dev/workspace/.worktree-scratch"))
+          (assert (= (.-local-repo-root s1) "/Users/dev/workspace"))
+          (assert (not (string-empty? (.-local-repo-root s1))))))
+      true)))
 
 (df test-harness-config-tree [] -> Bool
   :d "Verifies direct instantiation of HarnessConfig from structured ASN configuration tree."
@@ -44,11 +52,14 @@
                       (cfg/AsnField :key ":fsm-normalizer" :val (cfg/asn-bool false))
                       (cfg/AsnField :key ":repl-in-memory" :val (cfg/asn-bool false)))))
         (cfg-opt (cfg/harness-config-from-asn-tree tree))]
-    (and (option-is-some? cfg-opt)
-         (let [(c (option-unwrap cfg-opt))]
-           (and (cfg/feature-enabled? c "firewall")
-                (and (not (cfg/feature-enabled? c "fsm-normalizer"))
-                     (not (cfg/feature-enabled? c "repl-in-memory"))))))))
+    (do
+      (assert (option-is-some? cfg-opt))
+      (let [(c (option-unwrap cfg-opt))]
+        (do
+          (assert (cfg/feature-enabled? c "firewall"))
+          (assert (not (cfg/feature-enabled? c "fsm-normalizer")))
+          (assert (not (cfg/feature-enabled? c "repl-in-memory")))))
+      true)))
 
 (df test-hook-predicate-evaluation [] -> Bool
   :d "Verifies HookPredicate condition evaluation on target tool name and context tag."
@@ -62,10 +73,12 @@
                       :name "guard-read-ops"
                       :target-pattern "read_file"
                       :action-override "allow"))]
-    (and (cfg/evaluate-hook-predicate pred-deny "rm_rf" "guard")
-         (and (not (cfg/evaluate-hook-predicate pred-deny "read_file" "guard"))
-              (and (cfg/evaluate-hook-predicate pred-allow "read_file" "guard")
-                   (not (cfg/evaluate-hook-predicate pred-allow "write_file" "guard")))))))
+    (do
+      (assert (cfg/evaluate-hook-predicate pred-deny "rm_rf" "guard"))
+      (assert (not (cfg/evaluate-hook-predicate pred-deny "read_file" "guard")))
+      (assert (cfg/evaluate-hook-predicate pred-allow "read_file" "guard"))
+      (assert (not (cfg/evaluate-hook-predicate pred-allow "write_file" "guard")))
+      true)))
 
 (df test-plugin-guard-evaluation [] -> Bool
   :d "Verifies evaluate-plugin-guards enforcing hook predicates and blocking denied tools."
@@ -82,17 +95,21 @@
                :conflicts (list)
                :predicates (list pred-block-terminal)))
         (plugin (plug/create-plugin "sec-guard" "Security Guard" "1.0.0" 1 cap))]
-    (and (not (plug/evaluate-plugin-guards plugin (cfg/hook-pre-call) "exec_command"))
-         (and (plug/evaluate-plugin-guards plugin (cfg/hook-pre-call) "read_file")
-              (plug/evaluate-plugin-guards plugin (cfg/hook-post-call) "exec_command")))))
+    (do
+      (assert (not (plug/evaluate-plugin-guards plugin (cfg/hook-pre-call) "exec_command")))
+      (assert (plug/evaluate-plugin-guards plugin (cfg/hook-pre-call) "read_file"))
+      (assert (plug/evaluate-plugin-guards plugin (cfg/hook-post-call) "exec_command"))
+      true)))
 
 (df test-cascaded-config-ast [] -> Bool
   :d "Verifies robust cascaded configuration resolution across tiers with both structured ASN and backward-compatible strings."
   (let [(c0 (cfg/default-harness-config))
         (c1 (cfg/resolve-cascaded-config c0 "(:fsm-normalizer false)" "" "(:repl-in-memory false)"))]
-    (and (not (cfg/feature-enabled? c1 "fsm-normalizer"))
-         (and (cfg/feature-enabled? c1 "firewall")
-              (not (cfg/feature-enabled? c1 "repl-in-memory"))))))
+    (do
+      (assert (not (cfg/feature-enabled? c1 "fsm-normalizer")))
+      (assert (cfg/feature-enabled? c1 "firewall"))
+      (assert (not (cfg/feature-enabled? c1 "repl-in-memory")))
+      true)))
 
 (df test-malformed-asn-nodes [] -> Bool
   :d "Verifies graceful rejection and error handling for malformed ASN nodes."
@@ -100,9 +117,12 @@
         (p-res (cfg/model-profile-from-asn-node malformed))
         (s-res (cfg/storage-config-from-asn-node malformed))
         (c-res (cfg/harness-config-from-asn-tree malformed))]
-    (and (option-is-none? p-res)
-         (and (option-is-none? s-res)
-              (option-is-none? c-res)))))
+    (do
+      (assert (option-is-none? p-res))
+      (assert (option-is-none? s-res))
+      (assert (option-is-none? c-res))
+      (assert (not (option-is-some? p-res)))
+      true)))
 
 (df run-tests [] -> Bool
   :d "Executes all config plugin unit assertions."

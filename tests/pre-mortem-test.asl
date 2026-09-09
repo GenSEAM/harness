@@ -30,13 +30,15 @@
         (v-fail-custom-max (pm/evaluate-pre-mortem "Action exceeding custom 1-hop ceiling" (list r-valid-1 r-valid-2) 1))
         (v-fail-cap (pm/evaluate-pre-mortem "Action attempting 3-hop ceiling capped to 2" (list r-excessive) 3))
         (ungrounded-in-fail (filter (fn [(c pm/ConsequenceRisk)] -> Bool (not (.-is-grounded c))) (.-consequences v-fail-ceiling)))]
-    (and (.-passed v-pass)
-         (and (= (list-length (.-blocked-reasons v-pass)) 0)
-              (and (not (.-passed v-fail-ceiling))
-                   (and (> (list-length (.-blocked-reasons v-fail-ceiling)) 0)
-                        (and (> (list-length ungrounded-in-fail) 0)
-                             (and (not (.-passed v-fail-custom-max))
-                                  (not (.-passed v-fail-cap))))))))))
+    (do
+      (assert (.-passed v-pass))
+      (assert (= (list-length (.-blocked-reasons v-pass)) 0))
+      (assert (not (.-passed v-fail-ceiling)))
+      (assert (> (list-length (.-blocked-reasons v-fail-ceiling)) 0))
+      (assert (> (list-length ungrounded-in-fail) 0))
+      (assert (not (.-passed v-fail-custom-max)))
+      (assert (not (.-passed v-fail-cap)))
+      true)))
 
 (df test-pre-mortem-falsification-triggers [] -> Bool
   :d "Verifies falsification trigger generation and trigger existence enforcement."
@@ -62,14 +64,16 @@
         (v-ok (pm/evaluate-pre-mortem "Safe action" (list r-ok) 2))
         (v-no-trig (pm/evaluate-pre-mortem "Action missing trigger" (list r-missing-trig) 2))
         (v-crit (pm/evaluate-pre-mortem "Action with critical risk" (list r-critical) 2))]
-    (and (string-contains? trig "asl test")
-         (and (string-contains? trig "harness/src/proxy.asl")
-              (and (string-contains? trig "stale-cache")
-                   (and (.-passed v-ok)
-                        (and (not (.-passed v-no-trig))
-                             (and (> (list-length (.-blocked-reasons v-no-trig)) 0)
-                                  (and (not (.-passed v-crit))
-                                       (> (list-length (.-blocked-reasons v-crit)) 0))))))))))
+    (do
+      (assert (string-contains? trig "asl test"))
+      (assert (string-contains? trig "harness/src/proxy.asl"))
+      (assert (string-contains? trig "stale-cache"))
+      (assert (.-passed v-ok))
+      (assert (not (.-passed v-no-trig)))
+      (assert (> (list-length (.-blocked-reasons v-no-trig)) 0))
+      (assert (not (.-passed v-crit)))
+      (assert (> (list-length (.-blocked-reasons v-crit)) 0))
+      true)))
 
 (df run-tests [] -> Bool
   :d "Executes full pre-mortem test suite."

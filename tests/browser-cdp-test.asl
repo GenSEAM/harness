@@ -24,6 +24,7 @@
   (let [(conn (cdp/make-cdp-connection "ws://127.0.0.1:9222" "s1"))
         (cmd (cdp/extract-axtree conn))]
     (assert (string-contains? cmd "Accessibility.getFullAXTree") "cmd contains getFullAXTree")
+    (assert (not (string-contains? cmd "Page.navigate")) "cmd does not contain Page.navigate")
     true))
 
 (df test-dispatch-click [] -> Bool

@@ -16,6 +16,7 @@
   (let [(raw "```asn\n(:svg :w 320 :h 320)\n```")
         (res (ah/strip-markdown-fences raw))]
     (assert (= res "(:svg :w 320 :h 320)") "ASN fences must be stripped")
+    (assert (not (string-contains? res "```")) "ASN fences must not contain markdown ticks")
     true))
 
 (df test-strip-js-fences [] -> Bool
@@ -23,12 +24,14 @@
   (let [(raw "```javascript\nconst x = 1;\n```")
         (res (ah/strip-markdown-fences raw))]
     (assert (= res "const x = 1;") "JS fences must be stripped")
+    (assert (not (string-contains? res "```")) "JS fences must not contain markdown ticks")
     true))
 
 (df test-toolcall-kind [] -> Bool
   :d "Verifies toolcall kind classification"
   (let [(rep (ah/repair-and-normalize "(:call :tool \"write\" :path \"index.html\" :content \"<h1>test</h1>\")"))]
     (assert (= (.-tool-kind rep) "html") "Kind must be html")
+    (assert (not (= (.-tool-kind rep) "svg")) "Kind must not be svg")
     true))
 
 (df test-balance-delimiters [] -> Bool

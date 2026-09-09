@@ -15,6 +15,7 @@
   (let [(st (ver/init-turn-state))
         (res (ver/audit-action-precondition st "view_file"))]
     (assert (.-approved res) "read-only action approved")
+    (assert (not (string-contains? (.-reason res) "rejected")) "not rejected")
     true))
 
 (df test-mutating-action-rejected-without-plan [] -> Bool
@@ -31,6 +32,7 @@
         (st2 (ver/register-plan-item st "item-1" "Add helper function" "asl test test.asl"))
         (res (ver/audit-action-precondition st2 "write_to_file"))]
     (assert (.-approved res) "mutating approved with plan")
+    (assert (not (string-contains? (.-reason res) "rejected")) "not rejected")
     true))
 
 (df test-esh-rejection-unexecuted-gate [] -> Bool

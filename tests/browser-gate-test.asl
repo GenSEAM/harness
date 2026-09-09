@@ -16,6 +16,7 @@
   (let [(code "(:svg :w 320 (:rc :x 0")
         (v (bg/check-syntax-gate code "svg"))]
     (assert (not (.-passed v)) "unbalanced ASN fails syntax gate")
+    (assert (.-passed (bg/check-syntax-gate "(:svg :w 320 (:rc :x 0))" "svg")) "balanced ASN passes syntax gate")
     true))
 
 (df test-security-eval [] -> Bool
@@ -23,6 +24,7 @@
   (let [(code "function foo() { eval('alert(1)'); }")
         (v (bg/check-security-gate code))]
     (assert (not (.-passed v)) "eval call fails security gate")
+    (assert (.-passed (bg/check-security-gate "function foo() { return 1; }")) "clean code passes security gate")
     true))
 
 (df test-games-readiness [] -> Bool
@@ -30,6 +32,7 @@
   (let [(code "<canvas id=\"game\"></canvas><script>console.log('idle');</script>")
         (v (bg/check-readiness-gate code "games"))]
     (assert (not (.-passed v)) "missing rAF fails games readiness gate")
+    (assert (.-passed (bg/check-readiness-gate "<canvas id=\"game\"></canvas><script>requestAnimationFrame(loop);</script>" "games")) "games with rAF passes readiness gate")
     true))
 
 (df run-tests [] -> Bool

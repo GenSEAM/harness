@@ -55,6 +55,7 @@
   (let [(unbalanced "(:batch (:out \"test.asl\"")
         (balanced (anti/balance-delimiters unbalanced))]
     (assert (string-ends-with? balanced "))") "anti-hallucination auto-balances S-expressions")
+    (assert (not (string-ends-with? balanced "test.asl\"")) "delimiters are not unclosed")
     true))
 
 (df run-projection-tests [] -> Bool
