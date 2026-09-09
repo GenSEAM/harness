@@ -8,6 +8,9 @@
     (:axiom :id "judicious-autonomy" :rule "Default to Fast-Path for routine work; escalate to Full-Rigor on boundaries or fault")
     (:axiom :id "zero-sigils" :rule "Zero @ or # sigils across all identifiers, packages, and frames (c5, d48)")
     (:axiom :id "pure-asn-memory" :rule "Zero markdown files in memory ledgers; 100% machine-native ASN with on-demand dual projection (d44)")
+    (:axiom :id "responsibility-unit" :rule "Shared teleological responsibility dominates bureaucratic compliance: user-centric intent fidelity over mechanical green passes")
+    (:axiom :id "epistemic-steps" :rule "Anti-hallucination disciplines (GroundFact, ContextBudget, AdversarialReflect, ReconcileReality) are discrete executable DAG steps, not prompt suggestions")
+    (:axiom :id "adaptive-homeostasis" :rule "Adaptive replanning upon gate failure: bounded self-healing feedback loops (max-replan-iterations 3) instead of fatal pipeline abortion")
   ]
   :operating-modes [
     (:mode :id "fast-path"
@@ -29,6 +32,11 @@
     (:act :id "verify" :role "auditor" :tools [:test :gate :coverage] :rule "Clean context, physical receipts, dual polarity")
     (:act :id "reconcile" :role "meta-audit" :tools [:crutch-check :intent] :rule "Detect forgotten scaffolding and crutches")
     (:act :id "compress" :role "compactor" :tools [:diff-codec :snr] :rule "Preserve semantic contracts, prune token noise")
+    (:act :id "ground-fact" :role "scout" :tools [:out :sym :read] :rule "Verify file AST and symbol truth before any mutation")
+    (:act :id "context-budget" :role "compactor" :tools [:tokens :snr] :rule "Throttle token ballast; enforce SNR >= 0.75")
+    (:act :id "adversarial-reflect" :role "auditor" :tools [:gap :diff] :rule "Self-adversarial pre-gate critique of diffs, boundaries, and omissions")
+    (:act :id "reconcile-reality" :role "auditor" :tools [:test :gate] :rule "Execute physical gates under strict falsifiability (exit 0, assert false must fail)")
+    (:act :id "adaptive-replan" :role "planner" :tools [:dag :triage] :rule "Dynamic recalculation of recovery DAG upon gate failure with bounded iterations")
   ]
   :task-lifecycle [
     (:tier :id "t1-backlog" :file ".asl/mem/tasks/backlog.asn" :role "parked-candidates" :tokens 0 :op :triage :policy "strictly on-demand, zero recurring cron")
@@ -75,5 +83,9 @@
     (:sync :id "d47" :topic "token-profiler-compaction-paradigm" :ref ".asl/mem/decisions/ADR-0047-codebase-lexical-token-profiler.asn")
     (:sync :id "d48" :topic "universal-sigil-eradication" :ref ".asl/mem/decisions/ADR-0048-universal-sigil-eradication-and-bare-symbols.asn")
     (:sync :id "d49" :topic "ambient-voice-prompt-transliterator" :ref ".asl/mem/decisions/ADR-0049-ambient-voice-and-prompt-transliterator-engine.asn")
+    (:sync :id "d50" :topic "sovereign-engine-resident-architecture" :ref ".asl/mem/decisions/ADR-0050-sovereign-engine-resident-architecture-and-deep-memory.asn")
+    (:sync :id "d51" :topic "token-efficiency-format-camelcase" :ref ".asl/mem/decisions/ADR-0051-token-efficiency-format-documentation-and-camelcase-conventions.asn")
+    (:sync :id "d52" :topic "enriched-task-context-standard" :ref ".asl/mem/decisions/ADR-0052-enriched-task-context-standard.asn")
+    (:sync :id "d53" :topic "agent-responsibility-adaptive-dag-pure-asl" :ref ".asl/mem/decisions/ADR-0053-agent-responsibility-paradigm-adaptive-dag-and-pure-asl-migration.asn")
   ]
 )

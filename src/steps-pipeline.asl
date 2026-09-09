@@ -11,7 +11,11 @@
       make-standard-phases classify-task-entropy
       make-pipeline-by-mode default-addie-config
       make-reflection-config execute-epistemic-pipeline
-      evaluate-stage-teleology]
+      evaluate-stage-teleology
+      AdaptiveDAGConfig EpistemicStepRecord
+      make-adaptive-dag-config is-replan-exhausted?
+      trigger-adaptive-replan record-epistemic-primitive
+      advance-pipeline-stage-adaptive]
   :i [(operational-model :a op)
       (teleology :a tel)])
 
@@ -39,6 +43,18 @@
   (:f gap-audits (List GapAuditResult) "History of plan and implementation gap reviews")
   (:f is-completed Bool "True if all phases passed and final gate succeeded")
   (:f final-status Str "Outcome: pending | approved | rejected | verified | failed"))
+
+(dfs AdaptiveDAGConfig
+  (:f max-replan-iterations I64 "Maximum homeostatic replan attempts before fatal abort")
+  (:f current-replan-count I64 "Current number of replan iterations executed")
+  (:f auto-diagnose Bool "Automatically analyze failure output and insert diagnostic triage step")
+  (:f allow-recovery Bool "True if adaptive recovery is enabled"))
+
+(dfs EpistemicStepRecord
+  (:f step-type Str "ground-fact | context-budget | adversarial-reflect | reconcile-reality")
+  (:f target Str "Target path, symbol, or gate command")
+  (:f executed Bool "True if physically executed")
+  (:f details Str "Recorded observations or proof"))
 
 (dfe PipelineStage
   (:c s1-ingest      [] "Ingestion and boundary normalization of task instruction and invariants")
@@ -578,3 +594,59 @@
        " | progress=" (to-string (.-current-phase-idx pipeline)) "/" (to-string (len (.-phases pipeline)))
        " | completed=" (if (.-is-completed pipeline) "true" "false")
        " | status=" (.-final-status pipeline)))
+
+(df make-adaptive-dag-config [(max-replan I64) (auto-diag Bool)] -> AdaptiveDAGConfig
+  :d "Constructs canonical AdaptiveDAGConfig with homeostatic recovery ceiling."
+  (AdaptiveDAGConfig
+    :max-replan-iterations max-replan
+    :current-replan-count 0
+    :auto-diagnose auto-diag
+    :allow-recovery true))
+
+(df is-replan-exhausted? [(cfg AdaptiveDAGConfig)] -> Bool
+  :d "Checks whether dynamic replan attempts have reached maximum ceiling."
+  (>= (.-current-replan-count cfg) (.-max-replan-iterations cfg)))
+
+(df trigger-adaptive-replan [(pipeline StepsPipeline) (cfg AdaptiveDAGConfig) (failure-reason Str)] -> StepsPipeline
+  :d "Dynamically triggers homeostatic replanning upon gate failure if under recovery limit."
+  (if (is-replan-exhausted? cfg)
+    (StepsPipeline
+      :task-id (.-task-id pipeline)
+      :task-instruction (.-task-instruction pipeline)
+      :active-stage (.-active-stage pipeline)
+      :phases (.-phases pipeline)
+      :current-phase-idx (.-current-phase-idx pipeline)
+      :gap-audits (.-gap-audits pipeline)
+      :is-completed false
+      :final-status "failed")
+    (let [(replan-idx (+ (.-current-replan-count cfg) 1))
+          (triage-phase (StepPhase
+                          :id (str "triage-" (to-string replan-idx))
+                          :name "Adaptive Root-Cause Triage & Recovery DAG"
+                          :stage "plan"
+                          :gate-command "asl check .asl/mem/tasks/in_flight.asn"
+                          :status "running"
+                          :findings (list (str "Auto-diagnose: " failure-reason))))]
+      (StepsPipeline
+        :task-id (.-task-id pipeline)
+        :task-instruction (.-task-instruction pipeline)
+        :active-stage "plan"
+        :phases (list-append (.-phases pipeline) (list triage-phase))
+        :current-phase-idx (.-current-phase-idx pipeline)
+        :gap-audits (.-gap-audits pipeline)
+        :is-completed false
+        :final-status "replanning"))))
+
+(df record-epistemic-primitive [(step-type Str) (target Str) (details Str)] -> EpistemicStepRecord
+  :d "Constructs an EpistemicStepRecord capturing verified operational discipline."
+  (EpistemicStepRecord
+    :step-type step-type
+    :target target
+    :executed true
+    :details details))
+
+(df advance-pipeline-stage-adaptive [(pipeline StepsPipeline) (gate-passed Bool) (output Str) (cfg AdaptiveDAGConfig)] -> StepsPipeline
+  :d "Transitions pipeline stage with adaptive replan fallback upon gate failure."
+  (if gate-passed
+    (advance-pipeline-stage pipeline true output)
+    (trigger-adaptive-replan pipeline cfg output)))

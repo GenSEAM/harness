@@ -9,8 +9,11 @@
       test-global-anti-tamper
       test-custom-mandate
       test-prompt-formatting
+      test-adaptive-dag-replanning
+      test-epistemic-primitives
       run-tests]
-  :i [(teleology :a tel)])
+  :i [(teleology :a tel)
+      (steps-pipeline :a sp)])
 
 (df test-scout-mandate [] -> Bool
   :d "Verifies Scout archetype mandate properties and behavioral boundaries."
@@ -171,6 +174,41 @@
       (assert (< (string-length audit-t) 300))
       true)))
 
+(df test-adaptive-dag-replanning [] -> Bool
+  :d "Verifies dynamic adaptive replanning upon gate failure up to maximum recovery ceiling."
+  (let [(cfg (sp/make-adaptive-dag-config 2 true))
+        (pipe (sp/create-steps-pipeline "task-test-01" "Implement feature with adaptive fallback" "standard"))]
+    (do
+      (assert (= (.-max-replan-iterations cfg) 2))
+      (assert (= (.-current-replan-count cfg) 0))
+      (assert (not (sp/is-replan-exhausted? cfg)))
+      (assert (= (.-final-status pipe) "pending"))
+      (let [(replan-1 (sp/advance-pipeline-stage-adaptive pipe false "syntax error at line 42" cfg))]
+        (assert (= (.-final-status replan-1) "replanning"))
+        (assert (= (.-active-stage replan-1) "plan"))
+        (assert (> (len (.-phases replan-1)) (len (.-phases pipe)))))
+      (let [(exhausted-cfg (sp/AdaptiveDAGConfig :max-replan-iterations 2 :current-replan-count 2 :auto-diagnose true :allow-recovery true))]
+        (assert (sp/is-replan-exhausted? exhausted-cfg))
+        (let [(failed-pipe (sp/advance-pipeline-stage-adaptive pipe false "unresolvable failure" exhausted-cfg))]
+          (assert (= (.-final-status failed-pipe) "failed"))
+          (assert (not (.-is-completed failed-pipe)))))
+      true)))
+
+(df test-epistemic-primitives [] -> Bool
+  :d "Verifies GroundFact, ContextBudget, AdversarialReflect, and ReconcileReality records."
+  (let [(gf (sp/record-epistemic-primitive "ground-fact" "harness/src/steps-pipeline.asl" "AST verified"))
+        (cb (sp/record-epistemic-primitive "context-budget" "tokens" "SNR 0.82"))
+        (ar (sp/record-epistemic-primitive "adversarial-reflect" "diff" "zero gap detected"))
+        (rr (sp/record-epistemic-primitive "reconcile-reality" "asl test" "exit 0 verified"))]
+    (do
+      (assert (= (.-step-type gf) "ground-fact"))
+      (assert (.-executed gf))
+      (assert (= (.-step-type cb) "context-budget"))
+      (assert (= (.-step-type ar) "adversarial-reflect"))
+      (assert (= (.-step-type rr) "reconcile-reality"))
+      (assert (string-contains? (.-details rr) "exit 0"))
+      true)))
+
 (df run-tests [] -> Bool
   :d "Executes all teleology engine test assertions under strict falsification."
   (do
@@ -183,4 +221,6 @@
     (assert (test-global-anti-tamper))
     (assert (test-custom-mandate))
     (assert (test-prompt-formatting))
+    (assert (test-adaptive-dag-replanning))
+    (assert (test-epistemic-primitives))
     true))

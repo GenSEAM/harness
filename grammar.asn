@@ -949,6 +949,18 @@
           :rationale "Verifies default Addie configuration values")
     (:sym :name "run-steps-pipeline-tests" :kind :fn :tokens 4
           :rationale "Executes complete steps pipeline test suite")
+    (:sym :name "AdaptiveDAGConfig" :kind :type :tokens 2)
+    (:sym :name "EpistemicStepRecord" :kind :type :tokens 2)
+    (:sym :name "make-adaptive-dag-config" :kind :fn :tokens 3
+          :rationale "Constructs canonical AdaptiveDAGConfig with homeostatic recovery ceiling")
+    (:sym :name "is-replan-exhausted?" :kind :fn :tokens 3
+          :rationale "Checks whether dynamic replan attempts have reached maximum ceiling")
+    (:sym :name "trigger-adaptive-replan" :kind :fn :tokens 3
+          :rationale "Dynamically triggers homeostatic replanning upon gate failure if under recovery limit")
+    (:sym :name "record-epistemic-primitive" :kind :fn :tokens 3
+          :rationale "Constructs an EpistemicStepRecord capturing verified operational discipline")
+    (:sym :name "advance-pipeline-stage-adaptive" :kind :fn :tokens 3
+          :rationale "Transitions pipeline stage with adaptive replan fallback upon gate failure")
 
     ;; Phase 107 In-Container Autonomous Daemon Symbols
     (:sym :name "DaemonConfig" :kind :type :tokens 2)
