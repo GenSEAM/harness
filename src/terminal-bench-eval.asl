@@ -1,6 +1,10 @@
 (module asl-harness/terminal-bench-eval
   :d "Pure AgentScript specification for Terminal Bench evaluation bridge, task categorization, and telemetry reporting."
-  :x []
+  :x [EvalTask
+      make-eval-task
+      categorize-tb-task
+      format-eval-report
+      format-submission-summary]
   :i [])
 
 (dfs EvalTask
@@ -52,4 +56,18 @@
          " :failed-tasks " (string-from-int64 failed)
          " :pass-rate-pct " "\"" rate-pct "\""
          " :status " status-kw
+         ")")))
+
+(df format-submission-summary [(benchmark Str) (model Str) (passed I64) (total I64) (job-id Str)] -> Str
+  :d "Formats leaderboard-compliant official benchmark submission summary S-expression."
+  (let [(failed (- total passed))
+        (rate-pct (if (= total 0) "0.0%" (str (string-from-int64 (/ (* passed 100) total)) "%")))]
+    (str "(:terminal-bench-submission"
+         " :benchmark \"" benchmark "\""
+         " :model \"" model "\""
+         " :job-id \"" job-id "\""
+         " :total " (string-from-int64 total)
+         " :passed " (string-from-int64 passed)
+         " :failed " (string-from-int64 failed)
+         " :pass-rate \"" rate-pct "\""
          ")")))

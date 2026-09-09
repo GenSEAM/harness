@@ -8,10 +8,13 @@
       make-agent-ctx-op
       make-default-config
       estimate-tokens
+      total-blocks-tokens
       format-context-blocks
       assemble-baseline-context
       assemble-receipts-context
+      assemble-watermark-context
       assemble-jit-context
+      hydrate-jit-blocks
       assemble-agent-directed-context
       apply-universal-default-canvas
       is-core-block?
@@ -21,7 +24,8 @@
       parse-agent-ctx-op
       assemble-prompt]
   :i [(compactor :a comp)
-      (context_priority :a cp)])
+      (context_priority :a cp)
+      (engine_gateway :a eg)])
 
 (dfs ContextBlock
   (:f id Str "Unique identifier for context block")
@@ -183,6 +187,46 @@
       :retained-count (list-length retained)
       :evicted-count (list-length (.-evicted res)))))
 
+(df total-blocks-tokens [(blocks (List ContextBlock))] -> I64
+  :d "Calculates sum of token weights across all context blocks"
+  (fold (fn [(acc I64) (b ContextBlock)] -> I64 (+ acc (.-tokens b))) 0 blocks))
+
+(df assemble-watermark-context [(blocks (List ContextBlock)) (ceiling I64)] -> AssembledPrompt
+  :d "Compiles context compacting historical turns based on dynamic token watermark thresholds (60% soft, 80% hard)"
+  (let [(curr-tok (total-blocks-tokens blocks))
+        (pct (if (<= ceiling 0) 0 (/ (* curr-tok 100) ceiling)))
+        (keep-recent (cond
+                       ((>= pct 80) 2)
+                       ((>= pct 60) 5)
+                       (:else 20)))
+        (res (assemble-receipts-context blocks ceiling keep-recent))]
+    (AssembledPrompt
+      :strategy "watermark"
+      :total-tokens (.-total-tokens res)
+      :prompt-str (.-prompt-str res)
+      :retained-count (.-retained-count res)
+      :evicted-count (.-evicted-count res))))
+
+(df result-to-context-block [(r eg/EngineResult)] -> ContextBlock
+  :d "Converts an EngineResult into a JIT ContextBlock"
+  (let [(payload (str "(:jit-result :tier \"" (.-tier r) "\" :title \"" (.-title r) "\" :snippet \"" (.-snippet r) "\")"))]
+    (ContextBlock
+      :id (str "jit-" (.-tier r) "-" (.-title r))
+      :kind "working-set"
+      :tokens (estimate-tokens payload)
+      :payload payload)))
+
+(df hydrate-jit-blocks [(queries (List Str)) (limit I64)] -> (List ContextBlock)
+  :d "Queries the Unified Engine Gateway for JIT working memory blocks across Tier 0 and Tier 1"
+  (let [(fetch-query (fn [(q Str)] -> (List ContextBlock)
+                       (let [(results (eg/query-gateway q "tier-0-ast" limit true))]
+                         (map result-to-context-block results))))
+        (nested (map fetch-query queries))]
+    (fold (fn [(acc (List ContextBlock)) (bs (List ContextBlock))] -> (List ContextBlock)
+            (list-concat acc bs))
+          (list)
+          nested)))
+
 (df assemble-jit-context [(blocks (List ContextBlock)) (ceiling I64)] -> AssembledPrompt
   :d "Excludes conversational history and prioritizes AST working set chunks (Strategy 3)"
   (let [(essential-blocks (filter (fn [(b ContextBlock)] -> Bool
@@ -314,7 +358,7 @@
                  (not (is-history-block? b))))))
 
 (df apply-universal-default-canvas [(blocks (List ContextBlock)) (ceiling I64) (agent-op (Option AgentCtxOp))] -> AssembledPrompt
-  :d "Compiles context according to the Universal Golden Default Canvas: Core + Knowledge + Other + Receipts + Delta"
+  :d "Compiles context according to the Universal Golden Default Canvas with dynamic watermark compaction: Core + Knowledge + Other + Receipts + Delta"
   (mt agent-op
     ((some op)
      (assemble-agent-directed-context blocks ceiling op))
@@ -324,7 +368,13 @@
            (other-blocks (filter (fn [(b ContextBlock)] -> Bool (is-other-canvas-block? b)) blocks))
            (delta-blocks (filter (fn [(b ContextBlock)] -> Bool (is-delta-block? b)) blocks))
            (history-candidates (filter (fn [(b ContextBlock)] -> Bool (is-history-block? b)) blocks))
-           (receipt-blocks (process-receipts-blocks history-candidates 1))
+           (curr-tok (total-blocks-tokens blocks))
+           (pct (if (<= ceiling 0) 0 (/ (* curr-tok 100) ceiling)))
+           (keep-recent (cond
+                          ((>= pct 80) 1)
+                          ((>= pct 60) 3)
+                          (:else 5)))
+           (receipt-blocks (process-receipts-blocks history-candidates keep-recent))
            (prefix-blocks (list-append (list-append core-blocks knowledge-blocks) other-blocks))
            (ordered-candidates (list-append prefix-blocks (list-append receipt-blocks delta-blocks)))
            (acc (BlockAccumulator :retained (list) :evicted (list) :tokens 0))
@@ -346,6 +396,7 @@
     (cond
       ((= strat "baseline") (assemble-baseline-context blocks ceiling))
       ((= strat "receipts") (assemble-receipts-context blocks ceiling recent))
+      ((= strat "watermark") (assemble-watermark-context blocks ceiling))
       ((= strat "jit-memory") (assemble-jit-context blocks ceiling))
       ((= strat "agent-directed")
        (mt agent-op

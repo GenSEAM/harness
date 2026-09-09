@@ -1,0 +1,107 @@
+;; Machine-Readable Audit Protocols, Epistemic Definitions, and Meta-Audit Rubric (ASN)
+(:audit-protocols
+  :version "1.0.0"
+  :package asl-harness
+  :adr "d-0041"
+
+  ;; 1. Operational Epistemic Stage Definitions
+  :epistemic-mandates [
+    (:mandate :id "awareness" :title "Awareness (Осознание)"
+      :role "scout"
+      :definition "Deterministic, high-SNR extraction of ground truth from AST outlines (:out), symbol declarations (:sym), callers (:callers), and blast-radius (:impact)."
+      :rule "Zero whole-file dumping (>50 lines); ground every claim in AST truth without speculation.")
+
+    (:mandate :id "planning" :title "Planning (Планирование)"
+      :role "planner"
+      :definition "Constructing an executable DAG of atomic, dependency-ordered work items with strict ownership boundaries."
+      :rule "Every work item must have explicit :why, target paths :owns, and a deterministic :gate guaranteed to fail on baseline.")
+
+    (:mandate :id "implementation" :title "Implementation (Исполнение)"
+      :role "implementer"
+      :definition "Executing atomic code modifications strictly within declared target paths in staged RAM VFS buffers."
+      :rule "Advance :step-index monotonically, enforce zero comments c-0001, and maintain 100% pure AgentScript.")
+
+    (:mandate :id "reflection" :title "Reflection & Audit (Рефлексия и Аудит)"
+      :role "auditor"
+      :definition "Adversarial gap and intent analysis before and after mutation, searching for temporary crutches, scaffolding, and drift."
+      :rule "Scrutinize code against registered intent in intent.asn and ADRs; detect forgotten workarounds.")
+
+    (:mandate :id "reconciliation" :title "Reconciliation & Meta-Audit (Реконсиляция и Вторичный Аудит)"
+      :role "auditor"
+      :definition "Physical reality verification through gate execution and adversarial secondary review of the primary audit."
+      :rule "Require physical TaskReceipt with exit 0 and asserts > 0; verbal claims of success are formally rejected.")
+  ]
+
+  ;; 2. The 6-Class Incongruity & Crutch Taxonomy
+  :incongruity-taxonomy [
+    (:category :id "crutch-scaffolding"
+      :title "Crutch & Scaffolding (Костыли и временные леса)"
+      :description "Temporary workarounds, migration shims, or compatibility adapters that outlived their phase and were forgotten."
+      :detection-rule "Check if construct bypasses an architectural boundary without an active ADR justification."
+      :severity "high")
+
+    (:category :id "incomplete-feature"
+      :title "Incomplete Feature (Недоделки)"
+      :description "Partial implementation omitting edge cases, boundary states, null/empty collections, or error pathways."
+      :detection-rule "Verify if error paths, empty inputs, and rejection cases have matching assertions."
+      :severity "high")
+
+    (:category :id "architectural-drift"
+      :title "Architectural Drift (Архитектурный дрейф)"
+      :description "Code violating global axioms: duplicate wire escaping c-0003, inline comments c-0001, or premature abstractions d-0034."
+      :detection-rule "Compare implementation against foundational packages (asl-text, mem/vfs) and doctrine contracts."
+      :severity "critical")
+
+    (:category :id "orphaned-code"
+      :title "Orphaned & Dead Code (Мертвый код)"
+      :description "Functions, types, constants, or exports with zero callers across the codebase AST."
+      :detection-rule "Query callers via batch RPC (:callers <name>); flag uncalled exports without public consumer."
+      :severity "medium")
+
+    (:category :id "vacuous-verification"
+      :title "Vacuous Verification (Фиктивная верификация)"
+      :description "Tests passing with exit code 0 while evaluating zero assertions or testing tautological statements."
+      :detection-rule "Enforce Gate 5 strict falsification; require evaluated assertion count greater than zero."
+      :severity "critical")
+
+    (:category :id "intent-misalignment"
+      :title "Intent Misalignment (Рассогласование с интентом)"
+      :description "Implementations that solve a local requirement in a manner contrary to recorded decisions in intent.asn."
+      :detection-rule "Cross-reference target module with matching ADR in .asl/mem/decisions/."
+      :severity "high")
+  ]
+
+  ;; 3. Intent Rationalization Rubric
+  :intent-rationalization [
+    (:question :id "q1" :text "Why was this code originally introduced, and which ADR or user requirement does it fulfill?")
+    (:question :id "q2" :text "Does this construct belong in this package, or does it violate domain boundaries?")
+    (:question :id "q3" :text "Was this added as a temporary migration shim that can now be eradicated?")
+    (:question :id "q4" :text "Is the implementation complete, including boundary states, error paths, and non-vacuous tests?")
+  ]
+
+  ;; 4. Secondary Meta-Audit Protocol (Checking the Auditor)
+  :meta-audit-protocol [
+    (:criterion :id "grounding"
+      :name "Evidence Grounding"
+      :rule "Every reported finding must cite exact file path and line number backed by AST facts.")
+    (:criterion :id "completeness"
+      :name "Taxonomy Completeness"
+      :rule "Audit must verify all 6 incongruity classes, specifically testing for temporary crutches.")
+    (:criterion :id "anti-rubber-stamp"
+      :name "Anti-Rubber-Stamping"
+      :rule "Auditor must adopt an adversarial posture and reject vacuous agreements.")
+    (:criterion :id "falsifiable-remediations"
+      :name "Falsifiable Remediations"
+      :rule "Every recommendation must carry an executable command or assertion that verifies the fix.")
+  ]
+
+  ;; 5. Subagent Delegation Patterns for External LLMs
+  :subagent-delegation [
+    (:pattern :id "clean-context-meta-audit"
+      :subagent "steps-impl-reviewer"
+      :instructions "Review the candidate diff and the primary audit report. Independently execute verification gates, inspect for temporary crutches, and evaluate the primary audit against ADR-0041 meta-audit rubric.")
+    (:pattern :id "codebase-gap-scout"
+      :subagent "repo-scout"
+      :instructions "Extract high-SNR outlines and callers across affected modules. List all target symbols and check for orphaned exports.")
+  ]
+)

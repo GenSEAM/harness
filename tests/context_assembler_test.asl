@@ -8,6 +8,7 @@
       test-strategy-4-self-directed-assembly
       test-assemble-prompt-dispatcher
       test-escaped-payload-serialization
+      test-watermark-compaction-assembly
       run-tests]
   :i [(context_assembler :a ca)])
 
@@ -144,6 +145,21 @@
       (assert (string-contains? (.-prompt-str res) "\\\\path") "Backslash must be escaped")
       true)))
 
+(df test-watermark-compaction-assembly [] -> Bool
+  :d "Verifies dynamic watermark context assembly and gateway JIT block hydration."
+  (let [(b-sys (ca/make-context-block "sys" "sys-mandate" 100 "System prompt"))
+        (b-t1 (ca/make-context-block "t1" "history" 250 "fs-read: src/core.asl dumped 500 lines of file content"))
+        (b-t2 (ca/make-context-block "t2" "history" 250 "exec-cmd: test gate passed with exit 0"))
+        (b-t3 (ca/make-context-block "t3" "history" 250 "ast-patch: patched function token-stream"))
+        (blocks (list b-sys b-t1 b-t2 b-t3))
+        (res-watermark (ca/assemble-watermark-context blocks 1000))
+        (jit-blocks (ca/hydrate-jit-blocks (list "make-engine") 2))]
+    (do
+      (assert (= (.-strategy res-watermark) "watermark") "Strategy must be watermark")
+      (assert (> (list-length jit-blocks) 0) "JIT blocks must be hydrated via Engine Gateway")
+      (assert (string-contains? (.-payload (option-or (list-head jit-blocks) (ca/make-context-block "" "" 0 ""))) ":jit-result") "JIT payload must contain :jit-result envelope")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Executes full context assembler test suite."
   (and (test-context-block-creation)
@@ -153,4 +169,5 @@
                       (and (test-strategy-4-agent-ctx-op-parsing)
                            (and (test-strategy-4-self-directed-assembly)
                                 (and (test-assemble-prompt-dispatcher)
-                                     (test-escaped-payload-serialization)))))))))
+                                     (and (test-escaped-payload-serialization)
+                                          (test-watermark-compaction-assembly))))))))))

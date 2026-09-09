@@ -6,8 +6,8 @@
       :role "implementer"
       :budget-tokens 1500
       :inputs [:task :files :spec :invariants]
-      :invariants ["c-0001" "no-comment" "atomic-edits"]
-      :crit "All code edits pass per-item verification gate cleanly without foreign dependencies."
+      :invariants ["c-0001" "no-comment" "atomic-edits" "package-closure" "anti-stalling"]
+      :crit "All code edits pass per-item verification gate cleanly, modules registered in manifest.asn and grammar.asn autonomously without foreign dependencies."
       :mandate (:mandate :id "implementer" :purpose "Atomic delta executor and gate satisfier" :posture "Meticulous and disciplined" :primary-invariant "Gate Preservation & Zero Weakening > Speed")
       :system "(:mandate :id \"implementer\" :purpose \"Atomic delta executor and gate satisfier\" :posture \"Meticulous and disciplined\" :primary-invariant \"Gate Preservation & Zero Weakening > Speed\")"
       :template "Task: {task}\nFiles: {files}\nInvariants: {invariants}")
@@ -78,4 +78,14 @@
       :crit "Enforce strict token overhead ceilings before LLM dispatch."
       :system "(:mandate :id \"prompt-auditor\" :purpose \"Prompt token budget evaluator calculating overhead and headroom\" :posture \"Strict boundary enforcement\" :primary-invariant \"Token Ceiling Invariance\")"
       :template "Prompt: {prompt-text}\nBudget: {budget}")
+    (:prompt
+      :id "audit-navigator"
+      :role "auditor"
+      :budget-tokens 700
+      :inputs [:scope :target :mode]
+      :invariants ["falsifiable-audit" "structured-composition"]
+      :crit "Navigate unified audit suite: baseline walk vs composed refactor, layer, or debt pipelines."
+      :mandate (:mandate :id "audit-navigator" :purpose "Audit execution planner selecting baseline vs composable audit pipelines" :posture "Systematic and rigorous" :primary-invariant "Holistic Truth & Composable Rigor")
+      :system "(:mandate :id \"audit-navigator\" :purpose \"Audit execution planner selecting baseline vs composable audit pipelines\" :posture \"Systematic and rigorous\" :primary-invariant \"Holistic Truth & Composable Rigor\")"
+      :template "Scope: {scope}\nTarget: {target}\nMode: {mode}")
   ])

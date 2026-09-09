@@ -1,22 +1,31 @@
 ---
 name: asl-slm
-description: Small Language Model (SLM) local inference engine, Apple Silicon M1 unified memory telemetry, thinking vs non-thinking benchmarking, and offline evaluation. Use when running local models, measuring tokens/sec, or benchmarking without external API dependencies.
+description: Small Language Model (SLM) local inference engine, Apple Silicon M1 unified memory telemetry, thinking vs non-thinking benchmarking, and offline evaluation.
 ---
 
-# ASL-SLM (Small Language Model Inference & Telemetry)
+# asl-slm: Native Tooling & Verification Guide
 
-`asl-slm` provides a lightweight, pure ASL interface for orchestrating and evaluating Small Language Models (SLMs) locally on Apple Silicon and unified memory hardware.
+> [!IMPORTANT]
+> Deterministically compiled from canonical ASN specification (`./asl/.agents/skills/asl-slm/skill.asn`).
 
-## Core Capabilities
-- **Unified Memory Local Inference**: Runs quantized local models (Qwen 2.5 Coder 0.5B/7B, Gemma 31B) with zero cloud API dependencies.
-- **Thinking vs Non-Thinking Telemetry**: Measures time-to-first-token, generation throughput (tok/s), and cognitive overhead across thinking models.
-- **Strict Offline Benchmark Policy**: Mandates offline execution (`websearch-enabled: false`) to eliminate contamination and cheating on coding evaluations.
+## Rules of Engagement & Invariants
 
-## Verification & Benchmarks
-```bash
-# Run local model telemetry verification
-asl test harness/tests/m1-telemetry-test.asl
+- **[mandatory]**: Run quantized local models (qwen2.5-coder:3b-instruct) within <2GB unified memory ceiling.
+- **[workflow]**: Track time-to-first-token (TTFT), throughput (tok/s), and memory telemetry across reasoning traces.
+- **[negative]**: FORBIDDEN: Never invoke cloud APIs during airgap offline SLM benchmarks.
 
-# Run offline benchmark evaluation
-asl test harness/tests/swe-bench-test.asl
-```
+## Tool Suite Reference
+
+| Command | Purpose | Token Savings |
+| :--- | :--- | :--- |
+| `asl test harness/tests/m1-telemetry-test.asl` | Verify SLM local inference and unified memory telemetry | **90%** |
+| `ASL_AIRGAP=1 node harness/benchmarks/runners/eval-models.mjs` | Execute local SLM benchmark evaluation | **88%** |
+
+## Supported Agent Harnesses
+
+- `claude-code`
+- `factory-droid`
+- `antigravity`
+- `cursor`
+- `windsurf`
+- `universal-agents`

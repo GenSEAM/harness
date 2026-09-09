@@ -1,6 +1,6 @@
 (module asl-harness/compactor-test
   :d "Unit tests for context sliding-window compactor and fence stripper."
-  :x [test-strip-code-fences test-truncate-output test-extract-sexpr test-compact-history run-tests]
+  :x [test-strip-code-fences test-truncate-output test-extract-sexpr test-compact-history test-compact-at-watermark run-tests]
   :i [(compactor :a comp)])
 
 (df test-strip-code-fences [] -> Bool
@@ -38,6 +38,20 @@
     (assert (string-contains? (option-or (list-last compacted) "") "fs-read file cached") "last compacted contains receipt")
     true))
 
+(df test-compact-at-watermark [] -> Bool
+  :d "Verifies deterministic watermark-driven compaction at normal, soft (60%), and hard (80%) thresholds."
+  (let [(hist (list "recent 1" "recent 2" "recent 3" "recent 4" "recent 5" "ast-patch: src/main.asl" "exec-cmd: test gate passed"))
+        (under-watermark (comp/compact-at-watermark hist 50 100))
+        (soft-watermark (comp/compact-at-watermark hist 65 100))
+        (hard-watermark (comp/compact-at-watermark hist 85 100))]
+    (assert (= (list-length under-watermark) 7) "under watermark retains verbatim length")
+    (assert (= (option-or (list-last under-watermark) "") "exec-cmd: test gate passed") "under watermark retains verbatim last item")
+    (assert (= (list-length soft-watermark) 7) "soft watermark retains total length")
+    (assert (string-contains? (option-or (list-last soft-watermark) "") "exec-cmd verified gate") "soft watermark compacts older turns to receipt")
+    (assert (string-contains? (option-or (list-last hard-watermark) "") "exec-cmd verified gate") "hard watermark compacts older turns to receipt")
+    (assert (string-contains? (option-or (list-head (list-drop hard-watermark 2)) "") "ast-patch executed cleanly") "hard watermark keeps only 2 recent turns verbatim")
+    true))
+
 (df run-tests [] -> Bool
   :d "Executes full compactor test suite."
   (do
@@ -45,5 +59,6 @@
     (test-truncate-output)
     (test-extract-sexpr)
     (test-compact-history)
+    (test-compact-at-watermark)
     true))
 

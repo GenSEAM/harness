@@ -1,7 +1,7 @@
 ;; Package Grammar & Exported Symbol Registry (ASN)
-;; @genseam/asl-harness
+;; asl-harness
 (:grammar
-  :package @genseam/asl-harness
+  :package asl-harness
   :version "0.1.0"
   :tokens-baseline 2
   :symbols [
@@ -1395,6 +1395,65 @@
           :rationale "Unit test for Claude Code MCP configuration generation")
     (:sym :name "test-verify-bridge-connectivity" :kind :fn :tokens 4
           :rationale "Unit test for MCP bridge connectivity check")
+
+    ;; Phase 384 Harness Epistemic Audit Protocol & Crutch Taxonomy Symbols
+    (:sym :name "AuditFinding" :kind :type :tokens 2)
+    (:sym :name "AuditVerdict" :kind :type :tokens 2)
+    (:sym :name "MetaAuditReport" :kind :type :tokens 3
+          :rationale "Secondary meta-audit assessment report evaluating primary auditor rigor")
+    (:sym :name "make-audit-finding" :kind :fn :tokens 3
+          :rationale "Constructs an AuditFinding record with verified file location and falsifiable remediation gate")
+    (:sym :name "make-audit-verdict" :kind :fn :tokens 3
+          :rationale "Constructs an AuditVerdict record summarizing evaluation outcomes")
+    (:sym :name "make-meta-audit-report" :kind :fn :tokens 4
+          :rationale "Constructs a MetaAuditReport evaluating adequacy and rigor of a primary audit")
+    (:sym :name "is-crutch-finding?" :kind :fn :tokens 3
+          :rationale "Checks if an audit finding represents a temporary workaround or forgotten scaffolding")
+    (:sym :name "is-critical-finding?" :kind :fn :tokens 3
+          :rationale "Checks if an audit finding represents a critical violation requiring immediate rejection")
+    (:sym :name "evaluate-audit-findings" :kind :fn :tokens 3
+          :rationale "Aggregates audit findings calculates crutch frequency and derives overall verdict")
+    (:sym :name "is-meta-audit-adequate?" :kind :fn :tokens 4
+          :rationale "Validates that a primary audit satisfies minimum adequacy score and covers required categories")
+    (:sym :name "format-finding-asn" :kind :fn :tokens 3
+          :rationale "Serializes a single AuditFinding into compact canonical ASN frame")
+    (:sym :name "format-verdict-asn" :kind :fn :tokens 3
+          :rationale "Serializes an AuditVerdict into compact canonical ASN representation")
+
+    ;; Phase 385 Token Profiler & Lexical Counter Symbols
+    (:sym :name "WordFrequency" :kind :type :tokens 2)
+    (:sym :name "TokenBreakdown" :kind :type :tokens 2)
+    (:sym :name "TokenProfile" :kind :type :tokens 2)
+    (:sym :name "make-word-frequency" :kind :fn :tokens 3
+          :rationale "Constructs a WordFrequency entry")
+    (:sym :name "make-token-breakdown" :kind :fn :tokens 3
+          :rationale "Constructs a TokenBreakdown record")
+    (:sym :name "make-token-profile" :kind :fn :tokens 3
+          :rationale "Constructs a TokenProfile record")
+    (:sym :name "estimate-word-tokens" :kind :fn :tokens 3
+          :rationale "Calculates estimated token weight using subword length heuristics")
+    (:sym :name "is-keyword-token?" :kind :fn :tokens 3
+          :rationale "Checks if token represents an S-expression keyword starting with colon")
+    (:sym :name "is-delimiter-token?" :kind :fn :tokens 3
+          :rationale "Checks if token represents structural delimiter punctuation")
+    (:sym :name "is-literal-token?" :kind :fn :tokens 3
+          :rationale "Checks if token represents string numeric or boolean literal")
+    (:sym :name "clean-token-stream" :kind :fn :tokens 3
+          :rationale "Normalizes delimiters and extracts flat token stream from input text")
+    (:sym :name "compute-token-breakdown" :kind :fn :tokens 3
+          :rationale "Calculates counts across keyword identifier literal and delimiter categories")
+    (:sym :name "compute-word-frequencies" :kind :fn :tokens 3
+          :rationale "Aggregates unique word frequencies across token stream")
+    (:sym :name "sort-word-frequencies-desc" :kind :fn :tokens 4
+          :rationale "Sorts word frequencies descending from highest occurrence to lowest")
+    (:sym :name "take-top-frequencies" :kind :fn :tokens 3
+          :rationale "Extracts first n items from sorted frequency list")
+    (:sym :name "compute-token-profile" :kind :fn :tokens 3
+          :rationale "Analyzes input text and computes hierarchical token profile with top words from highest to lowest")
+    (:sym :name "format-word-frequency-asn" :kind :fn :tokens 4
+          :rationale "Formats single WordFrequency entry into canonical ASN")
+    (:sym :name "format-token-profile-asn" :kind :fn :tokens 4
+          :rationale "Formats complete TokenProfile into canonical ASN representation with top words")
   ]
 )
 

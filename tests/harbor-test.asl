@@ -6,6 +6,7 @@
       test-format-head-tail-banner
       test-make-environment-contract
       test-compute-bench-metrics
+      test-make-stage-prompt
       run-tests]
   :i [(asl-harness/harbor :a hb)
       (asl-harness/modal-bench :a mb)])
@@ -85,6 +86,30 @@
     (assert (string-contains? empty-metrics ":pass-rate-pct 0.0") "empty pass rate 0.0")
     true))
 
+(df test-make-stage-prompt [] -> Bool
+  (let [(p1 (hb/make-stage-prompt "s1-ingest" "Fix python bug" (list)))
+        (p2 (hb/make-stage-prompt "s2-reformulate" "" (list)))
+        (p3 (hb/make-stage-prompt "s3-intent-gate" "" (list "missing arg")))
+        (p4 (hb/make-stage-prompt "s4-plan" "" (list)))
+        (p5 (hb/make-stage-prompt "s5-plan-gate" "" (list "missing edge case")))
+        (p6 (hb/make-stage-prompt "s6-implement" "" (list)))
+        (p7 (hb/make-stage-prompt "s7-verify" "" (list)))]
+    (assert (string-contains? p1 "STAGE 1/7") "s1 contains header")
+    (assert (string-contains? p1 "asl rpc") "s1 guides asl rpc")
+    (assert (string-contains? p2 "STAGE 2/7") "s2 contains header")
+    (assert (string-contains? p2 "PRESERVATION INVARIANTS") "s2 contains preservation")
+    (assert (string-contains? p3 "STAGE 3/7") "s3 contains header")
+    (assert (string-contains? p3 "- missing arg") "s3 lists omissions")
+    (assert (string-contains? p4 "STAGE 4/7") "s4 contains header")
+    (assert (string-contains? p4 "ALL KNOWN UNKNOWNS") "s4 contains anks")
+    (assert (string-contains? p5 "STAGE 5/7") "s5 contains header")
+    (assert (string-contains? p5 "- missing edge case") "s5 lists issues")
+    (assert (string-contains? p6 "STAGE 6/7") "s6 contains header")
+    (assert (string-contains? p6 "(:write") "s6 guides atomic write")
+    (assert (string-contains? p7 "STAGE 7/7") "s7 contains header")
+    (assert (string-contains? p7 "TASK_FINISHED_SUCCESS") "s7 defines victory marker")
+    true))
+
 (df run-tests [] -> Bool
   (do
     (test-make-baseline-env)
@@ -93,4 +118,5 @@
     (test-format-head-tail-banner)
     (test-make-environment-contract)
     (test-compute-bench-metrics)
+    (test-make-stage-prompt)
     true))

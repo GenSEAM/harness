@@ -1,6 +1,6 @@
 (module asl-harness/compactor
   :d "Context sliding-window compactor, code-fence stripper, and history truncator."
-  :x [strip-code-fences truncate-output compact-history extract-sexpr]
+  :x [strip-code-fences truncate-output compact-history extract-sexpr compact-receipt compact-at-watermark]
   :i [])
 
 (df strip-code-fences [(text Str)] -> Str
@@ -59,4 +59,14 @@
               (older (list-drop history keep-recent))
               (compacted-older (map compact-receipt older))]
           (list-concat recent compacted-older)))))
+
+(df compact-at-watermark [(history (List Str)) (current-tokens I64) (budget I64)] -> (List Str)
+  :d "Deterministically compacts conversational history based on token watermark thresholds: soft watermark (>=60%) keeps 5 recent turns, hard watermark (>=80%) aggressively keeps 2 recent turns."
+  (if (<= budget 0)
+      history
+      (let [(pct (/ (* current-tokens 100) budget))]
+        (cond
+          ((>= pct 80) (compact-history history 2))
+          ((>= pct 60) (compact-history history 5))
+          (:else history)))))
 
