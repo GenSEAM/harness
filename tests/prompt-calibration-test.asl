@@ -3,6 +3,7 @@
   :x [test-micro-affirmative-pass
       test-anti-pattern-contamination
       test-full-calibration-matrix
+      test-browser-calibration-matrix
       test-format-calibration-asn
       run-calibration-tests
       run-tests]
@@ -30,6 +31,16 @@
     (assert (= (.-optimal-strategy-micro m) "Pure Affirmative Schema") "optimal strategy matches")
     true))
 
+(df test-browser-calibration-matrix [] -> Bool
+  :d "Verifies focused browser model calibration matrix respecting 3B ceiling"
+  (let [(score-nano (pc/evaluate-strategy (pc/scale-nano) (pc/strat-affirmative)))
+        (m (pc/run-browser-model-calibration))]
+    (assert (>= (.-schema-pass-rate score-nano) 85.0) "Nano schema pass rate >= 85%")
+    (assert (.-recommended score-nano) "Nano affirmative strategy recommended")
+    (assert (= (list-length (.-scores m)) 9) "Browser calibration has 9 scores (3 models * 3 strategies)")
+    (assert (string-contains? (.-title m) "Browser-Targeted") "Title references browser targets")
+    true))
+
 (df test-format-calibration-asn [] -> Bool
   :d "Verifies serialization to canonical ASN format."
   (let [(m (pc/run-full-calibration))
@@ -44,6 +55,7 @@
     (test-micro-affirmative-pass)
     (test-anti-pattern-contamination)
     (test-full-calibration-matrix)
+    (test-browser-calibration-matrix)
     (test-format-calibration-asn)
     true))
 

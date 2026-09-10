@@ -1,0 +1,63 @@
+(:voice-pipeline-specification
+  :schema-version "1.0.0"
+  :agent "Aslany"
+  :paradigm "Voice-In Action-Out (TTS Pruned)"
+  :updated-at 1788890000000
+  :status "verified"
+
+  :audio-capture [
+    (:engine
+      :type :audio-worklet
+      :sample-rate 16000
+      :channels 1
+      :format :pcm-float32
+      :frame-size-ms 160
+      :buffer-strategy :ring-buffer-non-blocking)
+
+    (:state-machine
+      :states [:idle :recording-toggle :recording-hold :aborted :finalizing]
+      :timing-threshold-ms 250
+      :transitions [
+        (:on :pointerdown :action "Record start timestamp t0. If agent executing, signal pending abort.")
+        (:on :pointerup :action "If (t_up - t0) >= 250ms -> transition to :finalizing (Hold-to-Talk). Else remain in :recording-toggle.")
+        (:on :pointerdown-second :action "If in :recording-toggle -> transition to :finalizing (Click-to-Toggle).")
+        (:on :recording-stop :action "Synchronously dispatch AbortController signal to active agent task loops.")
+      ])
+
+    (:cancellation-protocol
+      :token "AbortController.signal"
+      :reason "user_mic_interrupted"
+      :scope [:cdp-actions :stream-generation :tool-dispatch]
+      :behavior "Immediate task drain, clear active action queue, reset DOM highlight state.")
+  ]
+
+  :asr-engine [
+    (:model
+      :id "parakeet-tdt-0.6b-v3"
+      :architecture "Token-and-Duration Transducer (TDT)"
+      :parameters "600M"
+      :quantization "INT8 / ONNX"
+      :memory-footprint-mb 600
+      :real-time-factor 0.04
+      :languages ["ru" "en" "de" "fr" "es" "it" "25-european-languages"]
+      :streaming-chunk-ms 160
+      :features [:automatic-language-detection :native-punctuation :zero-regex-cleanup]
+      :intake-route "Hanes Cognitive Gateway -> Raw Token Stream")
+  ]
+
+  :cognitive-routing [
+    (:intent-router
+      :model "aslany-micro:0.5b"
+      :dispatch-latency-ms 25
+      :routes [
+        (:route :information-query
+          :triggers ["что такое" "какой" "найди" "сравни" "what is" "find" "compare" "docs"]
+          :action :fast-search
+          :grounding :google-search-required)
+        (:route :browser-action
+          :triggers ["кликни" "открой" "заполни" "найди на странице" "click" "open" "fill" "scroll"]
+          :action :agent-action
+          :grounding :cdp-accessibility-tree)
+      ])
+  ]
+)

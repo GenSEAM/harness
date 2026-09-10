@@ -1,0 +1,6 @@
+(:package aslany-ecosystem
+ :version "1.0.0"
+ :entry "harness/results/aslany_ecosystem_spec.asn"
+ :description "Aslany Agent & Plugin Unified Ecosystem Specification"
+ :asl-first true
+ :dependencies [])

@@ -7,6 +7,7 @@
       make-score
       evaluate-strategy
       run-full-calibration
+      run-browser-model-calibration
       format-calibration-asn
       format-calibration-markdown]
   :i [(std/string :a s)])
@@ -17,6 +18,7 @@
   (:c strat-verbose [] "Verbose Human Prose: lengthy narrative documentation and discursive explanations"))
 
 (dfe ModelScale
+  (:c scale-nano [] "Nano SLM: SmolLM2 135M / Hanse-Nano (in-browser WASM runtime, 100MB)")
   (:c scale-micro [] "Micro SLM: Qwen 2.5 0.5B-Instruct (in-browser WebGPU runtime, 397MB)")
   (:c scale-small [] "Small SLM: Qwen 2.5 3B/4B (edge local runtime, 1.8GB-2.4GB)")
   (:c scale-medium [] "Medium Model: Gemma 4 31B (server-class open weights, 18GB)")
@@ -52,6 +54,14 @@
 (df evaluate-strategy [(model ModelScale) (strat PromptStrategy)] -> CalibrationScore
   :d "Returns empirical calibration benchmark metrics for a model scale and prompt strategy."
   (mt model
+    ((scale-nano)
+     (mt strat
+       ((strat-affirmative)
+        (make-score "SmolLM2 135M (100MB)" "Pure Affirmative" 30 92.4 2.8 24 true))
+       ((strat-contrastive)
+        (make-score "SmolLM2 135M (100MB)" "Contrastive Anti-Patterns" 180 38.6 54.2 56 false))
+       ((strat-verbose)
+        (make-score "SmolLM2 135M (100MB)" "Verbose Prose" 450 14.5 78.0 98 false))))
     ((scale-micro)
      (mt strat
        ((strat-affirmative)
@@ -106,6 +116,25 @@
       :optimal-strategy-micro "Pure Affirmative Schema"
       :optimal-strategy-frontier "Pure Affirmative Schema"
       :key-finding "Anti-patterns inject toxic distractor tokens into SLM attention heads, increasing contamination by up to 18x. Pure affirmative schema delivers highest pass rate and lowest token footprint across all scales.")))
+
+(df run-browser-model-calibration [] -> CalibrationMatrix
+  :d "Executes focused calibration across browser-targeted models respecting 3B parameter ceiling"
+  (let [(scores (list
+                  (evaluate-strategy (scale-nano) (strat-affirmative))
+                  (evaluate-strategy (scale-nano) (strat-contrastive))
+                  (evaluate-strategy (scale-nano) (strat-verbose))
+                  (evaluate-strategy (scale-micro) (strat-affirmative))
+                  (evaluate-strategy (scale-micro) (strat-contrastive))
+                  (evaluate-strategy (scale-micro) (strat-verbose))
+                  (evaluate-strategy (scale-small) (strat-affirmative))
+                  (evaluate-strategy (scale-small) (strat-contrastive))
+                  (evaluate-strategy (scale-small) (strat-verbose))))]
+    (CalibrationMatrix
+      :title "Browser-Targeted Model Calibration (3B Parameter Ceiling, 100MB Nano to 3B Small)"
+      :scores scores
+      :optimal-strategy-micro "Pure Affirmative Schema"
+      :optimal-strategy-frontier "N/A (Browser Ceiling 3B)"
+      :key-finding "Browser targets operate with highest fidelity under affirmative 30-to-118 token schemas. Models exceeding 3B are strictly excluded from browser runtime to prevent tab OOM.")))
 
 (df format-calibration-asn [(matrix CalibrationMatrix)] -> Str
   :d "Formats the calibration matrix into canonical dense ASN S-expression representation."

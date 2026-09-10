@@ -10,6 +10,7 @@
       test-scalar-loss-and-progress
       test-continuous-gradient-directional-signal
       test-tiered-calibration-tasks
+      test-browser-ceiling-and-nano-tasks
       run-tests]
   :i [(model_calibration :a mc)])
 
@@ -235,6 +236,30 @@
       (assert (= (.-task-id first-hard) "IMPOSSIBLE-DISTRIB-CONSENSUS-01") "First hard task must be IMPOSSIBLE-DISTRIB-CONSENSUS-01")
       true)))
 
+(df test-browser-ceiling-and-nano-tasks [] -> Bool
+  :d "Verifies nano and browser calibration tasks and 3B browser ceiling enforcement"
+  (let [(nano-tasks (mc/nano-calibration-tasks))
+        (browser-tasks (mc/browser-calibration-tasks))
+        (nano-via-tier (mc/tasks-for-tier "nano"))
+        (browser-via-tier (mc/tasks-for-tier "browser"))
+        (first-nano (option-or (list-head nano-tasks) (mc/make-canary-task "" "" "" 0 (list) (list))))
+        (first-browser (option-or (list-head browser-tasks) (mc/make-canary-task "" "" "" 0 (list) (list))))]
+    (do
+      (assert (= (list-length nano-tasks) 3) "Nano suite must have 3 canary tasks")
+      (assert (= (list-length browser-tasks) 4) "Browser suite must have 4 canary tasks")
+      (assert (= (list-length nano-via-tier) 3) "Tier nano must return 3 tasks")
+      (assert (= (list-length browser-via-tier) 4) "Tier browser must return 4 tasks")
+      (assert (= (.-task-id first-nano) "NANO-TAG-01") "First nano task must be NANO-TAG-01")
+      (assert (= (.-task-id first-browser) "BROWSER-DOM-01") "First browser task must be BROWSER-DOM-01")
+      (assert (mc/enforce-browser-model-ceiling "SmolLM-135M") "100MB model allowed")
+      (assert (mc/enforce-browser-model-ceiling "Qwen2.5-0.5B") "0.5B model allowed")
+      (assert (mc/enforce-browser-model-ceiling "Qwen2.5-1.5B") "1.5B model allowed")
+      (assert (mc/enforce-browser-model-ceiling "Qwen2.5-3B") "3B ceiling model allowed")
+      (assert (not (mc/enforce-browser-model-ceiling "Qwen2.5-7B")) "7B rejected")
+      (assert (not (mc/enforce-browser-model-ceiling "Gemma-2-9B")) "9B rejected")
+      (assert (not (mc/enforce-browser-model-ceiling "Gemma-4-31B")) "31B rejected")
+      true)))
+
 (df run-tests [] -> Bool
   :d "Executes full model calibration test suite."
   (and (test-canary-tasks-construction)
@@ -246,4 +271,5 @@
                                 (and (test-ctrf-summary-parsing)
                                      (and (test-scalar-loss-and-progress)
                                           (and (test-continuous-gradient-directional-signal)
-                                               (test-tiered-calibration-tasks)))))))))))
+                                               (and (test-tiered-calibration-tasks)
+                                                    (test-browser-ceiling-and-nano-tasks))))))))))))

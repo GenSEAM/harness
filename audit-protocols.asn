@@ -69,6 +69,12 @@
       :description "Implementations that solve a local requirement in a manner contrary to recorded decisions in intent.asn."
       :detection-rule "Cross-reference target module with matching ADR in .asl/mem/decisions/."
       :severity "high")
+
+    (:category :id "unregistered-binary-anomaly"
+      :title "Unregistered Binary & Tooling Anomaly (Недекларированные утилиты и бинарники)"
+      :description "Invocations of host binaries or third-party tools (nc, curl, node, powershell) that are not declared in .asl.config.asn binary whitelist."
+      :detection-rule "Statically scan shell scripts and execution dispatchers against .asl.config.asn[:binary-whitelist]; flag unauthorized binary invocations."
+      :severity "critical")
   ]
 
   ;; 3. Intent Rationalization Rubric
@@ -86,7 +92,7 @@
       :rule "Every reported finding must cite exact file path and line number backed by AST facts.")
     (:criterion :id "completeness"
       :name "Taxonomy Completeness"
-      :rule "Audit must verify all 6 incongruity classes, specifically testing for temporary crutches.")
+      :rule "Audit must verify all 7 incongruity classes, specifically testing for temporary crutches and unregistered binaries.")
     (:criterion :id "anti-rubber-stamp"
       :name "Anti-Rubber-Stamping"
       :rule "Auditor must adopt an adversarial posture and reject vacuous agreements.")

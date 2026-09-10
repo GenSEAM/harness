@@ -1,0 +1,74 @@
+(:aslany-ecosystem-specification
+  :schema-version "1.0.0"
+  :brand "Aslany"
+  :tagline "ASL for Anything — Sovereign Voice Agent & In-Browser Plugin"
+  :updated-at 1788891000000
+  :status "verified"
+
+  :entities [
+    (:entity
+      :id "aslany-agent"
+      :kind :agent
+      :name "Aslany Agent"
+      :role "Cognitive Operator, Intent Router & Task Presets Orchestrator"
+      :substrate "Hanes Cognitive Engine / WebGPU In-Browser Runtime"
+      :engine [
+        (:router
+          :model-id "aslany-micro:0.5b"
+          :family "Qwen2.5-Coder"
+          :latency-ms 25
+          :routes [
+            (:route :fast-search :target "Web Search & Fact Grounding")
+            (:route :agent-action :target "Autonomous Browser DOM & CDP Execution")
+          ])
+        (:brain
+          :model-id "aslany-flagship:3b"
+          :family "Qwen2.5-Coder"
+          :vram-ceiling-mb 2150
+          :temperature 0.2
+          :context-budget 2048
+          :strategy :agent-directed)
+      ]
+      :presets [
+        (:preset :id "preset-fast-search" :layout :compact-card :action "Direct answer + bullet facts + live source links")
+        (:preset :id "preset-agent-action" :layout :timeline-stepper :action "CDP step timeline with instant abort button")
+        (:preset :id "preset-deep-synthesis" :layout :multi-column-digest :action "Multi-column comparison matrix + verified assertions")
+        (:preset :id "preset-code-patch" :layout :syntax-isolated :action "Compiler-verified AST code block without placeholders")
+      ]
+      :memory-protocol [
+        (:facts-ledger :mode :scalar-state-append :token-cap 200)
+        (:history-policy :mode :rolling-receipts :keep-recent 1)
+        (:deliberation :mode :affirmative-strictly-no-negations)
+      ])
+
+    (:entity
+      :id "aslany-plugin"
+      :kind :plugin
+      :name "Aslany Plugin"
+      :role "Manifest V3 Browser Extension, AudioWorklet Capture & CDP Bridge"
+      :substrate "Chromium Extension (SidePanel / Background Service Worker)"
+      :manifest-v3 [
+        (:permissions ["activeTab" "storage" "scripting" "debugger" "sidePanel"])
+        (:host-permissions ["<all_urls>"])
+        (:background (:service-worker "dist/background.js" :type "module"))
+        (:side-panel (:default-path "src/sidepanel.html"))
+        (:content-scripts [(:matches ["<all_urls>"] :js ["dist/content.js"] :run-at "document_idle")])
+      ]
+      :audio-capture [
+        (:worklet :sample-rate 16000 :channels 1 :format :pcm-float32 :frame-ms 160)
+        (:state-machine :modes [:click-to-toggle :hold-to-talk] :threshold-ms 250)
+        (:abort-controller :trigger :recording-stop :target :running-agent-tasks)
+      ]
+      :dom-pipeline [
+        (:compactor :mode :accessibility-tree :target-token-ceiling 800 :node-refs "@eN")
+        (:cdp-dispatcher :actions [:click :type :scroll :navigate :eval])
+      ])
+  ]
+
+  :coherence-invariants [
+    (:invariant :single-brand "Both agent and plugin share the canonical name Aslany")
+    (:invariant :voice-in-action-out "Audio intake via Parakeet-TDT-v3 without TTS overhead")
+    (:invariant :browser-ceiling "Total VRAM consumption strictly under 2500MB")
+    (:invariant :zero-unclosed-parens "All generated commands conform to balanced ASN syntax")
+  ]
+)

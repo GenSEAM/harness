@@ -213,11 +213,11 @@
     (:sym :name "evaluate-command-safety" :kind :fn :tokens 3
           :rationale "Validates shell commands against dangerous execution patterns")
     (:sym :name "audit-action" :kind :fn :tokens 2)
-    (:sym :name "test-path-traversal-blocked" :kind :fn :tokens 4
+    (:sym :name "TestPathTraversalBlocked" :kind :fn :tokens 4
           :rationale "Unit test asserting path traversal attempts are blocked")
-    (:sym :name "test-dangerous-cmd-blocked" :kind :fn :tokens 4
+    (:sym :name "TestDangerousCmdBlocked" :kind :fn :tokens 4
           :rationale "Unit test asserting dangerous shell commands are blocked")
-    (:sym :name "test-allowed-sandbox-path" :kind :fn :tokens 4
+    (:sym :name "TestAllowedSandboxPath" :kind :fn :tokens 4
           :rationale "Unit test asserting safe paths within workspace are allowed")
     (:sym :name "FsmState" :kind :enum :tokens 2)
     (:sym :name "FsmResult" :kind :struct :tokens 2)
@@ -836,17 +836,17 @@
           :rationale "Renders a comprehensive markdown diagnosis report")
     (:sym :name "test-plugin-registry-creation" :kind :fn :tokens 4
           :rationale "Unit test verifying assembly of standard built-in harness plugins")
-    (:sym :name "test-doctor-clean-baseline" :kind :fn :tokens 4
+    (:sym :name "TestDoctorCleanBaseline" :kind :fn :tokens 4
           :rationale "Unit test verifying default standard plugins pass doctor inspection with 100 percent health")
-    (:sym :name "test-doctor-detect-tool-collision" :kind :fn :tokens 5
+    (:sym :name "TestDoctorDetectToolCollision" :kind :fn :tokens 5
           :rationale "Unit test verifying detection of duplicate tool names across plugins")
-    (:sym :name "test-doctor-detect-missing-dependency" :kind :fn :tokens 5
+    (:sym :name "TestDoctorDetectMissingDependency" :kind :fn :tokens 5
           :rationale "Unit test verifying detection of unfulfilled plugin dependencies")
-    (:sym :name "test-doctor-detect-prompt-contradiction" :kind :fn :tokens 5
+    (:sym :name "TestDoctorDetectPromptContradiction" :kind :fn :tokens 5
           :rationale "Unit test verifying detection of contradictory prompt directives")
-    (:sym :name "test-doctor-llm-chain-fast-path-skip" :kind :fn :tokens 7
+    (:sym :name "TestDoctorLlmChainFastPathSkip" :kind :fn :tokens 7
           :rationale "Unit test verifying that healthy setup skips LLM inspection with zero token cost")
-    (:sym :name "test-doctor-llm-chain-activation-on-issues" :kind :fn :tokens 7
+    (:sym :name "TestDoctorLlmChainActivationOnIssues" :kind :fn :tokens 7
           :rationale "Unit test verifying that LLM chain inspector is triggered when issues exist")
     (:sym :name "test-format-doctor-report" :kind :fn :tokens 4
           :rationale "Unit test verifying markdown formatting of doctor diagnosis report")
@@ -1460,6 +1460,37 @@
           :rationale "Formats single WordFrequency entry into canonical ASN")
     (:sym :name "format-token-profile-asn" :kind :fn :tokens 4
           :rationale "Formats complete TokenProfile into canonical ASN representation with top words")
+    (:sym :name "BrowserExecutionContext" :kind :type :tokens 3
+          :rationale "Browser execution context profile")
+    (:sym :name "DynamicHarnessRoute" :kind :type :tokens 3
+          :rationale "Dynamic capability routing decision")
+    (:sym :name "SpecializedHarnessPreset" :kind :type :tokens 3
+          :rationale "Preconfigured specialized affirmative harness profile")
+    (:sym :name "PresetExecutionPlan" :kind :type :tokens 3
+          :rationale "Execution plan for browser demonstration preset")
+    (:sym :name "TranspiledOutput" :kind :type :tokens 2)
+    (:sym :name "ThreadProfileMetrics" :kind :type :tokens 3
+          :rationale "Execution thread context performance telemetry")
+    (:sym :name "make-browser-execution-context" :kind :fn :tokens 4
+          :rationale "Constructs a browser execution context")
+    (:sym :name "make-dynamic-harness-route" :kind :fn :tokens 4
+          :rationale "Constructs a dynamic harness route record")
+    (:sym :name "route-dynamic-harness" :kind :fn :tokens 3
+          :rationale "Routes capability to calibrated tier and harness")
+    (:sym :name "make-specialized-harness-preset" :kind :fn :tokens 4
+          :rationale "Constructs a specialized harness preset specification")
+    (:sym :name "generate-preset-execution-plan" :kind :fn :tokens 4
+          :rationale "Generates execution plan with calibrated route for preset")
+    (:sym :name "evaluate-execution-thread-profile" :kind :fn :tokens 4
+          :rationale "Evaluates thread context performance characteristics")
+    (:sym :name "transpile-preset-to-browser" :kind :fn :tokens 4
+          :rationale "Transpiles raw ASN model output into browser markup")
+    (:sym :name "format-dynamic-route-asn" :kind :fn :tokens 4
+          :rationale "Formats dynamic route as canonical ASN")
+    (:sym :name "format-preset-plan-asn" :kind :fn :tokens 4
+          :rationale "Formats preset execution plan as canonical ASN")
+    (:sym :name "format-thread-profile-asn" :kind :fn :tokens 4
+          :rationale "Formats thread profile telemetry as canonical ASN")
   ]
 )
 

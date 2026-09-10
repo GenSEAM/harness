@@ -1,0 +1,79 @@
+(:task-rendering-presets
+  :schema-version "1.0.0"
+  :agent "Aslany"
+  :updated-at 1788890000000
+  :status "verified"
+
+  :presets [
+    (:preset
+      :id "preset-fast-search"
+      :tag :fast-search
+      :title "Fast Grounded Search & Fact Synthesis"
+      :target-usecase "Live documentation lookup, library release checks, pricing, entity facts"
+      :layout :compact-card
+      :components [
+        (:comp :direct-answer :weight :bold :position :top "Immediate 1-2 sentence core conclusion")
+        (:comp :bullet-digest :format :markdown-list "Concise key facts, breaking changes, or code snippets")
+        (:comp :source-citations :format :inline-links "Verified clickable primary source links")
+        (:comp :telemetry-badge :format :compact "Display TTFT, search latency, and source count")
+      ]
+      :runtime-bounds [
+        (:bound :max-tokens 350)
+        (:bound :target-ttft-ms 180)
+        (:bound :search-depth :top-3-snippets)
+      ])
+
+    (:preset
+      :id "preset-agent-action"
+      :tag :agent-action
+      :title "Autonomous Browser Operator & CDP Step Timeline"
+      :target-usecase "Clicking buttons, filling inputs, form submission, web scraping, tab navigation"
+      :layout :timeline-stepper
+      :components [
+        (:comp :current-goal :format :callout "Active high-level user objective")
+        (:comp :step-list :format :ordered-stepper "Sequential list of past and planned action steps")
+        (:comp :active-step :format :highlight "Current active CDP action with target element @eN")
+        (:comp :abort-control :format :button "Instant Stop / Cancel action button wired to AbortController")
+        (:comp :receipt-badge :format :mono-tag "Verified completion status (:ok or :failed)")
+      ]
+      :runtime-bounds [
+        (:bound :max-action-steps 12)
+        (:bound :step-timeout-ms 5000)
+        (:bound :dom-budget-tokens 800)
+      ])
+
+    (:preset
+      :id "preset-deep-synthesis"
+      :tag :deep-synthesis
+      :title "Multi-Column Comparative Analysis & Fact Matrix"
+      :target-usecase "Architecture trade-offs, model benchmarks, comparative framework matrices"
+      :layout :multi-column-digest
+      :components [
+        (:comp :executive-summary :format :callout "High-SNR synthesis of recommendations")
+        (:comp :comparison-matrix :format :markdown-table "Structured multi-dimensional feature table")
+        (:comp :verified-assertions :format :checklist "Empirically validated claims with receipts")
+        (:comp :open-questions :format :bullet-list "Borderline cases or unresolved ambiguities")
+      ]
+      :runtime-bounds [
+        (:bound :max-tokens 1200)
+        (:bound :target-ttft-ms 400)
+      ])
+
+    (:preset
+      :id "preset-code-patch"
+      :tag :code-patch
+      :title "Compiler-Verified Code Block & AST Replacement"
+      :target-usecase "Code snippets, configuration files, ASL AST patches, shell one-liners"
+      :layout :syntax-isolated
+      :components [
+        (:comp :file-target :format :clickable-link "Full target file path and symbol anchor")
+        (:comp :code-canvas :format :syntax-highlighted "Production-ready, runnable code without placeholders")
+        (:comp :copy-action :format :button "Single-click clipboard copy with verification checksum")
+        (:comp :verification-gate :format :badge "Local compiler verification status (:check-passed true)")
+      ]
+      :runtime-bounds [
+        (:bound :max-tokens 800)
+        (:bound :forbid-placeholders true)
+      ])
+  ]
+)

@@ -9,11 +9,14 @@
       make-canary-task
       canonical-canary-tasks
       slm-calibration-tasks
+      nano-calibration-tasks
+      browser-calibration-tasks
       medium-calibration-tasks
       frontier-calibration-tasks
       super-hard-calibration-tasks
       full-spectrum-canary-tasks
       tasks-for-tier
+      enforce-browser-model-ceiling
       compute-pareto-score
       compute-gradient-pareto-score
       compute-loss-progress
@@ -154,9 +157,52 @@
                             (list-append (frontier-calibration-tasks)
                                          (super-hard-calibration-tasks)))))
 
+(df nano-calibration-tasks [] -> (List CanaryTask)
+  :d "Constructs 3 ultra-lightweight canary tasks for 100MB nano models"
+  (let [(b-sys (ca/make-context-block "sys" "sys-mandate" 25 "Nano Classifier"))
+        (b-tag (ca/make-context-block "tag" "tag-spec" 30 "Classify token [fact: tag-intent-read]"))
+        (t1 (make-canary-task "NANO-TAG-01" "Single Token Classify" "classification" 2 (list b-sys b-tag) (list "tag-intent-read")))
+        (b-mat (ca/make-context-block "mat" "match-spec" 35 "Match regex token [fact: match-sym-ident]"))
+        (t2 (make-canary-task "NANO-MATCH-02" "Regex Token Match" "pattern-match" 2 (list b-sys b-mat) (list "match-sym-ident")))
+        (b-cnt (ca/make-context-block "cnt" "count-spec" 30 "Count parens balance [fact: count-parens-1]"))
+        (t3 (make-canary-task "NANO-COUNT-03" "Paren Delimiter Count" "delimiter" 2 (list b-sys b-cnt) (list "count-parens-1")))]
+    (list t1 t2 t3)))
+
+(df browser-calibration-tasks [] -> (List CanaryTask)
+  :d "Constructs 4 specialized tasks targeting browser-runnable models under 3B parameter ceiling"
+  (let [(b-sys (ca/make-context-block "sys" "sys-mandate" 40 "Browser SLM Agent"))
+        (b-dom (ca/make-context-block "dom" "dom-spec" 65 "Resolve DOM selector [fact: dom-selector-query]"))
+        (t1 (make-canary-task "BROWSER-DOM-01" "DOM Selector Resolution" "dom-query" 2 (list b-sys b-dom) (list "dom-selector-query")))
+        (b-act (ca/make-context-block "act" "act-spec" 55 "Affirmative 4-tool action dispatch [fact: affirm-action-valid]"))
+        (t2 (make-canary-task "BROWSER-ACT-02" "Affirmative Action Dispatch" "affirmative-tool" 2 (list b-sys b-act) (list "affirm-action-valid")))
+        (b-toy (ca/make-context-block "toy" "toy-spec" 70 "Simulate cellular automata grid step [fact: toy-life-step-ok]"))
+        (t3 (make-canary-task "BROWSER-TOY-03" "Interactive Toy Simulation Step" "toy-sim" 3 (list b-sys b-toy) (list "toy-life-step-ok")))
+        (b-vdom (ca/make-context-block "vdom" "vdom-spec" 75 "Emit reactive VDOM element form [fact: vdom-render-pure]"))
+        (t4 (make-canary-task "BROWSER-VDOM-04" "Reactive VDOM Form Generation" "vdom-render" 3 (list b-sys b-vdom) (list "vdom-render-pure")))]
+    (list t1 t2 t3 t4)))
+
+(df enforce-browser-model-ceiling [(model-name Str)] -> Bool
+  :d "Enforces strict 3-billion parameter ceiling rejecting 7B, 9B, and larger models for browser targets"
+  (if (or (string-contains? model-name "7B")
+      (or (string-contains? model-name "7b")
+      (or (string-contains? model-name "8B")
+      (or (string-contains? model-name "8b")
+      (or (string-contains? model-name "9B")
+      (or (string-contains? model-name "9b")
+      (or (string-contains? model-name "14B")
+      (or (string-contains? model-name "14b")
+      (or (string-contains? model-name "31B")
+      (or (string-contains? model-name "31b")
+      (or (string-contains? model-name "70B")
+          (string-contains? model-name "70b"))))))))))))
+    false
+    true))
+
 (df tasks-for-tier [(tier Str)] -> (List CanaryTask)
-  :d "Routes to specialized canary tasks based on model scale tier (slm, medium, frontier, impossible, all, or canonical)"
+  :d "Routes to specialized canary tasks based on model scale tier (nano, browser, slm, medium, frontier, impossible, all, or canonical)"
   (cond
+    ((= tier "nano") (nano-calibration-tasks))
+    ((= tier "browser") (browser-calibration-tasks))
     ((= tier "slm") (slm-calibration-tasks))
     ((= tier "medium") (medium-calibration-tasks))
     ((= tier "frontier") (frontier-calibration-tasks))

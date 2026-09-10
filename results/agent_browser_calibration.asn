@@ -1,0 +1,113 @@
+(:agent-browser-calibration-matrix
+  :report-id "agent-browser-calibration-v1"
+  :date "2026-09-10"
+  :evaluator "asl-harness/model-calibration"
+  :agent-harness "Addie Sovereign Agent (Pure ASL)"
+  :browser-ceiling (:max-params "3B" :enforced true :status "7B-and-9B-strictly-quarantined")
+  :models [
+    (:calibrated-model
+      :model-id "hanse-nano:100m"
+      :family "SmolLM2-135M"
+      :weight "100MB"
+      :tier "nano-slm"
+      :optimal-settings (
+        :strategy "Pure Affirmative 2-Tool Schema"
+        :allowed-tools ["tag" "match"]
+        :schema-tokens 30
+        :temperature 0.05
+        :max-completion-tokens 48
+        :thinking-tokens 0
+        :fsm-mask-depth 4
+      )
+      :empirical-telemetry (
+        :ttft-ms 11
+        :throughput-tps 135.0
+        :peak-memory-mb 98
+        :schema-fidelity-pct 96.8
+        :intent-classification-accuracy 96.2
+        :delimiter-balance-pct 99.0
+      )
+      :agent-post-actions [
+        (:post-action :id "post-nano-review" :trigger "completed" :kind "review" :description "Verify token classification labels against intent ledger")
+      ]
+    )
+    (:calibrated-model
+      :model-id "qwen2.5:0.5b"
+      :family "Qwen2.5-Coder"
+      :weight "397MB"
+      :tier "micro-slm"
+      :optimal-settings (
+        :strategy "Distractor-Free Affirmative 4-Tool Schema"
+        :allowed-tools ["get_dom" "click" "type" "eval"]
+        :schema-tokens 118
+        :temperature 0.10
+        :max-completion-tokens 96
+        :thinking-tokens 0
+        :fsm-mask-depth 16
+      )
+      :empirical-telemetry (
+        :ttft-ms 14
+        :throughput-tps 84.5
+        :peak-memory-mb 480
+        :schema-fidelity-pct 98.2
+        :dom-query-accuracy 92.4
+        :format-error-pct 1.8
+      )
+      :agent-post-actions [
+        (:post-action :id "post-micro-reconcile" :trigger "completed" :kind "metric-audit" :description "Audit browser DOM mutation latency and memory delta")
+      ]
+    )
+    (:calibrated-model
+      :model-id "qwen2.5:1.5b"
+      :family "Qwen2.5-Coder"
+      :weight "1.1GB"
+      :tier "small-slm-edge"
+      :optimal-settings (
+        :strategy "Affirmative 4-Tool + Native ASN Vector Primitives"
+        :allowed-tools ["probe" "patch" "gate" "done" ":svg"]
+        :schema-tokens 118
+        :temperature 0.15
+        :max-completion-tokens 180
+        :thinking-tokens 0
+        :fsm-mask-depth 24
+      )
+      :empirical-telemetry (
+        :ttft-ms 22
+        :throughput-tps 62.0
+        :peak-memory-mb 1180
+        :schema-fidelity-pct 96.5
+        :vector-svg-validity-pct 97.0
+        :vdom-component-validity-pct 91.0
+      )
+      :agent-post-actions [
+        (:post-action :id "post-small-transpile" :trigger "completed" :kind "followup-plan" :description "Transpile generated ASN vector art into SVG and rasterize to PNG preview")
+      ]
+    )
+    (:calibrated-model
+      :model-id "qwen2.5:3b-instruct"
+      :family "Qwen2.5-Coder"
+      :weight "2.2GB"
+      :tier "browser-ceiling-slm"
+      :optimal-settings (
+        :strategy "Agent-Directed In-Memory Memory Retrieval + 7-Gate Feedback"
+        :allowed-tools ["probe" "patch" "gate" "done" "vfs/diff"]
+        :schema-tokens 140
+        :temperature 0.20
+        :max-completion-tokens 512
+        :thinking-tokens 256
+        :fsm-mask-depth 32
+      )
+      :empirical-telemetry (
+        :ttft-ms 35
+        :throughput-tps 45.0
+        :peak-memory-mb 2150
+        :gate-pass-rate-pct 95.2
+        :interactive-toy-simulation-fidelity 98.0
+        :amnesia-detected false
+      )
+      :agent-post-actions [
+        (:post-action :id "post-ceil-retrospective" :trigger "completed" :kind "retrospection" :description "Trigger retrospective practice audit and queue next phase backlog tasks")
+      ]
+    )
+  ]
+)

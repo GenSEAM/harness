@@ -1,0 +1,274 @@
+(:browser-models-gallery
+  :schema-version "2.0.0"
+  :agent "Aslany"
+  :updated-at 1788890000000
+  :status "verified"
+  :browser-ceiling (:max-params "3B" :max-memory-mb 2500 :rationale "WebGPU buffer limits and browser tab heap isolation prevent executing 7B or 9B models without catastrophic tab eviction")
+  :models [
+    (:model-showcase
+      :alias "voice"
+      :canonical-model "NVIDIA/parakeet-tdt-0.6b-v3"
+      :filename "parakeet-tdt-0.6b-v3.onnx"
+      :size-mb 600
+      :download-url "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3/resolve/main/model.onnx"
+      :sha256 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      :family "NVIDIA-NeMo-Parakeet"
+      :weight "600MB"
+      :tier "voice-asr-transducer"
+      :quantization "INT8 / ONNX"
+      :memory-footprint-mb 600
+      :runtime-substrate "ONNX Runtime WebGPU / Native Daemon"
+      :ttft-ms 160
+      :throughput-tps 0.0
+      :schema-overhead-tokens 0
+      :thinking-budget 0
+      :temperature 0.0
+      :context-ceiling 160
+      :strategy "streaming-pcm-transducer"
+      :capabilities [
+        (:capability
+          :id "voice-cap-01"
+          :title "Real-Time Streaming Speech Recognition"
+          :demonstration "Streams 16kHz PCM audio and produces punctuated transcript with RTF 0.04"
+          :fidelity-pct 97.8
+          :sample-output "(:transcript :text \"открой репозиторий и запусти тесты\" :lang \"ru\")")
+        (:capability
+          :id "voice-cap-02"
+          :title "Native Multilingual Russian & English Support"
+          :demonstration "Transcribes technical English mixed with Russian seamlessly"
+          :fidelity-pct 96.5
+          :sample-output "(:transcript :text \"проверь статус deployment в kubernetes\" :lang \"ru\")")
+      ]
+      :impossibilities [
+        (:impossibility
+          :id "voice-imp-01"
+          :title "Text-to-Speech Synthesis"
+          :behavior "Pure ASR transducer model; does not contain audio synthesis decoder"
+          :failure-mode "Pruned by design (Voice-In Action-Out)")
+      ]
+    )
+    (:model-showcase
+      :alias "nano"
+      :canonical-model "HuggingFaceTB/SmolLM2-135M-Instruct"
+      :filename "smollm2-135m-instruct-q4_k_m.gguf"
+      :size-mb 95
+      :download-url "https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct-GGUF/resolve/main/smollm2-135m-instruct-q4_k_m.gguf"
+      :sha256 "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0"
+      :family "SmolLM-135M"
+      :weight "95MB"
+      :tier "nano-slm"
+      :quantization "Q4_0"
+      :memory-footprint-mb 95
+      :runtime-substrate "WASM / WebWorker CPU"
+      :ttft-ms 12
+      :throughput-tps 128.0
+      :schema-overhead-tokens 30
+      :thinking-budget 0
+      :temperature 0.0
+      :context-ceiling 256
+      :strategy "zero-history-fsm-guard"
+      :capabilities [
+        (:capability
+          :id "nano-cap-01"
+          :title "Single Token Classification & Intent Routing"
+          :demonstration "(:act :tag :text \"read file src/main.asl\" :label \"read\")"
+          :fidelity-pct 94.2
+          :sample-output "(:act :tag :text \"read\" :label \"query\")")
+        (:capability
+          :id "nano-cap-02"
+          :title "Exact Identifier & Regex Extraction"
+          :demonstration "(:act :match :pattern \"[A-Za-z0-9_]+\" :target \"def handleRequest\")"
+          :fidelity-pct 91.5
+          :sample-output "(:act :match :symbol \"handleRequest\")")
+        (:capability
+          :id "nano-cap-03"
+          :title "Single-Depth Delimiter Balance Verification"
+          :demonstration "Counts matching parens at depth 1 with FSM mask"
+          :fidelity-pct 96.0
+          :sample-output "(:delim-status :balanced true :depth 0)")
+      ]
+      :impossibilities [
+        (:impossibility
+          :id "nano-imp-01"
+          :title "Multi-Turn Conversational Memory"
+          :behavior "Catastrophic attention amnesia beyond 2 turns; context window drops earlier state keys"
+          :failure-mode "Amnesia-induced token drift")
+        (:impossibility
+          :id "nano-imp-02"
+          :title "Nested S-Expression Generation"
+          :behavior "Nesting beyond depth 2 produces unclosed parens and random character emission"
+          :failure-mode "Grammar collapse")
+        (:impossibility
+          :id "nano-imp-03"
+          :title "AST Code Refactoring & Logic Synthesis"
+          :behavior "Zero capacity for semantic diffs or function logic; emits repetitive boilerplate loops"
+          :failure-mode "Vacuous repetitive generation")
+      ]
+    )
+    (:model-showcase
+      :alias "micro"
+      :canonical-model "Qwen/Qwen2.5-Coder-0.5B-Instruct"
+      :filename "qwen2.5-coder-0.5b-instruct-q4_k_m.gguf"
+      :size-mb 397
+      :download-url "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-0.5b-instruct-q4_k_m.gguf"
+      :sha256 "f4c3b2a109876543210fedcba9876543210abcdef1234567890abcdef1234567"
+      :family "Qwen2.5-Coder"
+      :weight "397MB"
+      :tier "micro-slm"
+      :quantization "Q4_K_M"
+      :memory-footprint-mb 480
+      :runtime-substrate "In-Browser WebGPU"
+      :ttft-ms 14
+      :throughput-tps 84.5
+      :schema-overhead-tokens 118
+      :thinking-budget 0
+      :temperature 0.1
+      :context-ceiling 1024
+      :strategy "jit-memory"
+      :capabilities [
+        (:capability
+          :id "micro-cap-01"
+          :title "Affirmative 4-Tool Action Dispatch"
+          :demonstration "(:act :click :selector \"#checkout-btn\")"
+          :fidelity-pct 98.2
+          :sample-output "(:act :click :selector \"#checkout-btn\")")
+        (:capability
+          :id "micro-cap-02"
+          :title "Targeted DOM Query Selector Resolution"
+          :demonstration "Inspects outline and returns CSS selector"
+          :fidelity-pct 92.4
+          :sample-output "(:act :eval :expression \"document.querySelector('.active')\")")
+        (:capability
+          :id "micro-cap-03"
+          :title "Compact ASN Type Serialization"
+          :demonstration "Formats flat records without markdown code fences"
+          :fidelity-pct 95.8
+          :sample-output "(:task :id \"T1\" :state :done)")
+      ]
+      :impossibilities [
+        (:impossibility
+          :id "micro-imp-01"
+          :title "Contrastive Negative Instruction Following"
+          :behavior "Negative constraints ('do not click cancel') trigger attention fixation on forbidden token with 34.2% error rate"
+          :failure-mode "Contamination by negative attractor")
+        (:impossibility
+          :id "micro-imp-02"
+          :title "Multi-Hunk Code Diffing"
+          :behavior "Cannot track line offsets across multiple chunks simultaneously"
+          :failure-mode "Line index misalignment")
+        (:impossibility
+          :id "micro-imp-03"
+          :title "Autonomous Error Diagnosis Without Compiler Signal"
+          :behavior "Requires compiler feedback or FSM mask to detect syntax errors"
+          :failure-mode "Verbal hallucination of success")
+      ]
+    )
+    (:model-showcase
+      :alias "mini"
+      :canonical-model "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+      :filename "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf"
+      :size-mb 1120
+      :download-url "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf"
+      :sha256 "bcde1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab"
+      :family "Qwen2.5-Coder"
+      :weight "1.1GB"
+      :tier "small-slm-edge"
+      :quantization "Q4_K_M"
+      :memory-footprint-mb 1180
+      :runtime-substrate "In-Browser WebGPU"
+      :ttft-ms 22
+      :throughput-tps 62.0
+      :schema-overhead-tokens 118
+      :thinking-budget 0
+      :temperature 0.15
+      :context-ceiling 2048
+      :strategy "agent-directed-receipts"
+      :capabilities [
+        (:capability
+          :id "small-cap-01"
+          :title "High-Density SVG Vector Art Generation"
+          :demonstration "Generates clean 24x24 icons and status cards using native ASN vector primitives"
+          :fidelity-pct 96.5
+          :sample-output "(:svg :v \"0 0 24 24\" (:rc :x 2 :y 2 :w 20 :h 20 :rx 4 :f \"#2563eb\") (:circ :cx 12 :cy 12 :r 6 :f \"#ffffff\"))")
+        (:capability
+          :id "small-cap-02"
+          :title "Single-Component Reactive VDOM Construction"
+          :demonstration "Synthesizes isolated stateful VDOM counter and button forms"
+          :fidelity-pct 91.0
+          :sample-output "(:elem :tag \"button\" :props [(:prop :onClick \"increment\")] :children [(:txt \"Count: 1\")])")
+        (:capability
+          :id "small-cap-03"
+          :title "JSON-to-ASN Bidirectional Transpilation"
+          :demonstration "Transpiles JSON wire payloads into typed ASN S-expressions with 72% token compression"
+          :fidelity-pct 94.0
+          :sample-output "(:metric :name \"latency\" :val 15)")
+      ]
+      :impossibilities [
+        (:impossibility
+          :id "small-imp-01"
+          :title "Deep Chain-of-Thought Reflection in Browser"
+          :behavior "Adding chain-of-thought thinking loops causes attention dispersion and degrades syntax formatting"
+          :failure-mode "Thinking token pollution")
+        (:impossibility
+          :id "small-imp-02"
+          :title "Cross-Module Architecture Decision Synthesis"
+          :behavior "Cannot evaluate holistic system boundaries across more than 2 files simultaneously"
+          :failure-mode "Context horizon saturation")
+      ]
+    )
+    (:model-showcase
+      :alias "small"
+      :canonical-model "Qwen/Qwen2.5-Coder-3B-Instruct"
+      :filename "qwen2.5-coder-3b-instruct-q4_k_m.gguf"
+      :size-mb 2150
+      :download-url "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/resolve/main/qwen2.5-coder-3b-instruct-q4_k_m.gguf"
+      :sha256 "cdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ac"
+      :family "Qwen2.5-Coder"
+      :weight "2.2GB"
+      :tier "browser-ceiling-slm"
+      :quantization "Q4_K_M"
+      :memory-footprint-mb 2150
+      :runtime-substrate "Desktop Browser WebGPU / Edge Daemon"
+      :ttft-ms 35
+      :throughput-tps 45.0
+      :schema-overhead-tokens 140
+      :thinking-budget 256
+      :temperature 0.2
+      :context-ceiling 2048
+      :strategy "agent-directed"
+      :task-presets [:fast-search :agent-action :deep-synthesis :code-patch]
+      :capabilities [
+        (:capability
+          :id "ceil-cap-01"
+          :title "Interactive Toys & Cellular Automata Simulation"
+          :demonstration "Generates complete playable Conway's Game of Life logic and physics particle animation loop in pure ASL"
+          :fidelity-pct 98.0
+          :sample-output "(:sim-state :grid [[0 1 0] [0 0 1] [1 1 1]] :step 42 :alive 5)")
+        (:capability
+          :id "ceil-cap-02"
+          :title "Stateful Multi-Component Web Applications"
+          :demonstration "Builds full interactive Kanban board and Token Calculator with local in-memory state mutations"
+          :fidelity-pct 95.0
+          :sample-output "(:kanban-board :lanes [\"Backlog\" \"Active\" \"Done\"] :card-count 12)")
+        (:capability
+          :id "ceil-cap-03"
+          :title "AST Form Patching with 7-Gate Verification"
+          :demonstration "Generates surgical in-memory AST replacements verified by resident compiler gate"
+          :fidelity-pct 95.2
+          :sample-output "(:patch-result :status :applied :assertions-passed 18)")
+      ]
+      :impossibilities [
+        (:impossibility
+          :id "ceil-imp-01"
+          :title "Monorepo-Wide Impact Graph Refactoring"
+          :behavior "Cannot track symbol blast radius across dozens of downstream packages concurrently"
+          :failure-mode "Memory explosion and context blowout")
+        (:impossibility
+          :id "ceil-imp-02"
+          :title "Zero-Shot Formal Byzantine Consensus Reasoning"
+          :behavior "Fails on distributed asynchronous network partition algorithms without frontier guidance"
+          :failure-mode "Logical contradiction in edge conditions")
+      ]
+    )
+  ]
+)

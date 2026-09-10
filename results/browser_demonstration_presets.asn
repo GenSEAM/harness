@@ -1,0 +1,146 @@
+(:demonstration-presets-catalog
+  :catalog-version "1.0.0"
+  :browser-ceiling "3B"
+  :last-calibrated "2026-09-10"
+  :categories [
+    (:category
+      :id "cat-toys"
+      :title "Interactive Toys & Physics Simulations"
+      :target-tier "browser-ceiling-slm"
+      :recommended-model "qwen2.5:3b-instruct"
+      :execution-context "multi-thread"
+      :presets [
+        (:preset
+          :id "toy-game-of-life"
+          :title "Conway's Game of Life Simulation"
+          :kind "cellular-automata"
+          :grid-dimension [8 8]
+          :initial-pattern "glider"
+          :spec "Pure ASL cellular grid stepping with periodic toroidal boundary wrap"
+          :sample-input "(:step-simulation :grid-size [8 8] :pattern :glider :step 1)"
+          :sample-output "(:sim-state :grid [[0 1 0 0 0 0 0 0] [0 0 1 0 0 0 0 0] [1 1 1 0 0 0 0 0] [0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0]] :step 1 :alive-count 5 :extinction false)"
+          :fidelity-pct 98.0
+          :impossibility "Exceeding 32x32 grid induces memory exhaustion in browser WASM")
+        (:preset
+          :id "toy-physics-reactor"
+          :title "Coulomb & Spring Particle Reactor"
+          :kind "kinematic-simulation"
+          :particle-count 6
+          :spec "2D Euler integration with Coulomb electrostatic repulsion and Hooke spring dampening"
+          :sample-input "(:simulate-particles :count 6 :dt 0.016 :damping 0.95)"
+          :sample-output "(:physics-frame :particles [(:p :id 1 :x 50.2 :y 48.9 :vx 1.2 :vy -0.4) (:p :id 2 :x 149.8 :y 151.1 :vx -1.2 :vy 0.4)] :kinetic-energy 14.8 :equilibrium false)"
+          :fidelity-pct 96.5
+          :impossibility "Continuous N-body gravitational simulation with N > 50 causes frame drops below 30fps")
+        (:preset
+          :id "toy-kinetic-bouncing-balls"
+          :title "Kinetic Bouncing Balls Simulation"
+          :kind "collision-physics"
+          :ball-count 4
+          :spec "Multi-body elastic rebound with wall boundary restitution and gravitational acceleration"
+          :sample-input "(:step-bouncing-balls :gravity 9.8 :restitution 0.85 :bounds [200 200])"
+          :sample-output "(:kinetic-state :balls [(:ball :id 1 :x 100 :y 185 :vy -12.4 :grounded false) (:ball :id 2 :x 45 :y 198 :vy 1.2 :grounded true)] :total-momentum 42.1)"
+          :fidelity-pct 95.5
+          :impossibility "Full rigid body non-convex collision mesh resolution")
+        (:preset
+          :id "toy-reactive-state-counter"
+          :title "Reactive State Machine & Calculator"
+          :kind "state-machine"
+          :spec "Deterministic integer accumulator with undo redo stack and bounded arithmetic"
+          :sample-input "(:transition :state (:current 41 :stack [10 20 40]) :op :add :val 1)"
+          :sample-output "(:transition-result :state (:current 42 :stack [10 20 40 41]) :status :ok :overflow false)"
+          :fidelity-pct 99.0
+          :impossibility "Arbitrary multi-precision symbolic computer algebra")
+      ]
+    )
+    (:category
+      :id "cat-websites"
+      :title "Reactive VDOM Websites & Design Systems"
+      :target-tier "small-slm-edge"
+      :recommended-model "qwen2.5:1.5b"
+      :execution-context "multi-thread"
+      :presets [
+        (:preset
+          :id "site-developer-portfolio"
+          :title "Responsive Developer Portfolio Landing"
+          :kind "vdom-page"
+          :spec "Modern dark aesthetic portfolio with hero section, skills grid, project showcase, and footer"
+          :sample-input "(:generate-page :type :portfolio :theme :dark :owner \"Alex\")"
+          :sample-output "(:vdom :tag \"main\" :class \"portfolio-main dark\" :children [(:vdom :tag \"header\" :children [(:vdom :tag \"h1\" :text \"Alex\") (:vdom :tag \"nav\" :children [(:vdom :tag \"a\" :props [(:prop :href \"#projects\")] :text \"Projects\")])]) (:vdom :tag \"section\" :class \"hero\" :children [(:vdom :tag \"h2\" :text \"Autonomous Agent Engineer\")]) (:vdom :tag \"section\" :class \"skills\" :children [(:vdom :tag \"span\" :text \"AgentScript\") (:vdom :tag \"span\" :text \"WebGPU\")])])"
+          :fidelity-pct 96.0
+          :impossibility "Cross-page client side router hydration across deep nested dynamic paths")
+        (:preset
+          :id "site-saas-pricing-matrix"
+          :title "Dark-Mode SaaS Pricing Matrix"
+          :kind "vdom-component"
+          :spec "3-tier pricing matrix with monthly annual toggle switch, feature comparison checklist, and CTA buttons"
+          :sample-input "(:generate-pricing-table :tiers [\"Starter\" \"Pro\" \"Enterprise\"] :currency \"USD\")"
+          :sample-output "(:vdom :tag \"section\" :class \"pricing-grid\" :children [(:vdom :tag \"div\" :class \"card starter\" :children [(:vdom :tag \"h3\" :text \"Starter\") (:vdom :tag \"p\" :text \"$0/mo\") (:vdom :tag \"button\" :text \"Start Free\")]) (:vdom :tag \"div\" :class \"card pro active\" :children [(:vdom :tag \"h3\" :text \"Pro\") (:vdom :tag \"p\" :text \"$29/mo\") (:vdom :tag \"button\" :class \"btn-primary\" :text \"Upgrade\")])])"
+          :fidelity-pct 95.2
+          :impossibility "Server-driven stripe billing webhook integration without external gateway")
+        (:preset
+          :id "site-analytics-dashboard"
+          :title "Telemetry & Analytics Metric Dashboard"
+          :kind "vdom-dashboard"
+          :spec "Responsive telemetry dashboard with KPI summary badges, status cards, and layout grid"
+          :sample-input "(:generate-dashboard :metrics [(:m :name \"TTFT\" :val \"12ms\") (:m :name \"Throughput\" :val \"128 tok/s\")])"
+          :sample-output "(:vdom :tag \"div\" :class \"dashboard-container\" :children [(:vdom :tag \"div\" :class \"kpi-row\" :children [(:vdom :tag \"div\" :class \"card\" :children [(:vdom :tag \"span\" :text \"TTFT\") (:vdom :tag \"h2\" :text \"12ms\")]) (:vdom :tag \"div\" :class \"card\" :children [(:vdom :tag \"span\" :text \"Throughput\") (:vdom :tag \"h2\" :text \"128 tok/s\")])])])"
+          :fidelity-pct 97.0
+          :impossibility "Real-time streaming WebGL 3D volumetric data cube rendering")
+        (:preset
+          :id "site-checkout-wizard"
+          :title "Accessible Multi-Step Form Wizard"
+          :kind "vdom-form"
+          :spec "Step-by-step accessible form with Contact, Shipping, and Payment stages plus validation badges"
+          :sample-input "(:generate-form-wizard :steps [\"Contact\" \"Shipping\" \"Confirm\"])"
+          :sample-output "(:vdom :tag \"form\" :class \"wizard-form\" :children [(:vdom :tag \"div\" :class \"step-indicator\" :children [(:vdom :tag \"span\" :class \"active\" :text \"1. Contact\") (:vdom :tag \"span\" :text \"2. Shipping\")]) (:vdom :tag \"input\" :props [(:prop :type \"email\") (:prop :placeholder \"you@domain.com\")]) (:vdom :tag \"button\" :text \"Next Step\")])"
+          :fidelity-pct 96.4
+          :impossibility "Autonomous client-side cryptographic credit card cipher generation")
+      ]
+    )
+    (:category
+      :id "cat-svgs"
+      :title "Native ASN Vector Graphics & Diagramming"
+      :target-tier "small-slm-edge"
+      :recommended-model "qwen2.5:1.5b"
+      :execution-context "single-thread"
+      :presets [
+        (:preset
+          :id "svg-architecture-flowchart"
+          :title "System Architecture Flowchart"
+          :kind "vector-diagram"
+          :spec "3-node sequential pipeline with directed bezier connectors, rounded rects, and typography"
+          :sample-input "(:generate-flowchart :steps [\"Perception\" \"Planning\" \"Reconciliation\"])"
+          :sample-output "(:svg :v \"0 0 600 160\" (:rc :x 20 :y 40 :w 140 :h 80 :rx 8 :f \"#0f172a\" :s \"#38bdf8\" :sw 2) (:txt :x 90 :y 85 :sz 14 :f \"#f8fafc\" :anch :mid \"Perception\") (:p :d \"M 160 80 L 220 80\" :s \"#94a3b8\" :sw 2) (:rc :x 220 :y 40 :w 140 :h 80 :rx 8 :f \"#0f172a\" :s \"#818cf8\" :sw 2) (:txt :x 290 :y 85 :sz 14 :f \"#f8fafc\" :anch :mid \"Planning\") (:p :d \"M 360 80 L 420 80\" :s \"#94a3b8\" :sw 2) (:rc :x 420 :y 40 :w 140 :h 80 :rx 8 :f \"#0f172a\" :s \"#4ade80\" :sw 2) (:txt :x 490 :y 85 :sz 14 :f \"#f8fafc\" :anch :mid \"Reconciliation\"))"
+          :fidelity-pct 97.5
+          :impossibility "Automatic force-directed graph node collision avoidance with N > 20 nodes")
+        (:preset
+          :id "svg-security-shield-badge"
+          :title "Metric Security Shield & Verification Badge"
+          :kind "vector-badge"
+          :spec "Vector security shield with dual-ring perimeter, centered checkmark path, and status subtitle"
+          :sample-input "(:generate-shield-badge :title \"GATE VERIFIED\" :subtitle \"35 Assertions Clean\")"
+          :sample-output "(:svg :v \"0 0 200 200\" (:rc :x 10 :y 10 :w 180 :h 180 :rx 16 :f \"#0f172a\" :s \"#38bdf8\" :sw 2) (:circ :cx 100 :cy 85 :r 45 :f \"#1e293b\" :s \"#38bdf8\" :sw 2) (:p :d \"M 85 85 L 95 95 L 115 75\" :s \"#4ade80\" :sw 4 :f \"none\") (:txt :x 100 :y 155 :sz 14 :f \"#f8fafc\" :anch :mid \"GATE VERIFIED\") (:txt :x 100 :y 175 :sz 11 :f \"#94a3b8\" :anch :mid \"35 Assertions Clean\"))"
+          :fidelity-pct 98.5
+          :impossibility "Complex photographic ray-traced lighting simulation")
+        (:preset
+          :id "svg-schematic-chameleon"
+          :title "Schematic Chameleon Brand Mascot"
+          :kind "vector-mascot"
+          :spec "Technical mascot with spiral tail path, hexagonal crest facets, and round pupil highlight"
+          :sample-input "(:generate-mascot :name \"chameleon\" :style :schematic)"
+          :sample-output "(:svg :v \"0 0 240 240\" (:p :d \"M 40 180 C 20 180 20 140 50 140 C 70 140 80 160 60 180\" :s \"#38bdf8\" :sw 4 :f \"none\") (:circ :cx 140 :cy 90 :r 30 :f \"#0f172a\" :s \"#38bdf8\" :sw 2) (:circ :cx 145 :cy 85 :r 8 :f \"#38bdf8\") (:p :d \"M 100 120 L 160 120 L 140 160 L 90 150 Z\" :f \"#1e293b\" :s \"#818cf8\" :sw 2))"
+          :fidelity-pct 94.0
+          :impossibility "Organic skeletal rigging and bone deformation animation")
+        (:preset
+          :id "svg-isometric-cloud-cluster"
+          :title "Isometric Server & Database Cluster"
+          :kind "vector-illustration"
+          :spec "3D isometric projection of stacked blade servers, cylindrical database, and bus link"
+          :sample-input "(:generate-isometric-cluster :nodes [\"edge\" \"core\" \"db\"])"
+          :sample-output "(:svg :v \"0 0 300 200\" (:p :d \"M 150 20 L 250 80 L 150 140 L 50 80 Z\" :f \"#1e293b\" :s \"#38bdf8\" :sw 2) (:p :d \"M 50 80 L 50 120 L 150 180 L 150 140 Z\" :f \"#0f172a\" :s \"#38bdf8\" :sw 2) (:p :d \"M 150 140 L 150 180 L 250 120 L 250 80 Z\" :f \"#0b0f19\" :s \"#38bdf8\" :sw 2))"
+          :fidelity-pct 93.5
+          :impossibility "Arbitrary full 3D matrix camera perspective rotation")
+      ]
+    )
+  ]
+)

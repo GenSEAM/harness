@@ -1,9 +1,9 @@
 (module asl-harness/firewall-test
   :d "Unit tests for Action Firewall: boundary validation, command safety, and lease enforcement."
-  :x [test-path-traversal-blocked test-dangerous-cmd-blocked test-allowed-sandbox-path run-tests]
+  :x [TestPathTraversalBlocked TestDangerousCmdBlocked TestAllowedSandboxPath run-tests]
   :i [(firewall :a fw)])
 
-(df test-path-traversal-blocked [] -> Bool
+(df TestPathTraversalBlocked [] -> Bool
   :d "Verifies that path traversal sequences, root escapes, and sensitive system paths are strictly blocked."
   (let [(policy (fw/default-firewall-policy))
         (v-traversal (fw/evaluate-path-boundary policy "../../secret"))
@@ -22,7 +22,7 @@
     (assert (not (.-allowed v-audit-write)) "audit write blocked")
     true))
 
-(df test-dangerous-cmd-blocked [] -> Bool
+(df TestDangerousCmdBlocked [] -> Bool
   :d "Verifies that dangerous shell commands, pipes to shell, and destructive operations are blocked."
   (let [(policy (fw/default-firewall-policy))
         (v-rm (fw/evaluate-command-safety policy "rm -rf /"))
@@ -39,7 +39,7 @@
     (assert (not (.-allowed v-audit-exec)) "audit exec rm -rf blocked")
     true))
 
-(df test-allowed-sandbox-path [] -> Bool
+(df TestAllowedSandboxPath [] -> Bool
   :d "Verifies that safe operations and valid paths inside sandbox workspace are permitted."
   (let [(policy (fw/default-firewall-policy))
         (v-file (fw/evaluate-path-boundary policy "src/firewall.asl"))
@@ -56,7 +56,7 @@
 (df run-tests [] -> Bool
   :d "Runs all firewall test cases."
   (do
-    (test-path-traversal-blocked)
-    (test-dangerous-cmd-blocked)
-    (test-allowed-sandbox-path)
+    (TestPathTraversalBlocked)
+    (TestDangerousCmdBlocked)
+    (TestAllowedSandboxPath)
     true))

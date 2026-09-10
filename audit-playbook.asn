@@ -1,6 +1,6 @@
 ;; AgentScript Audit Operational Playbook & Composition Matrix (ASN)
 (:audit-playbook
-  :version "2.0.0"
+  :version "0.1.0"
   :canonical-cli "asl audit [subcmd|target]"
   :resident-rpc "asl rpc '(:batch (:chk) ...)'"
 

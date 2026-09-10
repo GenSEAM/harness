@@ -1,12 +1,12 @@
 (module asl-harness/doctor-test
   :d "Unit verification test suite for Agent Doctor and Adaptive LLM-Chain Inspector"
   :x [test-plugin-registry-creation
-      test-doctor-clean-baseline
-      test-doctor-detect-tool-collision
-      test-doctor-detect-missing-dependency
-      test-doctor-detect-prompt-contradiction
-      test-doctor-llm-chain-fast-path-skip
-      test-doctor-llm-chain-activation-on-issues
+      TestDoctorCleanBaseline
+      TestDoctorDetectToolCollision
+      TestDoctorDetectMissingDependency
+      TestDoctorDetectPromptContradiction
+      TestDoctorLlmChainFastPathSkip
+      TestDoctorLlmChainActivationOnIssues
       test-format-doctor-report
       run-doctor-tests
       run-tests]
@@ -26,7 +26,7 @@
     (assert (pl/contains-string? tools "run-sandboxed-script") "has run-sandboxed-script")
     true))
 
-(df test-doctor-clean-baseline [] -> Bool
+(df TestDoctorCleanBaseline [] -> Bool
   :d "Tests that default standard plugins pass doctor inspection with 100% health"
   (let [(reg (pl/build-standard-harness-plugins))
         (diag (doc/diagnose-agent-plugins reg))]
@@ -37,7 +37,7 @@
     (assert (= (list-length (.-missing-deps diag)) 0) "0 missing deps")
     true))
 
-(df test-doctor-detect-tool-collision [] -> Bool
+(df TestDoctorDetectToolCollision [] -> Bool
   :d "Tests detection of duplicate tool names across plugins"
   (let [(reg (pl/build-standard-harness-plugins))
         (bad-plugin (pl/create-plugin
@@ -61,7 +61,7 @@
       (assert (= (.-tool-name c) "intel-preload") "collision tool is intel-preload"))
     true))
 
-(df test-doctor-detect-missing-dependency [] -> Bool
+(df TestDoctorDetectMissingDependency [] -> Bool
   :d "Tests detection of unfulfilled plugin dependencies"
   (let [(reg (pl/registry-create))
         (p (pl/create-plugin
@@ -81,7 +81,7 @@
     (assert (= (list-length (.-missing-deps diag)) 1) "1 missing dep found")
     true))
 
-(df test-doctor-detect-prompt-contradiction [] -> Bool
+(df TestDoctorDetectPromptContradiction [] -> Bool
   :d "Tests detection of contradictory prompt directives"
   (let [(reg (pl/registry-create))
         (p1 (pl/create-plugin
@@ -112,7 +112,7 @@
     (assert (> (list-length (.-contradictions diag)) 0) "contradictions found")
     true))
 
-(df test-doctor-llm-chain-fast-path-skip [] -> Bool
+(df TestDoctorLlmChainFastPathSkip [] -> Bool
   :d "Tests that healthy setup skips LLM inspection (0 token cost)"
   (let [(reg (pl/build-standard-harness-plugins))
         (diag (doc/diagnose-agent-plugins reg))
@@ -121,7 +121,7 @@
     (assert (not (.-llm-inspected after)) "llm was not inspected")
     true))
 
-(df test-doctor-llm-chain-activation-on-issues [] -> Bool
+(df TestDoctorLlmChainActivationOnIssues [] -> Bool
   :d "Tests that LLM chain inspector is triggered when issues exist"
   (let [(reg (pl/registry-create))
         (p1 (pl/create-plugin "p1" "P1" "1.0" 1
@@ -153,12 +153,12 @@
   :d "Runs complete test suite for Agent Doctor and Plugin System"
   (do
     (test-plugin-registry-creation)
-    (test-doctor-clean-baseline)
-    (test-doctor-detect-tool-collision)
-    (test-doctor-detect-missing-dependency)
-    (test-doctor-detect-prompt-contradiction)
-    (test-doctor-llm-chain-fast-path-skip)
-    (test-doctor-llm-chain-activation-on-issues)
+    (TestDoctorCleanBaseline)
+    (TestDoctorDetectToolCollision)
+    (TestDoctorDetectMissingDependency)
+    (TestDoctorDetectPromptContradiction)
+    (TestDoctorLlmChainFastPathSkip)
+    (TestDoctorLlmChainActivationOnIssues)
     (test-format-doctor-report)
     true))
 
