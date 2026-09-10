@@ -553,6 +553,8 @@
        "        \"Spawn execution subagent (model: " (.-execution-tier cfg) ") for atomic code implementation and gate verification.\"\n"
        "        \"Run research and execution in isolated contexts or workspaces (branch/share) to prevent attention decay and KV-cache pollution.\"\n"
        "        \"Utilize asl rpc (:batch ...) in priority for workspace-aware symbol navigation, callers, and impact analysis.\"\n"
+       "        \"Terminal diagram mandate: For terminal CLI display, render bounded DAGs and trees via native Unicode box-art (asl-agent/asn-boxart); never emit unrendered wide Mermaid blocks that exceed terminal column width.\"\n"
+       "        \"Visual diagram mandate: For rich architectural graphs, compile visual HTML via asl-vdom/diagram and save to docs/diagrams/ with instant browser launch.\"\n"
        "      ]\n"
        "    )\n"
        "    <!-- ORCHESTRATOR_END -->"))
