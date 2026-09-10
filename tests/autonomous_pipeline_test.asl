@@ -1,5 +1,5 @@
 (module asl-harness/autonomous-pipeline-test
-  :d "Unit and falsifiable verification suite for autonomous agent pipeline selection, stage temperatures, and Hanas model stand calibration."
+  :d "Unit and falsifiable verification suite for autonomous agent pipeline selection, stage temperatures, and Harness model stand calibration."
   :x [test-stage-temperature-config-defaults
       test-stage-temperature-resolution
       test-all-five-pipeline-profiles
@@ -9,10 +9,10 @@
       test-autonomous-selection-trivial
       test-autonomous-selection-architecture
       test-autonomous-selection-standard
-      test-hanas-model-stand-implementation-calibration
-      test-hanas-model-stand-reflection-calibration
-      test-hanas-model-stand-planning-calibration
-      test-hanas-model-stand-full-sweep
+      test-harness-model-stand-implementation-calibration
+      test-harness-model-stand-reflection-calibration
+      test-harness-model-stand-planning-calibration
+      test-harness-model-stand-full-sweep
       test-asn-serialization
       run-tests]
   :i [(autonomous_pipeline :a ap)])

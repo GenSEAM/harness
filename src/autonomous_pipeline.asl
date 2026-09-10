@@ -5,7 +5,7 @@
       AutonomousPipelineProfile
       PipelineSelectionDecision
       StageCalibrationPoint
-      HanasModelStandSweep
+      HarnessModelStandSweep
       make-stage-temperature-config
       default-stage-temperatures
       stage-temperature-for
@@ -21,11 +21,11 @@
       compute-task-entropy-score
       autonomous-select-pipeline
       evaluate-stage-temperature-point
-      run-hanas-stage-calibration
+      run-harness-stage-calibration
       format-stage-temperature-asn
       format-pipeline-profile-asn
       format-selection-decision-asn
-      format-hanas-stand-sweep-asn]
+      format-harness-stand-sweep-asn]
   :i [])
 
 (dfs StageTemperatureConfig
@@ -50,7 +50,7 @@
   (:f entropy-range Str "Task entropy range where profile is optimal")
   (:f stages (List PipelineStageSpec) "Ordered stage specifications with stage-specific temperatures")
   (:f temp-config StageTemperatureConfig "Stage temperature configuration")
-  (:f recommended-model-tier Str "Recommended Hanas model tier: nano | micro | mini | small")
+  (:f recommended-model-tier Str "Recommended Harness model tier: nano | micro | mini | small")
   (:f supports-fast-path Bool "True if trivial tasks bypass deep planning and reflection"))
 
 (dfs PipelineSelectionDecision
@@ -71,8 +71,8 @@
   (:f pareto-score F64 "Combined multi-objective score")
   (:f is-pareto-optimal Bool "True if on the Pareto efficiency frontier"))
 
-(dfs HanasModelStandSweep
-  (:f model-alias Str "Hanas model tier: nano | micro | mini | small")
+(dfs HarnessModelStandSweep
+  (:f model-alias Str "Harness model tier: nano | micro | mini | small")
   (:f canonical-model Str "Canonical HF model path")
   (:f memory-limit-mb I64 "WebGPU or worker memory ceiling")
   (:f stage-points (List StageCalibrationPoint) "Calibration results across stages and temperatures")
@@ -538,7 +538,7 @@
          :confidence 0.92)))))
 
 (df evaluate-stage-temperature-point [(model-alias Str) (stage Str) (temp F64)] -> StageCalibrationPoint
-  :d "Simulates canary execution on the Hanas testing stand and returns empirical Pareto metrics for stage temperature."
+  :d "Simulates canary execution on the Harness testing stand and returns empirical Pareto metrics for stage temperature."
   (let [(is-small (or (= model-alias "small") (= model-alias "frontier")))
         (is-mini (or (= model-alias "mini") (= model-alias "medium")))
         (is-micro (= model-alias "micro"))
@@ -654,8 +654,8 @@
             :pareto-score 48.0
             :is-pareto-optimal false)))))))
 
-(df run-hanas-stage-calibration [(model-alias Str)] -> HanasModelStandSweep
-  :d "Executes multi-stage temperature sweep across Hanas stand models and derives optimal stage temperatures."
+(df run-harness-stage-calibration [(model-alias Str)] -> HarnessModelStandSweep
+  :d "Executes multi-stage temperature sweep across Harness stand models and derives optimal stage temperatures."
   (let [(is-micro (= model-alias "micro"))
         (canon-model (cond
                        ((= model-alias "small") "Qwen/Qwen2.5-Coder-3B-Instruct")
@@ -692,7 +692,7 @@
                      :implementation-temp 0.00
                      :verification-temp 0.00
                      :scout-temp 0.10))]
-    (HanasModelStandSweep
+    (HarnessModelStandSweep
       :model-alias model-alias
       :canonical-model canon-model
       :memory-limit-mb mem-limit
@@ -745,9 +745,9 @@
 "
        "  :rationale "" (.-rationale decision) "")"))
 
-(df format-hanas-stand-sweep-asn [(sweep HanasModelStandSweep)] -> Str
-  :d "Serializes HanasModelStandSweep to S-expression format."
-  (str "(:hanas-stand-sweep
+(df format-harness-stand-sweep-asn [(sweep HarnessModelStandSweep)] -> Str
+  :d "Serializes HarnessModelStandSweep to S-expression format."
+  (str "(:harness-stand-sweep
 "
        "  :model-alias "" (.-model-alias sweep) ""
 "

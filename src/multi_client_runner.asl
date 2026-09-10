@@ -30,7 +30,11 @@
       make-orchestrator-queue
       enqueue-orchestrator-task
       count-tasks-by-state
-      advance-task-state]
+      advance-task-state
+      make-ad-client
+      make-eddie-client
+      ClientConcurrencyProfile
+      get-client-concurrency-profile]
   :i [])
 
 (dfs ClientTarget
@@ -109,19 +113,23 @@
   :d "Constructs the client target descriptor for agy (Antigravity CLI)"
   (make-antigravity-client))
 
-(df make-eddie-client [] -> ClientTarget
-  :d "Constructs the client target descriptor for Eddie (Native AgentScript executive)"
+(df make-ad-client [] -> ClientTarget
+  :d "Constructs the client target descriptor for AD (Primary Native AgentScript executive)"
   (ClientTarget
-    :id "eddie"
-    :name "Eddie (Native ASL)"
+    :id "ad"
+    :name "AD (Native ASL)"
     :engine "agent-native-asl"
-    :prompt-channel "EDDIE.md"
+    :prompt-channel "AD.md"
     :supports-mcp true
     :supports-staged-vfs true))
 
+(df make-eddie-client [] -> ClientTarget
+  :d "Constructs the client target descriptor for Eddie / AD alias"
+  (make-ad-client))
+
 (dfs ClientConcurrencyProfile
   :d "Concurrency and rate limit bounds for orchestrated agents"
-  (:f client-id Str "Client identifier: agy, claude-code, eddie")
+  (:f client-id Str "Client identifier: agy, claude-code, ad")
   (:f soft-limit I64 "Default operational concurrency limit")
   (:f hard-limit I64 "Maximum burst concurrency limit")
   (:f flexibility Str "Concurrency flexibility tier: strict, bounded, elastic")
@@ -139,21 +147,21 @@
     (if (or (= client-id "claude") (= client-id "claude-code"))
       (ClientConcurrencyProfile
         :client-id "claude-code"
-        :soft-limit 2
-        :hard-limit 3
-        :flexibility "strict"
-        :rationale "Separate strict limit governed by Anthropic TPM/RPM quotas and subprocess context costs.")
-      (if (= client-id "eddie")
+        :soft-limit 4
+        :hard-limit 8
+        :flexibility "bounded"
+        :rationale "Balanced soft-4/hard-8 bounds for Claude Code orchestrated workloads.")
+      (if (or (or (= client-id "ad") (= client-id "addie")) (= client-id "eddie"))
         (ClientConcurrencyProfile
-          :client-id "eddie"
-          :soft-limit 8
-          :hard-limit 16
+          :client-id "ad"
+          :soft-limit 4
+          :hard-limit 8
           :flexibility "elastic"
-          :rationale "Highly flexible scaling via native S-expression batch RPC, in-RAM VFS, and minimal token footprint.")
+          :rationale "High-throughput soft-4/hard-8 concurrency scaling for AD native AgentScript executive.")
         (ClientConcurrencyProfile
           :client-id client-id
           :soft-limit 4
-          :hard-limit 6
+          :hard-limit 8
           :flexibility "bounded"
           :rationale "Standard default concurrency profile.")))))
 
