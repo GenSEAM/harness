@@ -31,6 +31,7 @@
       enqueue-orchestrator-task
       count-tasks-by-state
       advance-task-state
+      make-addie-client
       make-ad-client
       make-eddie-client
       ClientConcurrencyProfile
@@ -113,23 +114,27 @@
   :d "Constructs the client target descriptor for agy (Antigravity CLI)"
   (make-antigravity-client))
 
-(df make-ad-client [] -> ClientTarget
-  :d "Constructs the client target descriptor for AD (Primary Native AgentScript executive)"
+(df make-addie-client [] -> ClientTarget
+  :d "Constructs the client target descriptor for Addie (Primary Native AgentScript executive)"
   (ClientTarget
-    :id "ad"
-    :name "AD (Native ASL)"
+    :id "addie"
+    :name "Addie (Native ASL)"
     :engine "agent-native-asl"
-    :prompt-channel "AD.md"
+    :prompt-channel "ADDIE.md"
     :supports-mcp true
     :supports-staged-vfs true))
 
+(df make-ad-client [] -> ClientTarget
+  :d "Constructs the client target descriptor for AD alias"
+  (make-addie-client))
+
 (df make-eddie-client [] -> ClientTarget
-  :d "Constructs the client target descriptor for Eddie / AD alias"
-  (make-ad-client))
+  :d "Constructs the client target descriptor for Eddie alias"
+  (make-addie-client))
 
 (dfs ClientConcurrencyProfile
   :d "Concurrency and rate limit bounds for orchestrated agents"
-  (:f client-id Str "Client identifier: agy, claude-code, ad")
+  (:f client-id Str "Client identifier: agy, claude-code, addie")
   (:f soft-limit I64 "Default operational concurrency limit")
   (:f hard-limit I64 "Maximum burst concurrency limit")
   (:f flexibility Str "Concurrency flexibility tier: strict, bounded, elastic")
@@ -151,13 +156,13 @@
         :hard-limit 8
         :flexibility "bounded"
         :rationale "Balanced soft-4/hard-8 bounds for Claude Code orchestrated workloads.")
-      (if (or (or (= client-id "ad") (= client-id "addie")) (= client-id "eddie"))
+      (if (or (or (= client-id "addie") (= client-id "ad")) (= client-id "eddie"))
         (ClientConcurrencyProfile
-          :client-id "ad"
+          :client-id "addie"
           :soft-limit 4
           :hard-limit 8
           :flexibility "elastic"
-          :rationale "High-throughput soft-4/hard-8 concurrency scaling for AD native AgentScript executive.")
+          :rationale "High-throughput soft-4/hard-8 concurrency scaling for Addie native AgentScript executive.")
         (ClientConcurrencyProfile
           :client-id client-id
           :soft-limit 4

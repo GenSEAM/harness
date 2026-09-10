@@ -1500,9 +1500,9 @@
     (:sym :name "PipelineSelectionDecision" :kind :type :tokens 3
           :rationale "Autonomous pipeline selection decision record with rationale and entropy")
     (:sym :name "StageCalibrationPoint" :kind :type :tokens 3
-          :rationale "Empirical canary evaluation calibration point on Hanas model stand")
-    (:sym :name "HanasModelStandSweep" :kind :type :tokens 4
-          :rationale "Multi-stage temperature calibration sweep results across Hanas model tiers")
+          :rationale "Empirical canary evaluation calibration point on Harness model stand")
+    (:sym :name "HarnessModelStandSweep" :kind :type :tokens 4
+          :rationale "Multi-stage temperature calibration sweep results across Harness model tiers")
     (:sym :name "make-stage-temperature-config" :kind :fn :tokens 4
           :rationale "Constructs stage temperature configuration")
     (:sym :name "default-stage-temperatures" :kind :fn :tokens 3
@@ -1532,17 +1532,17 @@
     (:sym :name "autonomous-select-pipeline" :kind :fn :tokens 3
           :rationale "Autonomously selects pipeline and stage temperatures for task")
     (:sym :name "evaluate-stage-temperature-point" :kind :fn :tokens 4
-          :rationale "Simulates canary execution on Hanas model testing stand")
-    (:sym :name "run-hanas-stage-calibration" :kind :fn :tokens 4
-          :rationale "Runs multi-stage temperature sweep on Hanas model stand")
+          :rationale "Simulates canary execution on Harness model testing stand")
+    (:sym :name "run-harness-stage-calibration" :kind :fn :tokens 4
+          :rationale "Runs multi-stage temperature sweep on Harness model stand")
     (:sym :name "format-stage-temperature-asn" :kind :fn :tokens 4
           :rationale "Formats stage temperature configuration as ASN")
     (:sym :name "format-pipeline-profile-asn" :kind :fn :tokens 4
           :rationale "Formats pipeline profile as canonical ASN")
     (:sym :name "format-selection-decision-asn" :kind :fn :tokens 4
           :rationale "Formats pipeline selection decision as canonical ASN")
-    (:sym :name "format-hanas-stand-sweep-asn" :kind :fn :tokens 4
-          :rationale "Formats Hanas stand sweep results as canonical ASN")
+    (:sym :name "format-harness-stand-sweep-asn" :kind :fn :tokens 4
+          :rationale "Formats Harness stand sweep results as canonical ASN")
   ]
 )
 

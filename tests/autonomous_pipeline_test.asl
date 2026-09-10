@@ -141,8 +141,8 @@
       (assert (and (>= (.-computed-entropy dec) 1.5) (< (.-computed-entropy dec) 4.0)) "Entropy in standard bounds")
       true)))
 
-(df test-hanas-model-stand-implementation-calibration [] -> Bool
-  :d "Verifies empirical Pareto optimization on Hanas stand proves T=0.00 is strictly mandatory for implementation."
+(df test-harness-model-stand-implementation-calibration [] -> Bool
+  :d "Verifies empirical Pareto optimization on Harness stand proves T=0.00 is strictly mandatory for implementation."
   (let [(pt-zero (ap/evaluate-stage-temperature-point "small" "impl" 0.00))
         (pt-low (ap/evaluate-stage-temperature-point "small" "impl" 0.10))
         (pt-mid (ap/evaluate-stage-temperature-point "small" "impl" 0.30))]
@@ -155,8 +155,8 @@
       (assert (not (.-is-pareto-optimal pt-low)) "T=0.10 is sub-optimal for implementation due to syntax drift")
       true)))
 
-(df test-hanas-model-stand-reflection-calibration [] -> Bool
-  :d "Verifies reflection calibration finds optimal Pareto balance at T=0.20 for Hanas small and mini models."
+(df test-harness-model-stand-reflection-calibration [] -> Bool
+  :d "Verifies reflection calibration finds optimal Pareto balance at T=0.20 for Harness small and mini models."
   (let [(pt-zero (ap/evaluate-stage-temperature-point "small" "reflect" 0.00))
         (pt-opt (ap/evaluate-stage-temperature-point "small" "reflect" 0.20))
         (pt-high (ap/evaluate-stage-temperature-point "small" "reflect" 0.50))]
@@ -168,8 +168,8 @@
       (assert (not (.-is-pareto-optimal pt-high)) "T=0.50 triggers false positive hallucinated rejections")
       true)))
 
-(df test-hanas-model-stand-planning-calibration [] -> Bool
-  :d "Verifies planning calibration finds optimal Pareto divergence at T=0.70 for Hanas small and mini models."
+(df test-harness-model-stand-planning-calibration [] -> Bool
+  :d "Verifies planning calibration finds optimal Pareto divergence at T=0.70 for Harness small and mini models."
   (let [(pt-low (ap/evaluate-stage-temperature-point "small" "plan" 0.10))
         (pt-opt (ap/evaluate-stage-temperature-point "small" "plan" 0.70))
         (pt-high (ap/evaluate-stage-temperature-point "small" "plan" 0.90))]
@@ -181,10 +181,10 @@
       (assert (not (.-is-pareto-optimal pt-high)) "T=0.90 suffers ungrounded symbol hallucination penalties")
       true)))
 
-(df test-hanas-model-stand-full-sweep [] -> Bool
-  :d "Verifies full multi-stage temperature sweep across all 4 Hanas model tiers."
-  (let [(sweep-small (ap/run-hanas-stage-calibration "small"))
-        (sweep-micro (ap/run-hanas-stage-calibration "micro"))]
+(df test-harness-model-stand-full-sweep [] -> Bool
+  :d "Verifies full multi-stage temperature sweep across all 4 Harness model tiers."
+  (let [(sweep-small (ap/run-harness-stage-calibration "small"))
+        (sweep-micro (ap/run-harness-stage-calibration "micro"))]
     (do
       (assert (= (.-model-alias sweep-small) "small") "Small model alias matches")
       (assert (= (.-memory-limit-mb sweep-small) 2150) "Small model memory ceiling is 2150MB")
@@ -204,11 +204,11 @@
   (let [(temps (ap/default-stage-temperatures))
         (prof (ap/make-deep-epistemic-pipeline))
         (dec (ap/autonomous-select-pipeline "T-01" "Build SVG game" "" 2 0.0 0.0))
-        (sweep (ap/run-hanas-stage-calibration "small"))
+        (sweep (ap/run-harness-stage-calibration "small"))
         (s-temps (ap/format-stage-temperature-asn temps))
         (s-prof (ap/format-pipeline-profile-asn prof))
         (s-dec (ap/format-selection-decision-asn dec))
-        (s-sweep (ap/format-hanas-stand-sweep-asn sweep))]
+        (s-sweep (ap/format-harness-stand-sweep-asn sweep))]
     (do
       (assert (string-contains? s-temps ":planning") "Stage temp ASN contains planning")
       (assert (string-contains? s-temps ":implementation") "Stage temp ASN contains implementation")
@@ -229,9 +229,9 @@
     (assert (test-autonomous-selection-trivial))
     (assert (test-autonomous-selection-architecture))
     (assert (test-autonomous-selection-standard))
-    (assert (test-hanas-model-stand-implementation-calibration))
-    (assert (test-hanas-model-stand-reflection-calibration))
-    (assert (test-hanas-model-stand-planning-calibration))
-    (assert (test-hanas-model-stand-full-sweep))
+    (assert (test-harness-model-stand-implementation-calibration))
+    (assert (test-harness-model-stand-reflection-calibration))
+    (assert (test-harness-model-stand-planning-calibration))
+    (assert (test-harness-model-stand-full-sweep))
     (assert (test-asn-serialization))
     true))

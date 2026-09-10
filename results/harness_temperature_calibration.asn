@@ -1,15 +1,15 @@
-(:hanas-temperature-calibration
+(:harness-temperature-calibration
   :schema-version "1.0.0"
   :agent "Aslany"
   :updated-at 1788891000000
   :status "verified"
-  :stand "Hanas Hardware & Model Calibration Stand"
+  :stand "Harness Hardware & Model Calibration Stand"
   :rationale "Autonomous pipeline configuration requires distinct empirical temperature values per cognitive stage: high divergence for planning, conservative criticality for reflection, and strict determinism for code generation."
 
   :invariants [
     (:invariant :id "c-0001" :rule "pure-asl-zero-comment" :status "verified")
     (:invariant :id "c-0002" :rule "machine-asn-zero-emoji" :status "verified")
-    (:invariant :id "d-0073" :rule "hanas-model-gallery-stand" :status "verified")
+    (:invariant :id "d-0073" :rule "harness-model-gallery-stand" :status "verified")
     (:invariant :id "d-0051" :rule "camelcase-token-economy" :status "verified")
   ]
 
