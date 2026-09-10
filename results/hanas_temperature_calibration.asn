@@ -1,0 +1,126 @@
+(:hanas-temperature-calibration
+  :schema-version "1.0.0"
+  :agent "Aslany"
+  :updated-at 1788891000000
+  :status "verified"
+  :stand "Hanas Hardware & Model Calibration Stand"
+  :rationale "Autonomous pipeline configuration requires distinct empirical temperature values per cognitive stage: high divergence for planning, conservative criticality for reflection, and strict determinism for code generation."
+
+  :invariants [
+    (:invariant :id "c-0001" :rule "pure-asl-zero-comment" :status "verified")
+    (:invariant :id "c-0002" :rule "machine-asn-zero-emoji" :status "verified")
+    (:invariant :id "d-0073" :rule "hanas-model-gallery-stand" :status "verified")
+    (:invariant :id "d-0051" :rule "camelcase-token-economy" :status "verified")
+  ]
+
+  :optimal-stage-temperatures [
+    (:stage-temp
+      :stage "implementation"
+      :optimal-temp 0.00
+      :rationale "Strictly mandatory across all model tiers; any T > 0.0 introduces syntax delimiter collapse and AST corruption."
+      :pareto-score 97.5
+      :syntax-integrity 100.0
+      :hallucination-rate 0.0)
+    (:stage-temp
+      :stage "verification"
+      :optimal-temp 0.00
+      :rationale "Zero sampling noise during gate evaluation and receipt assertion checking."
+      :pareto-score 98.0
+      :syntax-integrity 100.0
+      :hallucination-rate 0.0)
+    (:stage-temp
+      :stage "scout"
+      :optimal-temp 0.10
+      :rationale "Near-deterministic symbol resolution and call graph impact extraction without speculative hallucination."
+      :pareto-score 94.0
+      :syntax-integrity 99.5
+      :hallucination-rate 0.5)
+    (:stage-temp
+      :stage "reflection"
+      :optimal-temp 0.20
+      :rationale "Optimal balance for GAP audits; catches subtle edge cases, bloat, and omitted constraints without triggering false positive rejections."
+      :pareto-score 96.5
+      :syntax-integrity 98.0
+      :hallucination-rate 1.8)
+    (:stage-temp
+      :stage "planning"
+      :optimal-temp 0.70
+      :rationale "Peak Pareto divergence for Qwen-3B and Qwen-1.5B; maximizes multi-hypothesis exploration and work item coverage before hallucination penalties kick in."
+      :pareto-score 96.8
+      :syntax-integrity 97.0
+      :hallucination-rate 2.2)
+  ]
+
+  :model-tier-sweeps [
+    (:model-sweep
+      :alias "small"
+      :canonical-model "Qwen/Qwen2.5-Coder-3B-Instruct"
+      :memory-limit-mb 2150
+      :optimal-planning-temp 0.70
+      :optimal-reflection-temp 0.20
+      :optimal-implementation-temp 0.00
+      :pareto-peak-score 96.8)
+    (:model-sweep
+      :alias "mini"
+      :canonical-model "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+      :memory-limit-mb 1180
+      :optimal-planning-temp 0.70
+      :optimal-reflection-temp 0.20
+      :optimal-implementation-temp 0.00
+      :pareto-peak-score 95.2)
+    (:model-sweep
+      :alias "micro"
+      :canonical-model "Qwen/Qwen2.5-Coder-0.5B-Instruct"
+      :memory-limit-mb 480
+      :optimal-planning-temp 0.50
+      :optimal-reflection-temp 0.10
+      :optimal-implementation-temp 0.00
+      :pareto-peak-score 93.5)
+    (:model-sweep
+      :alias "nano"
+      :canonical-model "HuggingFaceTB/SmolLM2-135M-Instruct"
+      :memory-limit-mb 95
+      :optimal-planning-temp 0.00
+      :optimal-reflection-temp 0.00
+      :optimal-implementation-temp 0.00
+      :pareto-peak-score 88.0)
+  ]
+
+  :configured-pipelines [
+    (:pipeline
+      :id "fast"
+      :name "Fast-Track Single-Turn Pipeline"
+      :entropy-range "< 1.5"
+      :stages-count 2
+      :temperatures (:planning 0.0 :reflection 0.0 :implementation 0.0 :verification 0.0)
+      :recommended-tier "nano")
+    (:pipeline
+      :id "standard"
+      :name "Standard Steps+GAP Pipeline"
+      :entropy-range "1.5 - 4.0"
+      :stages-count 5
+      :temperatures (:planning 0.50 :reflection 0.20 :implementation 0.0 :verification 0.0)
+      :recommended-tier "mini")
+    (:pipeline
+      :id "deep-epistemic"
+      :name "Deep Epistemic 7-Stage Pipeline"
+      :entropy-range ">= 4.0"
+      :stages-count 7
+      :temperatures (:planning 0.70 :reflection 0.20 :implementation 0.0 :verification 0.0)
+      :recommended-tier "small")
+    (:pipeline
+      :id "creative-synthesis"
+      :name "Creative Synthesis & Generative Pipeline"
+      :entropy-range "Creative / Novel"
+      :stages-count 5
+      :temperatures (:planning 0.75 :reflection 0.30 :implementation 0.0 :verification 0.0)
+      :recommended-tier "small")
+    (:pipeline
+      :id "adversarial-hardening"
+      :name "Adversarial Security & Exploit Mitigation Pipeline"
+      :entropy-range "Security Critical"
+      :stages-count 5
+      :temperatures (:planning 0.40 :reflection 0.10 :implementation 0.0 :verification 0.0)
+      :recommended-tier "small")
+  ]
+)

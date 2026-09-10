@@ -109,6 +109,54 @@
   :d "Constructs the client target descriptor for agy (Antigravity CLI)"
   (make-antigravity-client))
 
+(df make-eddie-client [] -> ClientTarget
+  :d "Constructs the client target descriptor for Eddie (Native AgentScript executive)"
+  (ClientTarget
+    :id "eddie"
+    :name "Eddie (Native ASL)"
+    :engine "agent-native-asl"
+    :prompt-channel "EDDIE.md"
+    :supports-mcp true
+    :supports-staged-vfs true))
+
+(dfs ClientConcurrencyProfile
+  :d "Concurrency and rate limit bounds for orchestrated agents"
+  (:f client-id Str "Client identifier: agy, claude-code, eddie")
+  (:f soft-limit I64 "Default operational concurrency limit")
+  (:f hard-limit I64 "Maximum burst concurrency limit")
+  (:f flexibility Str "Concurrency flexibility tier: strict, bounded, elastic")
+  (:f rationale Str "Architectural reasoning for concurrency envelope"))
+
+(df get-client-concurrency-profile [(client-id Str)] -> ClientConcurrencyProfile
+  :d "Returns the calibrated concurrency limit profile per agent archetype"
+  (if (or (= client-id "agy") (= client-id "antigravity"))
+    (ClientConcurrencyProfile
+      :client-id "agy"
+      :soft-limit 4
+      :hard-limit 6
+      :flexibility "bounded"
+      :rationale "Strict soft-4/hard-6 envelope to prevent KV-cache bloat and attention decay in subagent DAGs.")
+    (if (or (= client-id "claude") (= client-id "claude-code"))
+      (ClientConcurrencyProfile
+        :client-id "claude-code"
+        :soft-limit 2
+        :hard-limit 3
+        :flexibility "strict"
+        :rationale "Separate strict limit governed by Anthropic TPM/RPM quotas and subprocess context costs.")
+      (if (= client-id "eddie")
+        (ClientConcurrencyProfile
+          :client-id "eddie"
+          :soft-limit 8
+          :hard-limit 16
+          :flexibility "elastic"
+          :rationale "Highly flexible scaling via native S-expression batch RPC, in-RAM VFS, and minimal token footprint.")
+        (ClientConcurrencyProfile
+          :client-id client-id
+          :soft-limit 4
+          :hard-limit 6
+          :flexibility "bounded"
+          :rationale "Standard default concurrency profile.")))))
+
 (df make-baseline-config [] -> InjectionConfig
   :d "Constructs the baseline arm configuration without paradigm injection"
   (InjectionConfig

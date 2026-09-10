@@ -1491,6 +1491,58 @@
           :rationale "Formats preset execution plan as canonical ASN")
     (:sym :name "format-thread-profile-asn" :kind :fn :tokens 4
           :rationale "Formats thread profile telemetry as canonical ASN")
+    (:sym :name "StageTemperatureConfig" :kind :type :tokens 3
+          :rationale "Calibrated sampling temperature configuration across cognitive stages")
+    (:sym :name "PipelineStageSpec" :kind :type :tokens 3
+          :rationale "Cognitive pipeline stage specification with stage temperature and gate")
+    (:sym :name "AutonomousPipelineProfile" :kind :type :tokens 3
+          :rationale "Autonomous agent execution pipeline profile with calibrated stage temperatures")
+    (:sym :name "PipelineSelectionDecision" :kind :type :tokens 3
+          :rationale "Autonomous pipeline selection decision record with rationale and entropy")
+    (:sym :name "StageCalibrationPoint" :kind :type :tokens 3
+          :rationale "Empirical canary evaluation calibration point on Hanas model stand")
+    (:sym :name "HanasModelStandSweep" :kind :type :tokens 4
+          :rationale "Multi-stage temperature calibration sweep results across Hanas model tiers")
+    (:sym :name "make-stage-temperature-config" :kind :fn :tokens 4
+          :rationale "Constructs stage temperature configuration")
+    (:sym :name "default-stage-temperatures" :kind :fn :tokens 3
+          :rationale "Returns default Pareto-optimal stage temperatures")
+    (:sym :name "stage-temperature-for" :kind :fn :tokens 3
+          :rationale "Resolves calibrated temperature for cognitive stage")
+    (:sym :name "make-pipeline-stage-spec" :kind :fn :tokens 4
+          :rationale "Constructs pipeline stage specification")
+    (:sym :name "make-fast-pipeline" :kind :fn :tokens 3
+          :rationale "Constructs fast-track 2-stage execution pipeline")
+    (:sym :name "make-standard-pipeline" :kind :fn :tokens 3
+          :rationale "Constructs standard Steps and GAP execution pipeline")
+    (:sym :name "make-deep-epistemic-pipeline" :kind :fn :tokens 3
+          :rationale "Constructs 7-stage deep epistemic reflection pipeline")
+    (:sym :name "make-creative-synthesis-pipeline" :kind :fn :tokens 3
+          :rationale "Constructs creative synthesis pipeline for generative tasks")
+    (:sym :name "make-adversarial-hardening-pipeline" :kind :fn :tokens 3
+          :rationale "Constructs adversarial security hardening pipeline")
+    (:sym :name "available-pipeline-profiles" :kind :fn :tokens 3
+          :rationale "Returns all registered autonomous pipeline profiles")
+    (:sym :name "find-pipeline-profile" :kind :fn :tokens 3
+          :rationale "Finds pipeline profile by identifier")
+    (:sym :name "detect-task-domain" :kind :fn :tokens 3
+          :rationale "Detects task domain from prompt semantics")
+    (:sym :name "compute-task-entropy-score" :kind :fn :tokens 4
+          :rationale "Computes continuous task entropy score H_task")
+    (:sym :name "autonomous-select-pipeline" :kind :fn :tokens 3
+          :rationale "Autonomously selects pipeline and stage temperatures for task")
+    (:sym :name "evaluate-stage-temperature-point" :kind :fn :tokens 4
+          :rationale "Simulates canary execution on Hanas model testing stand")
+    (:sym :name "run-hanas-stage-calibration" :kind :fn :tokens 4
+          :rationale "Runs multi-stage temperature sweep on Hanas model stand")
+    (:sym :name "format-stage-temperature-asn" :kind :fn :tokens 4
+          :rationale "Formats stage temperature configuration as ASN")
+    (:sym :name "format-pipeline-profile-asn" :kind :fn :tokens 4
+          :rationale "Formats pipeline profile as canonical ASN")
+    (:sym :name "format-selection-decision-asn" :kind :fn :tokens 4
+          :rationale "Formats pipeline selection decision as canonical ASN")
+    (:sym :name "format-hanas-stand-sweep-asn" :kind :fn :tokens 4
+          :rationale "Formats Hanas stand sweep results as canonical ASN")
   ]
 )
 

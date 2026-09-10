@@ -11,10 +11,14 @@
   :i [(multi_client_runner :a mcr)])
 
 (df test-client-targets [] -> Bool
-  :d "Verifies Claude Code and agy target definitions"
+  :d "Verifies Claude Code, agy, and Eddie target definitions and concurrency limit profiles"
   (let [(claude (mcr/make-claude-client))
         (agy (mcr/make-antigravity-client))
-        (agy2 (mcr/make-agy-client))]
+        (agy2 (mcr/make-agy-client))
+        (eddie (mcr/make-eddie-client))
+        (prof-agy (mcr/get-client-concurrency-profile "agy"))
+        (prof-claude (mcr/get-client-concurrency-profile "claude-code"))
+        (prof-eddie (mcr/get-client-concurrency-profile "eddie"))]
     (assert (= (.-id claude) "claude-code") "Claude ID must be claude-code")
     (= (.-engine claude) "claude-3-7-sonnet")
     (assert (= (.-prompt-channel claude) "CLAUDE.md") "Claude prompt channel must be CLAUDE.md")
@@ -25,6 +29,17 @@
     (= (.-engine agy) "gemini-2-pro")
     (assert (= (.-prompt-channel agy) "<RULE[user_global]>") "Antigravity channel must be RULE[user_global]")
     (assert (.-supports-staged-vfs agy) "Antigravity must support staged VFS")
+    (assert (= (.-id eddie) "eddie") "Eddie ID must be eddie")
+    (assert (= (.-name eddie) "Eddie (Native ASL)") "Eddie name must be Eddie")
+    (assert (= (.-soft-limit prof-agy) 4) "AntiGravity soft limit must be 4")
+    (assert (= (.-hard-limit prof-agy) 6) "AntiGravity hard limit must be 6")
+    (assert (= (.-flexibility prof-agy) "bounded") "AntiGravity profile must be bounded")
+    (assert (= (.-soft-limit prof-claude) 2) "Claude Code soft limit must be 2")
+    (assert (= (.-hard-limit prof-claude) 3) "Claude Code hard limit must be 3")
+    (assert (= (.-flexibility prof-claude) "strict") "Claude Code profile must be strict")
+    (assert (= (.-soft-limit prof-eddie) 8) "Eddie soft limit must be 8")
+    (assert (= (.-hard-limit prof-eddie) 16) "Eddie hard limit must be 16")
+    (assert (= (.-flexibility prof-eddie) "elastic") "Eddie profile must be elastic")
     true))
 
 (df test-injection-configs [] -> Bool
